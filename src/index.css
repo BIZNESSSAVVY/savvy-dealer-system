@@ -127,29 +127,32 @@
   .border-savvy-orange { border-color: hsl(var(--savvy-orange)); }
   .border-savvy-navy { border-color: hsl(var(--savvy-navy)); }
 
-  /* ONLY THE 4 MOST IMPORTANT BUTTONS ARE ORANGE */
+  /* ONLY THE 4 MOST IMPORTANT BUTTONS ARE ORANGE - FORCED WHITE TEXT */
   .btn-apply-financing,
   .btn-get-directions,
   .btn-browse-inventory {
-    @apply inline-flex items-center justify-center gap-4 rounded-xl px-10 py-5 font-black text-white text-xl transition-all shadow-300;
-    background-color: hsl(var(--savvy-orange));
+    @apply inline-flex items-center justify-center gap-4 rounded-xl px-10 py-5 font-black text-xl transition-all shadow-300;
+    background-color: hsl(var(--savvy-orange)) !important;
+    color: white !important;
     box-shadow: 0 20px 50px -12px hsl(var(--savvy-orange) / 0.5);
   }
   .btn-apply-financing:hover,
   .btn-get-directions:hover,
   .btn-browse-inventory:hover {
-    background-color: hsl(var(--savvy-orange-light));
+    background-color: hsl(var(--savvy-orange-light)) !important;
+    color: white !important;
     transform: translateY(-6px);
   }
 
-  /* Every other button = premium navy with ENHANCED shadows */
+  /* Every other button = premium navy with ENHANCED shadows and FORCED WHITE TEXT */
   .btn-savvy,
   .btn-navy,
   .btn-primary,
   .btn-vehicle-details,
   .btn-schedule-test-drive {
-    @apply inline-flex items-center justify-center gap-3 rounded-xl px-8 py-4 font-bold text-white transition-all;
-    background-color: hsl(var(--savvy-navy));
+    @apply inline-flex items-center justify-center gap-3 rounded-xl px-8 py-4 font-bold transition-all;
+    background-color: hsl(var(--savvy-navy)) !important;
+    color: white !important;
     box-shadow: 0 12px 40px -10px hsl(var(--savvy-navy) / 0.5);
   }
   .btn-savvy:hover,
@@ -157,7 +160,8 @@
   .btn-primary:hover,
   .btn-vehicle-details:hover,
   .btn-schedule-test-drive:hover {
-    background-color: hsl(var(--savvy-navy-light));
+    background-color: hsl(var(--savvy-navy-light)) !important;
+    color: white !important;
     transform: translateY(-4px);
     box-shadow: 0 16px 50px -10px hsl(var(--savvy-navy) / 0.6);
   }

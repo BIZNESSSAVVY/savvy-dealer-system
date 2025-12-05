@@ -2,312 +2,129 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================
-   SavvyOS - PUNCHED UP brand
-   All colors expressed as HSL (with modern alpha via "/")
-   ============================ */
-
+/* ----------------------------------------------------------
+   2026 PREMIUM UI COLOR SYSTEM (NO GRADIENTS)
+---------------------------------------------------------- */
 @layer base {
   :root {
-    /* Base / Text */
-    --background: 0 0% 100%;
-    --foreground: 216 12% 8%;
+    /* Primary Brand – Deep Premium Blue */
+    --primary: 218 72% 37%;        /* #2458B9 */
+    --primary-hover: 218 72% 30%;
+    --primary-light: 218 72% 45%;
 
-    /* Cards / Surfaces */
+    /* Accent – Vibrant Orange */
+    --secondary: 28 98% 52%;       /* #F47B1F */
+    --secondary-hover: 28 98% 45%;
+    --secondary-light: 28 98% 60%;
+
+    /* Neutral UI */
+    --background: 0 0% 98%;
+    --foreground: 224 14% 14%;
+
     --card: 0 0% 100%;
-    --card-foreground: 216 12% 8%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 216 12% 8%;
+    --card-foreground: 224 14% 14%;
 
-    /* Savvy Navy - deeper, richer for better contrast */
-    --savvy-navy-h: 210;      /* hue */
-    --savvy-navy: 210 95% 18%;   /* deep navy */
-    --savvy-navy-light: 210 95% 28%;
-    --savvy-navy-dark: 210 95% 12%;
+    --border: 220 8% 85%;
+    --input: 220 8% 90%;
 
-    /* Savvy Orange - brighter and warmer to POP */
-    --savvy-orange-h: 22;
-    --savvy-orange: 22 100% 50%;    /* main orange - strong */
-    --savvy-orange-light: 22 100% 60%;
-    --savvy-orange-dark: 22 100% 40%;
-
-    /* Accent (electric blue) for small highlights / links */
-    --accent: 206 95% 48%;
-    --accent-foreground: 0 0% 100%;
-
-    /* Muted / UI */
-    --muted: 210 20% 96%;
-    --muted-foreground: 210 12% 45%;
-
-    /* Semantic */
-    --success: 142 72% 36%;
-    --warning: 38 92% 50%;
-    --destructive: 0 82% 60%;
-
-    /* Inputs / borders / rings */
-    --border: 216 10% 90%;
-    --input: 216 10% 96%;
-    --ring: 22 100% 50%; /* uses orange ring for strong CTA focus */
-
-    /* Radius */
-    --radius: 0.6rem;
-
-    /* Gradients - tuned for punch + depth */
-    --gradient-primary: linear-gradient(135deg,
-      hsl(var(--savvy-navy) / 1) 0%,
-      hsl(var(--savvy-navy-light) / 1) 40%,
-      hsl(var(--savvy-orange) / 1) 100%);
-
-    --gradient-hero: linear-gradient(120deg,
-      hsl(var(--savvy-navy-dark) / 1) 0%,
-      hsl(var(--savvy-navy) / 1) 45%,
-      hsl(var(--savvy-orange) / 1) 100%);
-
-    --gradient-orange: linear-gradient(90deg,
-      hsl(var(--savvy-orange-dark) / 1) 0%,
-      hsl(var(--savvy-orange) / 1) 60%,
-      hsl(var(--savvy-orange-light) / 1) 100%);
-
-    --gradient-savvy: linear-gradient(135deg,
-      hsl(var(--savvy-navy) / 1) 0%,
-      hsl(var(--savvy-orange) / 1) 100%);
-
-    --gradient-reverse: linear-gradient(135deg,
-      hsl(var(--savvy-orange) / 1) 0%,
-      hsl(var(--savvy-navy) / 1) 100%);
-
-    --gradient-subtle: linear-gradient(180deg,
-      hsl(210 18% 98% / 1),
-      hsl(210 16% 94% / 1));
-
-    /* Shadows - stronger and colored subtly for brand depth */
-    --shadow-premium: 0 18px 50px -12px hsl(var(--savvy-navy) / 0.30);
-    --shadow-card: 0 8px 30px -10px hsl(var(--savvy-navy) / 0.12);
-    --shadow-hover: 0 20px 50px -14px hsl(var(--savvy-orange) / 0.25);
-    --shadow-orange: 0 10px 40px -12px hsl(var(--savvy-orange) / 0.28);
-    --shadow-navy: 0 10px 40px -12px hsl(var(--savvy-navy) / 0.28);
-
-    /* Sidebar / UI theme */
-    --sidebar-background: 210 20% 98%;
-    --sidebar-foreground: 216 12% 12%;
-    --sidebar-primary: var(--savvy-navy);
-    --sidebar-accent: var(--savvy-orange);
-    --sidebar-border: 210 12% 92%;
-    --sidebar-ring: var(--savvy-orange);
+    /* Modern shadows */
+    --shadow-soft: 0 2px 6px rgba(0,0,0,0.05);
+    --shadow-medium: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-strong: 0 8px 20px rgba(0,0,0,0.12);
   }
 
-  /* Dark mode variables: increased contrast and punch */
   .dark {
-    --background: 210 12% 6%;
-    --foreground: 210 12% 96%;
+    --background: 224 13% 10%;
+    --foreground: 0 0% 98%;
 
-    --card: 210 14% 8%;
-    --card-foreground: 210 12% 96%;
+    --card: 224 13% 14%;
+    --card-foreground: 0 0% 98%;
 
-    /* Navy moves slightly lighter in dark to keep richness */
-    --savvy-navy: 210 95% 22%;
-    --savvy-navy-light: 210 95% 32%;
-    --savvy-navy-dark: 210 95% 16%;
+    --border: 224 10% 22%;
+    --input: 224 12% 20%;
 
-    /* Orange brightens slightly on dark */
-    --savvy-orange: 22 100% 55%;
-    --savvy-orange-light: 22 100% 65%;
-    --savvy-orange-dark: 22 100% 45%;
-
-    --accent: 206 95% 60%;
-    --muted: 210 13% 12%;
-    --muted-foreground: 210 12% 76%;
-
-    --border: 210 14% 12%;
-    --input: 210 14% 10%;
-    --ring: 22 100% 55%;
-
-    --gradient-primary: linear-gradient(135deg,
-      hsl(var(--savvy-navy) / 1) 0%,
-      hsl(var(--savvy-navy-light) / 1) 45%,
-      hsl(var(--savvy-orange) / 1) 100%);
-
-    --shadow-premium: 0 18px 50px -12px hsl(var(--savvy-navy) / 0.45);
-    --shadow-card: 0 8px 28px -8px hsl(var(--savvy-navy) / 0.28);
-    --shadow-hover: 0 20px 50px -14px hsl(var(--savvy-orange) / 0.36);
-    --shadow-orange: 0 10px 40px -12px hsl(var(--savvy-orange) / 0.40);
-
-    --sidebar-background: 210 14% 7%;
-    --sidebar-foreground: 210 12% 96%;
-    --sidebar-primary: var(--savvy-navy);
-    --sidebar-accent: var(--savvy-orange);
-    --sidebar-border: 210 16% 12%;
-    --sidebar-ring: var(--savvy-orange);
-  }
-
-  /* Apply baseline bg/text utility via Tailwind's @apply */
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-synthesis: none;
+    /* Slightly stronger shadows for depth in dark mode */
+    --shadow-soft: 0 2px 6px rgba(0,0,0,0.25);
+    --shadow-medium: 0 4px 12px rgba(0,0,0,0.35);
+    --shadow-strong: 0 8px 22px rgba(0,0,0,0.45);
   }
 }
 
-/* ============================
-   High-impact utility classes
-   ============================ */
-@layer utilities {
-  /* Gradients & Hero */
-  .bg-gradient-primary {
-    background-image: var(--gradient-primary);
+/* ----------------------------------------------------------
+   BASE ELEMENTS
+---------------------------------------------------------- */
+@layer base {
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: Inter, ui-sans-serif, system-ui;
   }
+}
 
-  .bg-gradient-hero {
-    background-image: var(--gradient-hero);
+/* ----------------------------------------------------------
+   COMPONENT CLASSES
+---------------------------------------------------------- */
+@layer components {
+  /* Solid Button – Blue */
+  .btn-primary {
+    background-color: hsl(var(--primary));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-medium);
+    transition: background-color 0.2s ease, transform 0.2s ease;
   }
-
-  .bg-gradient-savvy {
-    background-image: var(--gradient-savvy);
-  }
-
-  .bg-gradient-orange {
-    background-image: var(--gradient-orange);
-  }
-
-  .bg-gradient-reverse {
-    background-image: var(--gradient-reverse);
-  }
-
-  .bg-gradient-subtle {
-    background-image: var(--gradient-subtle);
-  }
-
-  /* Shadows */
-  .shadow-premium {
-    box-shadow: var(--shadow-premium);
-  }
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
-  .shadow-hover {
-    box-shadow: var(--shadow-hover);
-  }
-  .shadow-orange {
-    box-shadow: var(--shadow-orange);
-  }
-  .shadow-navy {
-    box-shadow: var(--shadow-navy);
-  }
-
-  /* Text & background brand colors */
-  .text-savvy-orange {
-    color: hsl(var(--savvy-orange));
-  }
-  .text-savvy-navy {
-    color: hsl(var(--savvy-navy));
-  }
-
-  .bg-savvy-orange {
-    background-color: hsl(var(--savvy-orange));
-  }
-  .bg-savvy-orange-light {
-    background-color: hsl(var(--savvy-orange-light));
-  }
-  .bg-savvy-orange-dark {
-    background-color: hsl(var(--savvy-orange-dark));
-  }
-
-  .bg-savvy-navy {
-    background-color: hsl(var(--savvy-navy));
-  }
-  .bg-savvy-navy-light {
-    background-color: hsl(var(--savvy-navy-light));
-  }
-  .bg-savvy-navy-dark {
-    background-color: hsl(var(--savvy-navy-dark));
-  }
-
-  .border-savvy-orange {
-    border-color: hsl(var(--savvy-orange));
-  }
-  .border-savvy-navy {
-    border-color: hsl(var(--savvy-navy));
-  }
-
-  /* CTA / Button utilities for maximum pop */
-  .btn-savvy {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 font-semibold transition-all;
-    background-color: hsl(var(--savvy-orange));
-    color: hsl(0 0% 100%);
-    box-shadow: var(--shadow-orange);
-  }
-  .btn-savvy:hover {
-    background-color: hsl(var(--savvy-orange-light));
+  .btn-primary:hover {
+    background-color: hsl(var(--primary-hover));
     transform: translateY(-2px);
   }
-  .btn-savvy:active {
-    background-color: hsl(var(--savvy-orange-dark));
-    transform: translateY(0);
+
+  /* Solid Button – Orange */
+  .btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-medium);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .btn-secondary:hover {
+    background-color: hsl(var(--secondary-hover));
+    transform: translateY(-2px);
   }
 
-  .btn-navy {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 font-semibold transition-all;
-    background-color: hsl(var(--savvy-navy));
-    color: hsl(0 0% 100%);
-    box-shadow: var(--shadow-navy);
-  }
-  .btn-navy:hover {
-    background-color: hsl(var(--savvy-navy-light));
-    transform: translateY(-1px);
+  /* Card */
+  .card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
   }
 
-  /* Outline/Focus - use bold orange ring for CTAs for accessibility and pop */
-  .focus-ring-orange:focus {
-    outline: none;
-    box-shadow: 0 0 0 4px hsl(var(--savvy-orange) / 0.18), 0 1px 6px -2px hsl(var(--savvy-navy) / 0.28);
-    border-radius: var(--radius);
-  }
-
-  /* Large hero heading treatment for more pop */
-  .hero-title {
+  /* Headings */
+  .heading-xl {
+    font-size: 2.8rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-    text-shadow: 0 6px 18px hsl(var(--savvy-navy) / 0.12);
-  }
-
-  /* Badge / pill */
-  .badge-savvy {
-    @apply inline-flex items-center gap-2 text-sm font-medium rounded-full px-3 py-1;
-    background: linear-gradient(90deg, hsl(var(--savvy-orange) / 1), hsl(var(--savvy-orange-light) / 1));
-    color: hsl(0 0% 100%);
-    box-shadow: 0 6px 20px -8px hsl(var(--savvy-orange) / 0.35);
-  }
-
-  /* Elevated card accent */
-  .card-accent {
-    border-left: 6px solid hsl(var(--savvy-orange));
-    padding-left: 1rem;
-  }
-
-  /* Thin metallic separator */
-  .separator-metal {
-    background: linear-gradient(90deg, hsl(0 0% 96%) 0%, hsl(210 12% 88%) 50%, hsl(0 0% 96%) 100%);
-    height: 1px;
-  }
-
-  /* Utility to make images/logo pop on light backgrounds */
-  .logo-frame {
-    padding: 0.5rem;
-    border-radius: 0.75rem;
-    background: linear-gradient(180deg, hsl(var(--savvy-navy) / 0.04), hsl(var(--savvy-navy) / 0.02));
-    box-shadow: 0 6px 30px -12px hsl(var(--savvy-navy) / 0.14);
+    color: hsl(var(--primary));
   }
 }
 
-/* ============================
-   Helpful usage notes (keep in project README)
-   - Use .bg-gradient-hero on the hero container
-   - Use .hero-title for main H1
-   - Use .btn-savvy for primary CTAs
-   - Use .btn-navy for secondary CTAs
-   - Use .badge-savvy for attention pills
-   ============================ */
+/* ----------------------------------------------------------
+   UTILITIES
+---------------------------------------------------------- */
+@layer utilities {
+  .text-primary { color: hsl(var(--primary)); }
+  .bg-primary { background-color: hsl(var(--primary)); }
+
+  .text-secondary { color: hsl(var(--secondary)); }
+  .bg-secondary { background-color: hsl(var(--secondary)); }
+
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-medium { box-shadow: var(--shadow-medium); }
+  .shadow-strong { box-shadow: var(--shadow-strong); }
+
+  .border-default { border-color: hsl(var(--border)); }
+}

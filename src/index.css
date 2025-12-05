@@ -4,7 +4,7 @@
 
 /* ============================
    SavvyOS - PUNCHED UP brand
-   All colors expressed as HSL (with modern alpha via "/")
+   All colors expressed as HSL
    ============================ */
 
 @layer base {
@@ -19,23 +19,23 @@
     --popover: 0 0% 100%;
     --popover-foreground: 216 12% 8%;
 
-    /* Savvy Navy - deeper, richer for better contrast */
-    --savvy-navy-h: 210;      /* hue */
-    --savvy-navy: 210 95% 18%;   /* deep navy */
+    /* Savvy Navy */
+    --savvy-navy-h: 210;
+    --savvy-navy: 210 95% 18%;
     --savvy-navy-light: 210 95% 28%;
     --savvy-navy-dark: 210 95% 12%;
 
-    /* Savvy Orange - brighter and warmer to POP */
+    /* Savvy Orange */
     --savvy-orange-h: 22;
-    --savvy-orange: 22 100% 50%;    /* main orange - strong */
+    --savvy-orange: 22 100% 50%;
     --savvy-orange-light: 22 100% 60%;
     --savvy-orange-dark: 22 100% 40%;
 
-    /* Accent (electric blue) for small highlights / links */
+    /* Accent */
     --accent: 206 95% 48%;
     --accent-foreground: 0 0% 100%;
 
-    /* Muted / UI */
+    /* Muted */
     --muted: 210 20% 96%;
     --muted-foreground: 210 12% 45%;
 
@@ -47,47 +47,28 @@
     /* Inputs / borders / rings */
     --border: 216 10% 90%;
     --input: 216 10% 96%;
-    --ring: 22 100% 50%; /* uses orange ring for strong CTA focus */
+    --ring: 22 100% 50%; 
 
     /* Radius */
     --radius: 0.6rem;
 
-    /* Gradients - tuned for punch + depth */
-    --gradient-primary: linear-gradient(135deg,
-      hsl(var(--savvy-navy) / 1) 0%,
-      hsl(var(--savvy-navy-light) / 1) 40%,
-      hsl(var(--savvy-orange) / 1) 100%);
+    /* ==== GRADIENTS REPLACED WITH SOLID SAVVY ORANGE ==== */
 
-    --gradient-hero: linear-gradient(120deg,
-      hsl(var(--savvy-navy-dark) / 1) 0%,
-      hsl(var(--savvy-navy) / 1) 45%,
-      hsl(var(--savvy-orange) / 1) 100%);
+    --gradient-primary: hsl(var(--savvy-orange));
+    --gradient-hero: hsl(var(--savvy-orange));
+    --gradient-orange: hsl(var(--savvy-orange));
+    --gradient-savvy: hsl(var(--savvy-orange));
+    --gradient-reverse: hsl(var(--savvy-orange));
+    --gradient-subtle: hsl(var(--savvy-orange));
 
-    --gradient-orange: linear-gradient(90deg,
-      hsl(var(--savvy-orange-dark) / 1) 0%,
-      hsl(var(--savvy-orange) / 1) 60%,
-      hsl(var(--savvy-orange-light) / 1) 100%);
-
-    --gradient-savvy: linear-gradient(135deg,
-      hsl(var(--savvy-navy) / 1) 0%,
-      hsl(var(--savvy-orange) / 1) 100%);
-
-    --gradient-reverse: linear-gradient(135deg,
-      hsl(var(--savvy-orange) / 1) 0%,
-      hsl(var(--savvy-navy) / 1) 100%);
-
-    --gradient-subtle: linear-gradient(180deg,
-      hsl(210 18% 98% / 1),
-      hsl(210 16% 94% / 1));
-
-    /* Shadows - stronger and colored subtly for brand depth */
+    /* Shadows */
     --shadow-premium: 0 18px 50px -12px hsl(var(--savvy-navy) / 0.30);
     --shadow-card: 0 8px 30px -10px hsl(var(--savvy-navy) / 0.12);
     --shadow-hover: 0 20px 50px -14px hsl(var(--savvy-orange) / 0.25);
     --shadow-orange: 0 10px 40px -12px hsl(var(--savvy-orange) / 0.28);
     --shadow-navy: 0 10px 40px -12px hsl(var(--savvy-navy) / 0.28);
 
-    /* Sidebar / UI theme */
+    /* Sidebar */
     --sidebar-background: 210 20% 98%;
     --sidebar-foreground: 216 12% 12%;
     --sidebar-primary: var(--savvy-navy);
@@ -96,7 +77,7 @@
     --sidebar-ring: var(--savvy-orange);
   }
 
-  /* Dark mode variables: increased contrast and punch */
+  /* Dark Mode */
   .dark {
     --background: 210 12% 6%;
     --foreground: 210 12% 96%;
@@ -104,12 +85,10 @@
     --card: 210 14% 8%;
     --card-foreground: 210 12% 96%;
 
-    /* Navy moves slightly lighter in dark to keep richness */
     --savvy-navy: 210 95% 22%;
     --savvy-navy-light: 210 95% 32%;
     --savvy-navy-dark: 210 95% 16%;
 
-    /* Orange brightens slightly on dark */
     --savvy-orange: 22 100% 55%;
     --savvy-orange-light: 22 100% 65%;
     --savvy-orange-dark: 22 100% 45%;
@@ -122,25 +101,13 @@
     --input: 210 14% 10%;
     --ring: 22 100% 55%;
 
-    --gradient-primary: linear-gradient(135deg,
-      hsl(var(--savvy-navy) / 1) 0%,
-      hsl(var(--savvy-navy-light) / 1) 45%,
-      hsl(var(--savvy-orange) / 1) 100%);
-
-    --shadow-premium: 0 18px 50px -12px hsl(var(--savvy-navy) / 0.45);
-    --shadow-card: 0 8px 28px -8px hsl(var(--savvy-navy) / 0.28);
-    --shadow-hover: 0 20px 50px -14px hsl(var(--savvy-orange) / 0.36);
-    --shadow-orange: 0 10px 40px -12px hsl(var(--savvy-orange) / 0.40);
-
-    --sidebar-background: 210 14% 7%;
-    --sidebar-foreground: 210 12% 96%;
-    --sidebar-primary: var(--savvy-navy);
-    --sidebar-accent: var(--savvy-orange);
-    --sidebar-border: 210 16% 12%;
-    --sidebar-ring: var(--savvy-orange);
+    --gradient-primary: hsl(var(--savvy-orange));
+    --gradient-hero: hsl(var(--savvy-orange));
+    --gradient-orange: hsl(var(--savvy-orange));
+    --gradient-savvy: hsl(var(--savvy-orange));
+    --gradient-reverse: hsl(var(--savvy-orange));
   }
 
-  /* Apply baseline bg/text utility via Tailwind's @apply */
   * {
     @apply border-border;
   }
@@ -151,92 +118,58 @@
   }
 }
 
-/* ============================
-   High-impact utility classes
-   ============================ */
 @layer utilities {
-  /* Gradients & Hero */
   .bg-gradient-primary {
-    background-image: var(--gradient-primary);
+    background-color: hsl(var(--savvy-orange));
   }
 
   .bg-gradient-hero {
-    background-image: var(--gradient-hero);
+    background-color: hsl(var(--savvy-orange));
   }
 
   .bg-gradient-savvy {
-    background-image: var(--gradient-savvy);
+    background-color: hsl(var(--savvy-orange));
   }
 
   .bg-gradient-orange {
-    background-image: var(--gradient-orange);
+    background-color: hsl(var(--savvy-orange));
   }
 
   .bg-gradient-reverse {
-    background-image: var(--gradient-reverse);
+    background-color: hsl(var(--savvy-orange));
   }
 
   .bg-gradient-subtle {
-    background-image: var(--gradient-subtle);
+    background-color: hsl(var(--savvy-orange));
   }
 
   /* Shadows */
-  .shadow-premium {
-    box-shadow: var(--shadow-premium);
-  }
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
-  .shadow-hover {
-    box-shadow: var(--shadow-hover);
-  }
-  .shadow-orange {
-    box-shadow: var(--shadow-orange);
-  }
-  .shadow-navy {
-    box-shadow: var(--shadow-navy);
-  }
+  .shadow-premium { box-shadow: var(--shadow-premium); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-hover { box-shadow: var(--shadow-hover); }
+  .shadow-orange { box-shadow: var(--shadow-orange); }
+  .shadow-navy { box-shadow: var(--shadow-navy); }
 
-  /* Text & background brand colors */
-  .text-savvy-orange {
-    color: hsl(var(--savvy-orange));
-  }
-  .text-savvy-navy {
-    color: hsl(var(--savvy-navy));
-  }
+  /* Brand text & backgrounds */
+  .text-savvy-orange { color: hsl(var(--savvy-orange)); }
+  .text-savvy-navy { color: hsl(var(--savvy-navy)); }
 
-  .bg-savvy-orange {
-    background-color: hsl(var(--savvy-orange));
-  }
-  .bg-savvy-orange-light {
-    background-color: hsl(var(--savvy-orange-light));
-  }
-  .bg-savvy-orange-dark {
-    background-color: hsl(var(--savvy-orange-dark));
-  }
+  .bg-savvy-orange { background-color: hsl(var(--savvy-orange)); }
+  .bg-savvy-orange-light { background-color: hsl(var(--savvy-orange-light)); }
+  .bg-savvy-orange-dark { background-color: hsl(var(--savvy-orange-dark)); }
 
-  .bg-savvy-navy {
-    background-color: hsl(var(--savvy-navy));
-  }
-  .bg-savvy-navy-light {
-    background-color: hsl(var(--savvy-navy-light));
-  }
-  .bg-savvy-navy-dark {
-    background-color: hsl(var(--savvy-navy-dark));
-  }
+  .bg-savvy-navy { background-color: hsl(var(--savvy-navy)); }
+  .bg-savvy-navy-light { background-color: hsl(var(--savvy-navy-light)); }
+  .bg-savvy-navy-dark { background-color: hsl(var(--savvy-navy-dark)); }
 
-  .border-savvy-orange {
-    border-color: hsl(var(--savvy-orange));
-  }
-  .border-savvy-navy {
-    border-color: hsl(var(--savvy-navy));
-  }
+  .border-savvy-orange { border-color: hsl(var(--savvy-orange)); }
+  .border-savvy-navy { border-color: hsl(var(--savvy-navy)); }
 
-  /* CTA / Button utilities for maximum pop */
+  /* Buttons */
   .btn-savvy {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 font-semibold transition-all;
     background-color: hsl(var(--savvy-orange));
-    color: hsl(0 0% 100%);
+    color: white;
     box-shadow: var(--shadow-orange);
   }
   .btn-savvy:hover {
@@ -251,7 +184,7 @@
   .btn-navy {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 font-semibold transition-all;
     background-color: hsl(var(--savvy-navy));
-    color: hsl(0 0% 100%);
+    color: white;
     box-shadow: var(--shadow-navy);
   }
   .btn-navy:hover {
@@ -259,14 +192,13 @@
     transform: translateY(-1px);
   }
 
-  /* Outline/Focus - use bold orange ring for CTAs for accessibility and pop */
   .focus-ring-orange:focus {
     outline: none;
-    box-shadow: 0 0 0 4px hsl(var(--savvy-orange) / 0.18), 0 1px 6px -2px hsl(var(--savvy-navy) / 0.28);
+    box-shadow: 0 0 0 4px hsl(var(--savvy-orange) / 0.18),
+                0 1px 6px -2px hsl(var(--savvy-navy) / 0.28);
     border-radius: var(--radius);
   }
 
-  /* Large hero heading treatment for more pop */
   .hero-title {
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -274,40 +206,27 @@
     text-shadow: 0 6px 18px hsl(var(--savvy-navy) / 0.12);
   }
 
-  /* Badge / pill */
   .badge-savvy {
     @apply inline-flex items-center gap-2 text-sm font-medium rounded-full px-3 py-1;
-    background: linear-gradient(90deg, hsl(var(--savvy-orange) / 1), hsl(var(--savvy-orange-light) / 1));
-    color: hsl(0 0% 100%);
+    background-color: hsl(var(--savvy-orange));
+    color: white;
     box-shadow: 0 6px 20px -8px hsl(var(--savvy-orange) / 0.35);
   }
 
-  /* Elevated card accent */
   .card-accent {
     border-left: 6px solid hsl(var(--savvy-orange));
     padding-left: 1rem;
   }
 
-  /* Thin metallic separator */
   .separator-metal {
-    background: linear-gradient(90deg, hsl(0 0% 96%) 0%, hsl(210 12% 88%) 50%, hsl(0 0% 96%) 100%);
+    background-color: hsl(210 12% 88%);
     height: 1px;
   }
 
-  /* Utility to make images/logo pop on light backgrounds */
   .logo-frame {
     padding: 0.5rem;
     border-radius: 0.75rem;
-    background: linear-gradient(180deg, hsl(var(--savvy-navy) / 0.04), hsl(var(--savvy-navy) / 0.02));
+    background-color: hsl(var(--savvy-navy) / 0.04);
     box-shadow: 0 6px 30px -12px hsl(var(--savvy-navy) / 0.14);
   }
 }
-
-/* ============================
-   Helpful usage notes (keep in project README)
-   - Use .bg-gradient-hero on the hero container
-   - Use .hero-title for main H1
-   - Use .btn-savvy for primary CTAs
-   - Use .btn-navy for secondary CTAs
-   - Use .badge-savvy for attention pills
-   ============================ */

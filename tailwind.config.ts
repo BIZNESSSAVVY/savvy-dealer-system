@@ -8,14 +8,11 @@ export default {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      screens: { "2xl": "1400px" },
     },
     extend: {
       colors: {
@@ -25,14 +22,13 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
 
-        /* Map directly to Savvy brand colors */
         primary: {
-          DEFAULT: "hsl(var(--savvy-orange))",
-          foreground: "hsl(var(--accent-foreground))", // white
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--savvy-navy))",
-          foreground: "hsl(var(--accent-foreground))", // white
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
 
         destructive: {
@@ -54,13 +50,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-
-        /* Custom automotive colors */
-        automotive: {
-          dark: "hsl(var(--automotive-dark))",
-          silver: "hsl(var(--automotive-silver))",
-          gold: "hsl(var(--automotive-gold))",
         },
 
         success: "hsl(var(--success))",
@@ -103,7 +92,7 @@ export default {
           "0%": { transform: "scale(0.95)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
-        "shine": {
+        shine: {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
         },
@@ -114,7 +103,7 @@ export default {
         "fade-in": "fade-in 0.6s ease-out",
         "slide-up": "slide-up 0.4s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
-        "shine": "shine 2s ease-in-out infinite",
+        shine: "shine 2s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",

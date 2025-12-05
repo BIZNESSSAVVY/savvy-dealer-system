@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 /* ============================
-   SavvyOS - PUNCHED UP brand – PERFECT BALANCE EDITION
+   SavvyOS - PERFECT BALANCE EDITION
    Navy dominant • Orange only on the 4 most important CTAs
-   Updated with improved button contrast
    ============================ */
 
 @layer base {
@@ -20,30 +19,29 @@
     --popover: 0 0% 100%;
     --popover-foreground: 216 18% 12%;
 
-    /* Savvy Navy */
-    --savvy-navy-h: 210;
+    /* Brand: Savvy Navy + Orange */
     --savvy-navy: 210 95% 18%;
     --savvy-navy-light: 210 95% 28%;
     --savvy-navy-dark: 210 95% 12%;
-
-    /* Savvy Orange */
-    --savvy-orange-h: 22;
     --savvy-orange: 22 100% 50%;
     --savvy-orange-light: 22 100% 60%;
     --savvy-orange-dark: 22 100% 40%;
 
-    /* Accent */
-    --accent: var(--savvy-orange);
-    --accent-foreground: white;
+    /* Map to Tailwind extended colors */
+    --primary: var(--savvy-orange);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--savvy-navy);
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted */
+    /* Accent / Muted / Semantic */
+    --accent: var(--savvy-orange);
+    --accent-foreground: 0 0% 100%;
     --muted: 210 30% 94%;
     --muted-foreground: 210 20% 35%;
-
-    /* Semantic */
     --success: 142 72% 36%;
     --warning: 38 92% 50%;
     --destructive: 0 82% 60%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Inputs / borders / rings */
     --border: 210 30% 88%;
@@ -53,13 +51,10 @@
     /* Radius */
     --radius: 0.75rem;
 
-    /* Gradients replaced with solid orange */
+    /* Gradients */
     --gradient-primary: hsl(var(--savvy-orange));
     --gradient-hero: hsl(var(--savvy-orange));
-    --gradient-orange: hsl(var(--savvy-orange));
-    --gradient-savvy: hsl(var(--savvy-orange));
-    --gradient-reverse: hsl(var(--savvy-orange));
-    --gradient-subtle: hsl(var(--savvy-orange));
+    --gradient-silver: linear-gradient(90deg, #bbb, #eee);
 
     /* Shadows */
     --shadow-premium: 0 18px 50px -12px hsl(var(--savvy-navy) / 0.30);
@@ -72,7 +67,9 @@
     --sidebar-background: 210 30% 97%;
     --sidebar-foreground: 216 16% 12%;
     --sidebar-primary: var(--savvy-navy);
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: var(--savvy-orange);
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 210 30% 90%;
     --sidebar-ring: var(--savvy-orange);
   }
@@ -99,16 +96,6 @@
 }
 
 @layer utilities {
-  /* Gradients */
-  .bg-gradient-primary,
-  .bg-gradient-hero,
-  .bg-gradient-savvy,
-  .bg-gradient-orange,
-  .bg-gradient-reverse,
-  .bg-gradient-subtle {
-    background-color: hsl(var(--savvy-orange));
-  }
-
   /* Shadows */
   .shadow-premium { box-shadow: var(--shadow-premium); }
   .shadow-card { box-shadow: var(--shadow-card); }
@@ -116,7 +103,7 @@
   .shadow-orange { box-shadow: var(--shadow-orange); }
   .shadow-navy { box-shadow: var(--shadow-navy); }
 
-  /* Colors */
+  /* Brand helpers */
   .text-savvy-orange { color: hsl(var(--savvy-orange)); }
   .text-savvy-navy { color: hsl(var(--savvy-navy)); }
   .bg-savvy-orange { background-color: hsl(var(--savvy-orange)); }
@@ -128,15 +115,15 @@
   .border-savvy-orange { border-color: hsl(var(--savvy-orange)); }
   .border-savvy-navy { border-color: hsl(var(--savvy-navy)); }
 
-  /* Orange CTA buttons */
+  /* Orange CTA buttons – visibility on light backgrounds */
   .btn-apply-financing,
   .btn-get-directions,
   .btn-browse-inventory {
     @apply inline-flex items-center justify-center gap-4 rounded-xl px-10 py-5 font-black text-xl transition-all;
     background-color: hsl(var(--savvy-orange)) !important;
     color: white !important;
-    text-shadow: 0 1px 2px hsl(var(--savvy-navy) / 0.6);
-    border: 2px solid hsl(var(--savvy-orange-dark));
+    text-shadow: 0 2px 3px hsl(var(--savvy-navy) / 0.85);
+    border: 2px solid hsl(var(--savvy-navy));
     box-shadow: 0 20px 50px -12px hsl(var(--savvy-orange) / 0.5);
   }
   .btn-apply-financing:hover,
@@ -146,22 +133,16 @@
     transform: translateY(-6px);
   }
 
-  /* Navy buttons */
-  .btn-savvy,
-  .btn-navy,
-  .btn-primary,
+  /* Navy buttons – boosted contrast */
   .btn-vehicle-details,
   .btn-schedule-test-drive {
     @apply inline-flex items-center justify-center gap-3 rounded-xl px-8 py-4 font-bold transition-all;
     background-color: hsl(var(--savvy-navy)) !important;
     color: white !important;
-    text-shadow: 0 1px 2px hsl(var(--savvy-navy-dark));
-    border: 2px solid hsl(var(--savvy-orange) / 0.4);
+    text-shadow: 0 2px 3px hsl(var(--savvy-orange) / 0.6);
+    border: 2px solid hsl(var(--savvy-orange));
     box-shadow: 0 14px 45px -10px hsl(var(--savvy-navy) / 0.6);
   }
-  .btn-savvy:hover,
-  .btn-navy:hover,
-  .btn-primary:hover,
   .btn-vehicle-details:hover,
   .btn-schedule-test-drive:hover {
     background-color: hsl(var(--savvy-navy-light)) !important;
@@ -169,8 +150,10 @@
     box-shadow: 0 18px 55px -10px hsl(var(--savvy-navy) / 0.7);
   }
 
+  /* Focus ring */
   .focus-ring-orange:focus { @apply ring-4 ring-orange-500/30 outline-none; }
 
+  /* Hero title */
   .hero-title {
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -178,6 +161,7 @@
     text-shadow: 0 6px 18px hsl(var(--savvy-navy) / 0.12);
   }
 
+  /* Badges */
   .badge-savvy,
   .trusted-badge {
     @apply inline-flex items-center gap-4 px-10 py-5 text-xl font-black rounded-full;
@@ -186,20 +170,31 @@
     box-shadow: 0 15px 40px -10px hsl(var(--savvy-orange) / 0.6);
   }
 
+  /* Card accent */
   .card-accent {
     border-left: 6px solid hsl(var(--savvy-orange));
     padding-left: 1rem;
   }
 
+  /* Separator */
   .separator-metal {
     background-color: hsl(210 12% 88%);
     height: 1px;
   }
 
+  /* Logo frame */
   .logo-frame {
     padding: 0.5rem;
     border-radius: 0.75rem;
     background-color: hsl(var(--savvy-navy) / 0.04);
     box-shadow: 0 6px 30px -12px hsl(var(--savvy-navy) / 0.14);
+  }
+
+  /* Feature icons – orange */
+  .icon-quality,
+  .icon-financing,
+  .icon-service {
+    @apply text-6xl;
+    color: hsl(var(--savvy-orange));
   }
 }

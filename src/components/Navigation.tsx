@@ -7,6 +7,11 @@ import logo from "@/assets/logo.png";
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  
+  // New Phone Number: 317-741-7443
+  const DISPLAY_PHONE = "(317) 741-7443";
+  // The tel: link must be in E.164 format: +[country code][number] without dashes/spaces
+  const CALL_LINK = "tel:+13177417443"; 
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -20,19 +25,19 @@ const Navigation = () => {
 
   // Function to handle the call action
   const handleCallNow = () => {
-    window.location.href = "tel:+13022847114"; // +1 country code for US, no spaces or dashes
+    window.location.href = CALL_LINK;
   };
 
   return (
     <nav className="bg-background/95 backdrop-blur-md border-b border-border sticky top-0 z-50 shadow-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo and Brand Name (Updated) */}
           <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <img src={logo} alt="Cece Auto" className="h-10 w-auto" />
+            <img src={logo} alt="Savvy Dealer System" className="h-10 w-auto" />
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-primary">Cece Auto</h1>
-              <p className="text-xs text-muted-foreground">Felton, Delaware</p>
+              <h1 className="text-xl font-bold text-primary">Savvy Dealer System</h1>
+              <p className="text-xs text-muted-foreground">The Modern Dealer Platform</p>
             </div>
           </Link>
 
@@ -53,14 +58,15 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* Contact Info & CTA */}
+          {/* Contact Info & CTA (Updated) */}
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Phone className="h-4 w-4" />
-              <span>(302) 284-7114</span>
+              <span>{DISPLAY_PHONE}</span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
+              {/* Keeping 'Felton, DE' for geographic context, but it can be changed if needed. */}
               <span>Felton, DE</span>
             </div>
             <Button variant="hero" size="sm" onClick={handleCallNow}>
@@ -81,7 +87,7 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation (Updated) */}
         {isOpen && (
           <div className="md:hidden py-4 animate-slide-up">
             <div className="flex flex-col space-y-4">
@@ -102,7 +108,7 @@ const Navigation = () => {
               <div className="px-4 py-2 border-t border-border mt-4">
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                   <Phone className="h-4 w-4" />
-                  <span>(302) 284-7114</span>
+                  <span>{DISPLAY_PHONE}</span>
                 </div>
                 <Button variant="hero" size="sm" className="w-full" onClick={handleCallNow}>
                   Call Now

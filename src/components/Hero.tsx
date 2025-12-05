@@ -67,12 +67,11 @@ const Hero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
         <div className="animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Quality Used Cars in{" "}
-            <span className="text-automotive-gold">Felton, DE</span>
+            The Future of Car Buying in{" "}
+            <span className="text-automotive-gold">Indianapolis, IN</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Your trusted local dealership for affordable, reliable vehicles with
-            financing options that work for you.
+            We connect you with affordable, reliable vehicles and flexible financing through our modern, integrated dealer platform.
           </p>
 
           {/* Search Bar */}
@@ -146,7 +145,7 @@ const Hero = () => {
             </Button>
           </div>
 
-          {/* Trust Indicators */}
+          {/* Trust Indicators (Updated) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="flex flex-col items-center text-white animate-scale-in">
               <div className="bg-white/20 p-4 rounded-full mb-4">
@@ -175,10 +174,10 @@ const Hero = () => {
                 <Star className="h-8 w-8" />
               </div>
               <h3 className="text-lg font-semibold mb-2">
-                Trusted in Felton, DE
+                Nationwide Dealer Network
               </h3>
               <p className="text-white/80 text-sm">
-                Serving our community with integrity
+                Partnering with top dealers across the country
               </p>
             </div>
           </div>

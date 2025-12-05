@@ -121,10 +121,10 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Choose Cece Auto?
+              Why Choose Savvy Dealer System?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We're not just a car dealership - we're your trusted automotive partner in Felton, Delaware
+              We're not just a dealer system - we're your trusted dealer system partner in Felton, Delaware
             </p>
           </div>
           

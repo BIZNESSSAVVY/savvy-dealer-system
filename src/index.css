@@ -2,124 +2,116 @@
 @tailwind components;
 @tailwind utilities;
 
-/* --------------------------------------------------------------------------------------------------
-| SAVVY DEALER SYSTEM DESIGN SYSTEM (HSL VALUES)
-|
-| Brand Colors:
-| - Savvy Orange (Primary): 27 100% 50% (#FF7700)
-| - Savvy Navy (Secondary/Accent): 209 64% 47% (#1A4B75)
-| -------------------------------------------------------------------------------------------------- */
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
 
 @layer base {
   :root {
-    /* LIGHT MODE BASE COLORS */
-    --background: 0 0% 100%;             /* Pure White Background */
-    --foreground: 209 64% 18%;           /* Very Dark Navy Text */
+    --background: 0 0% 100%;
+    --foreground: 213 31% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 209 64% 18%;
+    --card-foreground: 213 31% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 209 64% 18%;
+    --popover-foreground: 213 31% 11%;
 
-    /* PRIMARY - Savvy Orange (CTA Buttons, Links) */
-    --primary: 27 100% 50%;
-    --primary-foreground: 0 0% 100%;     /* White Text on Primary buttons */
+    /* Automotive Blue - Deep, trustworthy navy */
+    --primary: 213 94% 18%;
+    --primary-foreground: 0 0% 98%;
 
-    /* SECONDARY - Savvy Navy (Headers, Secondary Buttons) */
-    --secondary: 209 64% 47%;
-    --secondary-foreground: 0 0% 100%;   /* White Text on Secondary buttons */
+    /* Premium Silver - Light, professional */
+    --secondary: 210 17% 95%;
+    --secondary-foreground: 213 31% 11%;
 
-    /* Muted tones for subtle elements (e.g., helper text) */
-    --muted: 210 17% 95%;                /* Light Grey */
-    --muted-foreground: 209 10% 40%;     /* Medium Grey */
+    /* Muted tones for subtle elements */
+    --muted: 213 17% 97%;
+    --muted-foreground: 213 9% 46%;
 
-    /* Accent - Darker Savvy Orange for hover/active states */
-    --accent: 27 100% 40%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Premium metallic blue */
+    --accent: 213 54% 24%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    /* CONTRAST FIX: Input and Border now have a slight shade for visibility */
-    --border: 210 17% 89%;               /* Light Grey Border */
-    --input: 0 0% 98%;                   /* Very Light Off-White/Grey Input Field Background */
-    --ring: 27 100% 50%;                 /* Focus Ring is Savvy Orange */
+    --border: 213 17% 89%;
+    --input: 213 17% 95%;
+    --ring: 213 94% 18%;
 
-    /* Custom Savvy Colors */
-    --savvy-navy-dark: 209 64% 18%;
-    --savvy-orange-light: 27 100% 70%;
+    /* Custom automotive colors */
+    --automotive-dark: 213 94% 15%;
+    --automotive-silver: 0 0% 85%;
+    --automotive-gold: 45 93% 47%;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
 
-    /* Gradients (Updated) */
-    --gradient-primary: linear-gradient(135deg, hsl(27, 100%, 50%), hsl(27, 100%, 40%)); /* Orange Gradient */
-    --gradient-navy: linear-gradient(135deg, hsl(209, 64%, 47%), hsl(209, 64%, 30%)); /* Navy Gradient */
-    --gradient-silver: linear-gradient(135deg, hsl(0, 0%, 95%), hsl(210, 17%, 89%)); /* Kept for compatibility */
-    --gradient-hero: linear-gradient(135deg, hsl(209, 64%, 18%) 0%, hsl(209, 64%, 47%) 100%); /* Navy Hero */
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(213, 94%, 18%), hsl(213, 54%, 24%));
+    --gradient-silver: linear-gradient(135deg, hsl(0, 0%, 95%), hsl(213, 17%, 89%));
+    --gradient-hero: linear-gradient(135deg, hsl(213, 94%, 15%) 0%, hsl(213, 54%, 24%) 100%);
 
-    /* Shadows - Use Savvy Navy for a professional shadow tint */
-    --shadow-premium: 0 10px 40px -10px hsl(209, 64%, 40%, 0.15);
-    --shadow-card: 0 4px 20px -4px hsl(209, 20%, 20%, 0.08);
-    --shadow-hover: 0 8px 30px -8px hsl(27, 100%, 50%, 0.2);
-    
+    /* Shadows */
+    --shadow-premium: 0 10px 40px -10px hsl(213, 94%, 18%, 0.15);
+    --shadow-card: 0 4px 20px -4px hsl(213, 20%, 20%, 0.08);
+    --shadow-hover: 0 8px 30px -8px hsl(213, 94%, 18%, 0.2);
+
     --radius: 0.5rem;
-    
-    /* Sidebar colors - Using Savvy Navy for background contrast */
-    --sidebar-background: 209 64% 47%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 27 100% 50%;      /* Savvy Orange (Active link) */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 209 40% 60%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 209 64% 55%;
-    --sidebar-ring: 27 100% 50%;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* -------------------------------------------------------------------------------------------------- */
-
   .dark {
-    /* DARK MODE BASE COLORS */
-    --background: 209 64% 10%;           /* Very Dark Navy Background */
-    --foreground: 210 40% 98%;           /* Light Off-White Text */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
 
-    --card: 209 64% 10%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 209 64% 10%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* PRIMARY - Savvy Orange */
-    --primary: 27 100% 50%;
-    --primary-foreground: 209 64% 10%;   /* Dark Navy Text on Primary buttons */
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    /* SECONDARY - Lighter Savvy Navy (for contrast against dark background) */
-    --secondary: 209 64% 20%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 209 64% 20%;
+    --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 209 64% 25%;
+    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    /* CONTRAST FIX: Input and Border visibility */
-    --border: 209 64% 25%;
-    --input: 209 64% 20%;
-    --ring: 27 100% 50%;                 /* Focus Ring is Savvy Orange */
-    
-    /* Sidebar colors */
-    --sidebar-background: 209 64% 20%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 27 100% 50%;      /* Savvy Orange (Active link) */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 209 64% 25%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 209 64% 25%;
-    --sidebar-ring: 27 100% 50%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 

@@ -2,116 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* SavvyOS Design System - Premium Automotive Branding
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 213 31% 11%;
+    --foreground: 210 40% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 213 31% 11%;
+    --card-foreground: 210 40% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 213 31% 11%;
+    --popover-foreground: 210 40% 8%;
 
-    /* Automotive Blue - Deep, trustworthy navy */
-    --primary: 213 94% 18%;
-    --primary-foreground: 0 0% 98%;
+    /* SavvyOS Navy - Professional, trustworthy deep blue */
+    --primary: 207 100% 25%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Premium Silver - Light, professional */
-    --secondary: 210 17% 95%;
-    --secondary-foreground: 213 31% 11%;
+    /* SavvyOS Orange - Vibrant, energetic accent */
+    --secondary: 30 100% 50%;
+    --secondary-foreground: 0 0% 100%;
 
     /* Muted tones for subtle elements */
-    --muted: 213 17% 97%;
-    --muted-foreground: 213 9% 46%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 210 10% 45%;
 
-    /* Accent - Premium metallic blue */
-    --accent: 213 54% 24%;
-    --accent-foreground: 0 0% 98%;
+    /* Accent - Bright SavvyOS Orange */
+    --accent: 30 100% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 213 17% 89%;
-    --input: 213 17% 95%;
-    --ring: 213 94% 18%;
+    --border: 210 20% 88%;
+    --input: 210 20% 94%;
+    --ring: 207 100% 25%;
 
-    /* Custom automotive colors */
-    --automotive-dark: 213 94% 15%;
-    --automotive-silver: 0 0% 85%;
-    --automotive-gold: 45 93% 47%;
+    /* SavvyOS Brand Colors */
+    --savvy-orange: 30 100% 50%;
+    --savvy-orange-light: 30 100% 60%;
+    --savvy-orange-dark: 30 100% 40%;
+    --savvy-navy: 207 100% 25%;
+    --savvy-navy-light: 207 100% 35%;
+    --savvy-navy-dark: 207 100% 20%;
+    
+    /* Supporting Colors */
+    --automotive-silver: 0 0% 88%;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(213, 94%, 18%), hsl(213, 54%, 24%));
-    --gradient-silver: linear-gradient(135deg, hsl(0, 0%, 95%), hsl(213, 17%, 89%));
-    --gradient-hero: linear-gradient(135deg, hsl(213, 94%, 15%) 0%, hsl(213, 54%, 24%) 100%);
+    /* Premium Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(207, 100%, 25%), hsl(207, 100%, 35%));
+    --gradient-orange: linear-gradient(135deg, hsl(30, 100%, 50%), hsl(30, 100%, 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(207, 100%, 20%) 0%, hsl(207, 100%, 30%) 50%, hsl(30, 100%, 50%) 100%);
+    --gradient-savvy: linear-gradient(135deg, hsl(207, 100%, 25%) 0%, hsl(207, 100%, 30%) 60%, hsl(30, 100%, 50%) 100%);
+    --gradient-reverse: linear-gradient(135deg, hsl(30, 100%, 50%) 0%, hsl(30, 100%, 55%) 40%, hsl(207, 100%, 25%) 100%);
+    --gradient-subtle: linear-gradient(135deg, hsl(210, 20%, 98%), hsl(210, 20%, 94%));
 
-    /* Shadows */
-    --shadow-premium: 0 10px 40px -10px hsl(213, 94%, 18%, 0.15);
-    --shadow-card: 0 4px 20px -4px hsl(213, 20%, 20%, 0.08);
-    --shadow-hover: 0 8px 30px -8px hsl(213, 94%, 18%, 0.2);
+    /* Enhanced Shadows with SavvyOS Branding */
+    --shadow-premium: 0 10px 40px -10px hsl(207, 100%, 25%, 0.18);
+    --shadow-card: 0 4px 20px -4px hsl(207, 60%, 30%, 0.1);
+    --shadow-hover: 0 12px 35px -8px hsl(30, 100%, 50%, 0.25);
+    --shadow-orange: 0 8px 30px -8px hsl(30, 100%, 50%, 0.3);
+    --shadow-navy: 0 8px 30px -8px hsl(207, 100%, 25%, 0.25);
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-foreground: 210 40% 20%;
+    --sidebar-primary: 207 100% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 30 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 20% 90%;
+    --sidebar-ring: 30 100% 50%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 210 40% 5%;
+    --foreground: 210 20% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 40% 7%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 40% 7%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 207 100% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 30 100% 55%;
+    --secondary-foreground: 210 40% 5%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 30% 15%;
+    --muted-foreground: 210 15% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 30 100% 55%;
+    --accent-foreground: 210 40% 5%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 210 30% 18%;
+    --input: 210 30% 15%;
+    --ring: 30 100% 55%;
+
+    /* Dark Mode SavvyOS Colors */
+    --savvy-orange: 30 100% 55%;
+    --savvy-orange-light: 30 100% 65%;
+    --savvy-orange-dark: 30 100% 45%;
+    --savvy-navy: 207 100% 35%;
+    --savvy-navy-light: 207 100% 45%;
+    --savvy-navy-dark: 207 100% 28%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(207, 100%, 30%), hsl(207, 100%, 40%));
+    --gradient-orange: linear-gradient(135deg, hsl(30, 100%, 50%), hsl(30, 100%, 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(207, 100%, 25%) 0%, hsl(207, 100%, 35%) 50%, hsl(30, 100%, 55%) 100%);
+    --gradient-savvy: linear-gradient(135deg, hsl(207, 100%, 30%) 0%, hsl(207, 100%, 35%) 60%, hsl(30, 100%, 55%) 100%);
+    --gradient-reverse: linear-gradient(135deg, hsl(30, 100%, 55%) 0%, hsl(30, 100%, 60%) 40%, hsl(207, 100%, 30%) 100%);
+    
+    --shadow-premium: 0 10px 40px -10px hsl(207, 100%, 20%, 0.4);
+    --shadow-card: 0 4px 20px -4px hsl(207, 80%, 15%, 0.3);
+    --shadow-hover: 0 12px 35px -8px hsl(30, 100%, 50%, 0.35);
+    --shadow-orange: 0 8px 30px -8px hsl(30, 100%, 50%, 0.4);
+    --shadow-navy: 0 8px 30px -8px hsl(207, 100%, 25%, 0.35);
+
+    --sidebar-background: 210 40% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 30 100% 55%;
+    --sidebar-primary-foreground: 210 40% 5%;
+    --sidebar-accent: 207 100% 35%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 30% 18%;
+    --sidebar-ring: 30 100% 55%;
   }
 }
 
@@ -122,5 +147,68 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* SavvyOS Custom Utility Classes */
+@layer utilities {
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .bg-gradient-savvy {
+    background: var(--gradient-savvy);
+  }
+  
+  .bg-gradient-orange {
+    background: var(--gradient-orange);
+  }
+  
+  .bg-gradient-reverse {
+    background: var(--gradient-reverse);
+  }
+  
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .shadow-orange {
+    box-shadow: var(--shadow-orange);
+  }
+  
+  .shadow-navy {
+    box-shadow: var(--shadow-navy);
+  }
+  
+  .text-savvy-orange {
+    color: hsl(var(--savvy-orange));
+  }
+  
+  .text-savvy-navy {
+    color: hsl(var(--savvy-navy));
+  }
+  
+  .bg-savvy-orange {
+    background-color: hsl(var(--savvy-orange));
+  }
+  
+  .bg-savvy-navy {
+    background-color: hsl(var(--savvy-navy));
+  }
+  
+  .border-savvy-orange {
+    border-color: hsl(var(--savvy-orange));
+  }
+  
+  .border-savvy-navy {
+    border-color: hsl(var(--savvy-navy));
   }
 }

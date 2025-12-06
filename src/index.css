@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /* ============================
-   SavvyOS - PUNCHED UP brand – PERFECT BALANCE EDITION
-   Navy dominant • Orange only on the 4 most important CTAs
+   SavvyOS - HIGH IMPACT DEMO EDITION
+   Vibrant orange CTAs • Premium navy foundation • Deal-closing design
    ============================ */
 
 @layer base {
@@ -25,13 +25,13 @@
     --savvy-navy-light: 210 95% 28%;
     --savvy-navy-dark: 210 95% 12%;
 
-    /* Savvy Orange */
+    /* Savvy Orange - VIBRANT */
     --savvy-orange-h: 22;
     --savvy-orange: 22 100% 50%;
     --savvy-orange-light: 22 100% 60%;
     --savvy-orange-dark: 22 100% 40%;
 
-    /* Primary (Navy for most buttons) */
+    /* Primary (Navy for structure) */
     --primary: var(--savvy-navy);
     --primary-foreground: 0 0% 100%;
 
@@ -39,7 +39,7 @@
     --secondary: 210 30% 94%;
     --secondary-foreground: 216 18% 12%;
 
-    /* Accent (Orange for special CTAs) */
+    /* Accent (Orange for impact) */
     --accent: var(--savvy-orange);
     --accent-foreground: 0 0% 100%;
 
@@ -61,16 +61,18 @@
     /* Radius */
     --radius: 0.75rem;
 
-    /* Gradients - NO TINT OVERLAYS */
+    /* Gradients - NO TINT OVERLAYS ON IMAGES */
     --gradient-primary: linear-gradient(135deg, hsl(210 95% 18%) 0%, hsl(210 95% 25%) 100%);
     --gradient-silver: linear-gradient(135deg, hsl(210 15% 92%) 0%, hsl(210 15% 96%) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(210 95% 18%) 0%, hsl(210 95% 25%) 100%);
+    --gradient-orange: linear-gradient(135deg, hsl(22 100% 50%) 0%, hsl(22 100% 60%) 100%);
 
     /* Shadows */
     --shadow-premium: 0 18px 50px -12px hsl(210 95% 18% / 0.30);
     --shadow-card: 0 8px 30px -10px hsl(210 95% 18% / 0.12);
     --shadow-hover: 0 20px 50px -14px hsl(22 100% 50% / 0.25);
     --shadow-orange: 0 10px 40px -12px hsl(22 100% 50% / 0.35);
+    --shadow-orange-glow: 0 0 30px hsl(22 100% 50% / 0.4), 0 15px 50px -10px hsl(22 100% 50% / 0.6);
     --shadow-navy: 0 10px 40px -12px hsl(210 95% 18% / 0.35);
 
     /* Sidebar */
@@ -109,36 +111,44 @@
 }
 
 @layer components {
-  /* ORANGE HERO BUTTONS - THE 3 MOST IMPORTANT CTAs */
+  /* ==== PRIMARY ORANGE CTAs - MAXIMUM IMPACT ==== */
   .btn-apply-financing,
   .btn-get-directions,
   .btn-browse-inventory {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important;
     border-radius: 0.75rem !important;
     padding: 1.25rem 2.5rem !important;
     font-weight: 900 !important;
     font-size: 1.125rem !important;
     line-height: 1.5 !important;
-    transition: all 0.3s ease !important;
-    background-color: hsl(22 100% 50%) !important;
+    letter-spacing: 0.01em !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: linear-gradient(135deg, hsl(22 100% 50%) 0%, hsl(22 100% 55%) 100%) !important;
     color: white !important;
     border: none !important;
-    box-shadow: 0 20px 50px -12px hsl(22 100% 50% / 0.5) !important;
+    box-shadow: 0 8px 30px -8px hsl(22 100% 50% / 0.6), 0 0 0 0 hsl(22 100% 50% / 0) !important;
     cursor: pointer !important;
+    text-shadow: 0 1px 2px hsl(22 100% 20% / 0.3) !important;
   }
   
   .btn-apply-financing:hover,
   .btn-get-directions:hover,
   .btn-browse-inventory:hover {
-    background-color: hsl(22 100% 60%) !important;
-    transform: translateY(-4px) !important;
-    box-shadow: 0 25px 60px -12px hsl(22 100% 50% / 0.6) !important;
+    background: linear-gradient(135deg, hsl(22 100% 55%) 0%, hsl(22 100% 60%) 100%) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 15px 50px -10px hsl(22 100% 50% / 0.7), 0 0 40px hsl(22 100% 50% / 0.3) !important;
   }
 
-  /* NAVY SECONDARY BUTTONS */
+  .btn-apply-financing:active,
+  .btn-get-directions:active,
+  .btn-browse-inventory:active {
+    transform: translateY(-1px) scale(1) !important;
+  }
+
+  /* ==== SECONDARY NAVY BUTTONS - PREMIUM FEEL ==== */
   .btn-vehicle-details,
   .btn-schedule-test-drive,
   .btn-savvy,
@@ -147,17 +157,17 @@
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.75rem !important;
+    gap: 0.5rem !important;
     border-radius: 0.75rem !important;
     padding: 1rem 2rem !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
     line-height: 1.5 !important;
-    transition: all 0.3s ease !important;
-    background-color: hsl(210 95% 18%) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: linear-gradient(135deg, hsl(210 95% 18%) 0%, hsl(210 95% 22%) 100%) !important;
     color: white !important;
     border: none !important;
-    box-shadow: 0 10px 30px -8px hsl(210 95% 18% / 0.4) !important;
+    box-shadow: 0 6px 20px -6px hsl(210 95% 18% / 0.5) !important;
     cursor: pointer !important;
   }
   
@@ -166,25 +176,28 @@
   .btn-savvy:hover,
   .btn-navy:hover,
   .btn-primary:hover {
-    background-color: hsl(210 95% 28%) !important;
+    background: linear-gradient(135deg, hsl(210 95% 25%) 0%, hsl(210 95% 30%) 100%) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 15px 40px -8px hsl(210 95% 18% / 0.5) !important;
+    box-shadow: 0 10px 30px -6px hsl(210 95% 18% / 0.6) !important;
   }
 
-  /* TRUSTED BADGE - VIBRANT ORANGE */
+  /* ==== TRUSTED BADGE - VIBRANT ORANGE WITH GLOW ==== */
   .badge-savvy,
   .trusted-badge {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 0.75rem !important;
-    padding: 0.75rem 1.5rem !important;
-    font-size: 1rem !important;
+    gap: 0.5rem !important;
+    padding: 0.625rem 1.5rem !important;
+    font-size: 0.875rem !important;
     font-weight: 800 !important;
+    letter-spacing: 0.025em !important;
+    text-transform: uppercase !important;
     border-radius: 9999px !important;
     background: linear-gradient(135deg, hsl(22 100% 50%) 0%, hsl(22 100% 55%) 100%) !important;
     color: white !important;
-    box-shadow: 0 15px 40px -10px hsl(22 100% 50% / 0.6) !important;
-    border: 2px solid hsl(22 100% 60%) !important;
+    box-shadow: 0 4px 20px -4px hsl(22 100% 50% / 0.6), 0 0 20px hsl(22 100% 50% / 0.2) !important;
+    border: 2px solid hsl(22 100% 60% / 0.5) !important;
+    text-shadow: 0 1px 2px hsl(22 100% 20% / 0.3) !important;
   }
 }
 
@@ -199,63 +212,125 @@
   .bg-gradient-silver {
     background: var(--gradient-silver);
   }
+  .bg-gradient-orange {
+    background: var(--gradient-orange);
+  }
 
   /* Shadows */
   .shadow-premium { box-shadow: var(--shadow-premium); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-hover { box-shadow: var(--shadow-hover); }
   .shadow-orange { box-shadow: var(--shadow-orange); }
+  .shadow-orange-glow { box-shadow: var(--shadow-orange-glow); }
   .shadow-navy { box-shadow: var(--shadow-navy); }
 
   /* Savvy brand colors */
-  .text-savvy-orange { color: hsl(var(--savvy-orange)) !important; }
-  .text-savvy-navy { color: hsl(var(--savvy-navy)) !important; }
+  .text-savvy-orange { color: hsl(22 100% 50%) !important; }
+  .text-savvy-navy { color: hsl(210 95% 18%) !important; }
 
-  .bg-savvy-orange { background-color: hsl(var(--savvy-orange)) !important; }
-  .bg-savvy-orange-light { background-color: hsl(var(--savvy-orange-light)) !important; }
-  .bg-savvy-orange-dark { background-color: hsl(var(--savvy-orange-dark)) !important; }
+  .bg-savvy-orange { 
+    background: linear-gradient(135deg, hsl(22 100% 50%) 0%, hsl(22 100% 55%) 100%) !important;
+  }
+  .bg-savvy-orange-light { background-color: hsl(22 100% 60%) !important; }
+  .bg-savvy-orange-dark { background-color: hsl(22 100% 40%) !important; }
 
-  .bg-savvy-navy { background-color: hsl(var(--savvy-navy)) !important; }
-  .bg-savvy-navy-light { background-color: hsl(var(--savvy-navy-light)) !important; }
-  .bg-savvy-navy-dark { background-color: hsl(var(--savvy-navy-dark)) !important; }
+  .bg-savvy-navy { background-color: hsl(210 95% 18%) !important; }
+  .bg-savvy-navy-light { background-color: hsl(210 95% 28%) !important; }
+  .bg-savvy-navy-dark { background-color: hsl(210 95% 12%) !important; }
 
-  .border-savvy-orange { border-color: hsl(var(--savvy-orange)) !important; }
-  .border-savvy-navy { border-color: hsl(var(--savvy-navy)) !important; }
+  .border-savvy-orange { border-color: hsl(22 100% 50%) !important; }
+  .border-savvy-navy { border-color: hsl(210 95% 18%) !important; }
 
   .focus-ring-orange:focus {
     outline: none !important;
-    ring: 4px solid hsl(22 100% 50% / 0.3) !important;
+    box-shadow: 0 0 0 4px hsl(22 100% 50% / 0.3) !important;
   }
 
   .hero-title {
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-    text-shadow: 0 6px 18px hsl(210 95% 18% / 0.12);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-shadow: 0 4px 12px hsl(0 0% 0% / 0.3);
   }
 
+  /* ==== ORANGE ACCENT HIGHLIGHTS ==== */
   .card-accent {
-    border-left: 6px solid hsl(var(--savvy-orange));
-    padding-left: 1rem;
+    border-left: 5px solid hsl(22 100% 50%);
+    padding-left: 1.25rem;
+    box-shadow: -5px 0 15px -5px hsl(22 100% 50% / 0.3);
+  }
+
+  .accent-border-top {
+    border-top: 4px solid hsl(22 100% 50%);
+  }
+
+  .accent-dot::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: hsl(22 100% 50%);
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    box-shadow: 0 0 10px hsl(22 100% 50% / 0.5);
+  }
+
+  /* Price tags with orange highlight */
+  .price-highlight {
+    color: hsl(22 100% 50%) !important;
+    font-weight: 900 !important;
+    font-size: 1.875rem !important;
+    text-shadow: 0 2px 10px hsl(22 100% 50% / 0.3);
   }
 
   .separator-metal {
-    background-color: hsl(210 12% 88%);
+    background: linear-gradient(90deg, transparent, hsl(210 12% 88%), transparent);
     height: 1px;
   }
 
   .logo-frame {
     padding: 0.5rem;
     border-radius: 0.75rem;
-    background-color: hsl(210 95% 18% / 0.04);
+    background-color: white;
     box-shadow: 0 6px 30px -12px hsl(210 95% 18% / 0.14);
+    border: 1px solid hsl(210 30% 90%);
   }
 
-  /* Feature icons – orange */
+  /* Feature icons – vibrant orange with glow */
   .icon-quality,
   .icon-financing,
   .icon-service {
-    color: hsl(var(--savvy-orange)) !important;
+    color: hsl(22 100% 50%) !important;
     font-size: 3.75rem !important;
+    filter: drop-shadow(0 4px 12px hsl(22 100% 50% / 0.3));
+  }
+
+  /* Orange underline for headings */
+  .heading-accent::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, hsl(22 100% 50%), hsl(22 100% 60%));
+    margin-top: 1rem;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px hsl(22 100% 50% / 0.4);
+  }
+
+  /* Stats with orange highlights */
+  .stat-number {
+    color: hsl(22 100% 50%) !important;
+    font-weight: 900 !important;
+    font-size: 3rem !important;
+    line-height: 1 !important;
+    text-shadow: 0 2px 15px hsl(22 100% 50% / 0.3);
+  }
+
+  /* Orange glow on hover for cards */
+  .card-hover:hover {
+    box-shadow: 0 20px 60px -12px hsl(22 100% 50% / 0.15), 0 0 0 2px hsl(22 100% 50% / 0.1) !important;
+    border-color: hsl(22 100% 50% / 0.3) !important;
+    transform: translateY(-4px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 }

@@ -32,7 +32,7 @@ const Navigation = () => {
             <img src={logo} alt="Savvy Dealer System" className="h-10 w-auto" />
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-primary">Savvy Dealer System</h1>
-              <p className="text-xs text-muted-foreground">USAlaware</p>
+              <p className="text-xs text-muted-foreground">USA</p>
             </div>
           </Link>
 

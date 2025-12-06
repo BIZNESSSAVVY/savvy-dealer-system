@@ -10,10 +10,10 @@ const About = () => {
       <section className="bg-gradient-primary py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            About Cece Auto
+            About Savvy Dealer System
           </h1>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            For more than 22 years Cece Automotive has proudly served Felton,
+            For more than 22 years Savvy Dealer Systemmotive has proudly served Felton,
             Delaware — built on word-of-mouth, trusted by families, and focused
             on fair, second-chance financing for customers with challenged credit.
           </p>
@@ -30,7 +30,7 @@ const About = () => {
               </h2>
               <div className="space-y-4 text-lg text-muted-foreground">
                 <p>
-                  For more than two decades, Cece Automotive has served Felton
+                  For more than two decades, Savvy Dealer Systemmotive has served Felton
                   and the surrounding Delaware communities by helping families
                   secure reliable vehicles even when credit has been a challenge.
                 </p>
@@ -41,7 +41,7 @@ const About = () => {
                   fairly and work hard to find practical financing solutions.
                 </p>
                 <p>
-                  Specializing in second-chance financing, Cece Automotive gives
+                  Specializing in second-chance financing, Savvy Dealer Systemmotive gives
                   hardworking families a real opportunity to rebuild credit and
                   regain independence behind the wheel. Friendly, fair, and
                   committed to doing right by our customers — that’s the Cece
@@ -52,7 +52,7 @@ const About = () => {
             <div className="relative">
               <img
                 src="cece.jfif"
-                alt="Cece Auto dealership"
+                alt="Savvy Dealer System dealership"
                 className="rounded-lg shadow-hover w-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-lg"></div>
@@ -205,7 +205,7 @@ const About = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-            Ready to Experience the Cece Auto Difference?
+            Ready to Experience the Savvy Dealer System Difference?
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Visit us today and discover why so many Delaware residents trust us with their automotive needs.

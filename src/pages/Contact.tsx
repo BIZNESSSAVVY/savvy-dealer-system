@@ -104,7 +104,7 @@ const Contact = () => {
   };
 
   const handleCallNow = () => {
-    console.log("Call initiated to (302) 284-7114");
+    console.log("Call initiated to (317) 741-7443");
     window.location.href = "tel:+13022847114";
   };
 
@@ -135,7 +135,7 @@ const Contact = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Contact Cece Auto
+            Contact Savvy Dealer System
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Get in touch with us today. We're here to help you find your perfect vehicle 
@@ -155,9 +155,9 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-lg font-semibold">(302) 284-7114</p>
+                  <p className="text-lg font-semibold">(317) 741-7443</p>
                   <p className="text-sm text-muted-foreground">Sales & General Inquiries</p>
-                  <p className="text-lg font-semibold">(302) 284-7114</p>
+                  <p className="text-lg font-semibold">(317) 741-7443</p>
                   <p className="text-sm text-muted-foreground">Service & Parts</p>
                 </div>
                 <Button variant="default" className="w-full mt-4" onClick={handleCallNow}>
@@ -176,9 +176,9 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="font-semibold">Cece Auto</p>
+                  <p className="font-semibold">Savvy Dealer System</p>
                   <p>102 Lombard St</p>
-                  <p>Felton, DE 19943</p>
+                  <p>USA 19943</p>
                 </div>
                 <Button variant="outline" className="w-full mt-4" onClick={openGoogleMaps}>
                   <MapPin className="h-4 w-4 mr-2" />
@@ -221,9 +221,9 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p>ceceauto@yahoo.com</p>
+                  <p>biznesssavvy39@gmail.com</p>
                   <p className="text-sm text-muted-foreground">General inquiries</p>
-                  <p>ceceauto@yahoo.com</p>
+                  <p>biznesssavvy39@gmail.com</p>
                   <p className="text-sm text-muted-foreground">Sales department</p>
                 </div>
               </CardContent>
@@ -378,7 +378,7 @@ const Contact = () => {
               <h3 className="text-xl font-semibold mb-2">Call for Immediate Assistance</h3>
               <p className="text-muted-foreground mb-4">Speak directly with our sales team</p>
               <Button variant="default" className="w-full" onClick={handleCallNow}>
-                (302) 284-7114              </Button>
+                (317) 741-7443              </Button>
             </CardContent>
           </Card>
 

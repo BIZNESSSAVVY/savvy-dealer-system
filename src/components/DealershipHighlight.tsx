@@ -15,10 +15,10 @@ const DealershipHighlight: React.FC = () => {
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-automotive-gold"></div>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Visit <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-automotive-gold">Cece Auto</span>
+            Visit <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-automotive-gold">Savvy Dealer System</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Your trusted local dealership in Felton, Delaware
+            Your trusted local dealership Nationwidelaware
           </p>
         </div>
 
@@ -29,7 +29,7 @@ const DealershipHighlight: React.FC = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-premium border-2 border-automotive-gold/20">
               <img
                 src={dealershipImage}
-                alt="Cece Auto Dealership - Felton, DE"
+                alt="Savvy Dealer System Dealership - USA"
                 className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-105"
               />
               {/* Shine Effect */}
@@ -72,7 +72,7 @@ const DealershipHighlight: React.FC = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center text-muted-foreground">
                   <MapPin className="h-5 w-5 text-automotive-gold mr-3 flex-shrink-0" />
-                  <span>102 Lombard St, Felton, DE 19943</span>
+                  <span>102 Lombard St, USA 19943</span>
                 </div>
                 <div className="flex items-center text-muted-foreground">
                   <Phone className="h-5 w-5 text-automotive-gold mr-3 flex-shrink-0" />

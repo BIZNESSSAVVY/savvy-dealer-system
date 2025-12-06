@@ -171,12 +171,12 @@ export default async function handler(req, res) {
     const emailPayload = {
       from: {
         email_address_id: 32138,
-        name: "Cece Auto"
+        name: "Savvy Dealer System"
       },
       to: [
         {
           email: notificationEmail,
-          name: "Cece Auto"
+          name: "Savvy Dealer System"
         }
       ],
       subject: `New Financing Application - ${fullName}`,

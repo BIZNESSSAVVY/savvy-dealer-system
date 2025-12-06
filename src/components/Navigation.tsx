@@ -29,10 +29,10 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <img src={logo} alt="Cece Auto" className="h-10 w-auto" />
+            <img src={logo} alt="Savvy Dealer System" className="h-10 w-auto" />
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-primary">Cece Auto</h1>
-              <p className="text-xs text-muted-foreground">Felton, Delaware</p>
+              <h1 className="text-xl font-bold text-primary">Savvy Dealer System</h1>
+              <p className="text-xs text-muted-foreground">USAlaware</p>
             </div>
           </Link>
 
@@ -57,11 +57,11 @@ const Navigation = () => {
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Phone className="h-4 w-4" />
-              <span>(302) 284-7114</span>
+              <span>(317) 741-7443</span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              <span>Felton, DE</span>
+              <span>USA</span>
             </div>
             <Button variant="hero" size="sm" onClick={handleCallNow}>
               Call Now
@@ -102,7 +102,7 @@ const Navigation = () => {
               <div className="px-4 py-2 border-t border-border mt-4">
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                   <Phone className="h-4 w-4" />
-                  <span>(302) 284-7114</span>
+                  <span>(317) 741-7443</span>
                 </div>
                 <Button variant="hero" size="sm" className="w-full" onClick={handleCallNow}>
                   Call Now

@@ -85,7 +85,7 @@ const AdminLogin = () => {
                         <div className="relative">
                             <img 
                                 src="/src/assets/logo.png" 
-                                alt="Cece Auto" 
+                                alt="Savvy Dealer System" 
                                 className="h-20 w-auto object-contain"
                                 onError={(e) => {
                                     // Fallback to icon if logo fails to load
@@ -207,7 +207,7 @@ const AdminLogin = () => {
                 {/* Footer */}
                 <div className="mt-6 text-center">
                     <p className="text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} Cece Auto. All rights reserved.
+                        © {new Date().getFullYear()} Savvy Dealer System. All rights reserved.
                     </p>
                 </div>
             </div>

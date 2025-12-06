@@ -68,7 +68,7 @@ const Hero = () => {
         <div className="animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Quality Used Cars in{" "}
-            <span className="text-automotive-gold">Felton, DE</span>
+            <span className="text-automotive-gold">USA</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
             Your trusted local dealership for affordable, reliable vehicles with
@@ -175,7 +175,7 @@ const Hero = () => {
                 <Star className="h-8 w-8" />
               </div>
               <h3 className="text-lg font-semibold mb-2">
-                Trusted in Felton, DE
+                Trusted Nationwide
               </h3>
               <p className="text-white/80 text-sm">
                 Serving our community with integrity

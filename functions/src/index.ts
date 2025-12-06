@@ -56,7 +56,7 @@ function generateFacebookFeed(vehicles: Vehicle[]): string {
 
         const condition = v.isNew ? 'NEW' : 'USED';
         const bodyStyle = mapBodyStyle(v.bodyStyle);
-        const description = v.description?.trim() || `${condition === 'NEW' ? 'Brand new' : 'Excellent condition'} ${v.year} ${v.make} ${v.model}. Contact CeCe Auto Sales for details.`;
+        const description = v.description?.trim() || `${condition === 'NEW' ? 'Brand new' : 'Excellent condition'} ${v.year} ${v.make} ${v.model}. Contact Savvy Dealer System Sales for details.`;
         const vehicleId = v.stockNumber || v.id;
 
         return `    <listing>
@@ -93,14 +93,14 @@ ${additionalImages}
             <component name="postal_code">19943</component>
             <component name="country">US</component>
         </address>
-        <dealer_name>CeCe Auto Sales</dealer_name>
-        <dealer_phone>(302) 284-7114</dealer_phone>
+        <dealer_name>Savvy Dealer System Sales</dealer_name>
+        <dealer_phone>(317) 741-7443</dealer_phone>
     </listing>`;
     }).join('\n');
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <listings>
-    <title>CeCe Auto Sales - Vehicle Inventory</title>
+    <title>Savvy Dealer System Sales - Vehicle Inventory</title>
     <link rel="self" href="${WEBSITE_URL}"/>
 ${listings}
 </listings>`;

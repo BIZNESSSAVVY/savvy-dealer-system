@@ -7,19 +7,19 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-muted-foreground">
         {/* Dealership Info */}
         <div>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Cece Auto</h3>
-          <p className="mb-2">Your trusted dealership in Felton, DE</p>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Savvy Dealer System</h3>
+          <p className="mb-2">Your trusted dealership Nationwide</p>
           <p className="flex items-center mb-2">
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <MapPin className="h-4 w-4 text-primary" />
             </span>
-            102 Lombard St, Felton, DE 19943
+            102 Lombard St, USA 19943
           </p>
           <p className="flex items-center">
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <Mail className="h-4 w-4 text-primary" />
             </span>
-            ceceauto@yahoo.com
+            biznesssavvy39@gmail.com
           </p>
         </div>
 
@@ -62,7 +62,7 @@ const Footer = () => {
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <Phone className="h-4 w-4 text-primary" />
             </span>
-            (302) 284-7114          </p>
+            (317) 741-7443          </p>
           <p className="flex items-center mb-2">
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <Clock className="h-4 w-4 text-primary" />
@@ -70,7 +70,7 @@ const Footer = () => {
             Mon-Fri: 10 AM - 5 PM | Sat: 10 AM -  4PM 
           </p>
           <p className="text-muted-foreground mt-4">
-            &copy; {new Date().getFullYear()} Cece Auto. All rights reserved.
+            &copy; {new Date().getFullYear()} Savvy Dealer System. All rights reserved.
           </p>
         </div>
       </div>

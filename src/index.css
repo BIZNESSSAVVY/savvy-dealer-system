@@ -108,6 +108,86 @@
   }
 }
 
+@layer components {
+  /* ORANGE HERO BUTTONS - THE 3 MOST IMPORTANT CTAs */
+  .btn-apply-financing,
+  .btn-get-directions,
+  .btn-browse-inventory {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    border-radius: 0.75rem !important;
+    padding: 1.25rem 2.5rem !important;
+    font-weight: 900 !important;
+    font-size: 1.125rem !important;
+    line-height: 1.5 !important;
+    transition: all 0.3s ease !important;
+    background-color: hsl(22 100% 50%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 20px 50px -12px hsl(22 100% 50% / 0.5) !important;
+    cursor: pointer !important;
+  }
+  
+  .btn-apply-financing:hover,
+  .btn-get-directions:hover,
+  .btn-browse-inventory:hover {
+    background-color: hsl(22 100% 60%) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 25px 60px -12px hsl(22 100% 50% / 0.6) !important;
+  }
+
+  /* NAVY SECONDARY BUTTONS */
+  .btn-vehicle-details,
+  .btn-schedule-test-drive,
+  .btn-savvy,
+  .btn-navy,
+  .btn-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    border-radius: 0.75rem !important;
+    padding: 1rem 2rem !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    transition: all 0.3s ease !important;
+    background-color: hsl(210 95% 18%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 10px 30px -8px hsl(210 95% 18% / 0.4) !important;
+    cursor: pointer !important;
+  }
+  
+  .btn-vehicle-details:hover,
+  .btn-schedule-test-drive:hover,
+  .btn-savvy:hover,
+  .btn-navy:hover,
+  .btn-primary:hover {
+    background-color: hsl(210 95% 28%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 15px 40px -8px hsl(210 95% 18% / 0.5) !important;
+  }
+
+  /* TRUSTED BADGE - VIBRANT ORANGE */
+  .badge-savvy,
+  .trusted-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    border-radius: 9999px !important;
+    background: linear-gradient(135deg, hsl(22 100% 50%) 0%, hsl(22 100% 55%) 100%) !important;
+    color: white !important;
+    box-shadow: 0 15px 40px -10px hsl(22 100% 50% / 0.6) !important;
+    border: 2px solid hsl(22 100% 60%) !important;
+  }
+}
+
 @layer utilities {
   /* Gradient backgrounds - proper gradients, not solid colors */
   .bg-gradient-primary {
@@ -128,55 +208,23 @@
   .shadow-navy { box-shadow: var(--shadow-navy); }
 
   /* Savvy brand colors */
-  .text-savvy-orange { color: hsl(var(--savvy-orange)); }
-  .text-savvy-navy { color: hsl(var(--savvy-navy)); }
+  .text-savvy-orange { color: hsl(var(--savvy-orange)) !important; }
+  .text-savvy-navy { color: hsl(var(--savvy-navy)) !important; }
 
-  .bg-savvy-orange { background-color: hsl(var(--savvy-orange)); }
-  .bg-savvy-orange-light { background-color: hsl(var(--savvy-orange-light)); }
-  .bg-savvy-orange-dark { background-color: hsl(var(--savvy-orange-dark)); }
+  .bg-savvy-orange { background-color: hsl(var(--savvy-orange)) !important; }
+  .bg-savvy-orange-light { background-color: hsl(var(--savvy-orange-light)) !important; }
+  .bg-savvy-orange-dark { background-color: hsl(var(--savvy-orange-dark)) !important; }
 
-  .bg-savvy-navy { background-color: hsl(var(--savvy-navy)); }
-  .bg-savvy-navy-light { background-color: hsl(var(--savvy-navy-light)); }
-  .bg-savvy-navy-dark { background-color: hsl(var(--savvy-navy-dark)); }
+  .bg-savvy-navy { background-color: hsl(var(--savvy-navy)) !important; }
+  .bg-savvy-navy-light { background-color: hsl(var(--savvy-navy-light)) !important; }
+  .bg-savvy-navy-dark { background-color: hsl(var(--savvy-navy-dark)) !important; }
 
-  .border-savvy-orange { border-color: hsl(var(--savvy-orange)); }
-  .border-savvy-navy { border-color: hsl(var(--savvy-navy)); }
-
-  /* ONLY THE 4 MOST IMPORTANT BUTTONS ARE ORANGE */
-  .btn-apply-financing,
-  .btn-get-directions,
-  .btn-browse-inventory {
-    @apply inline-flex items-center justify-center gap-4 rounded-xl px-10 py-5 font-black text-white text-xl transition-all;
-    background-color: hsl(var(--savvy-orange));
-    box-shadow: 0 20px 50px -12px hsl(var(--savvy-orange) / 0.5);
-  }
-  .btn-apply-financing:hover,
-  .btn-get-directions:hover,
-  .btn-browse-inventory:hover {
-    background-color: hsl(var(--savvy-orange-light));
-    transform: translateY(-6px);
-  }
-
-  /* Every other button = premium navy */
-  .btn-savvy,
-  .btn-navy,
-  .btn-primary,
-  .btn-vehicle-details,
-  .btn-schedule-test-drive {
-    @apply inline-flex items-center justify-center gap-3 rounded-xl px-8 py-4 font-bold text-white transition-all;
-    background-color: hsl(var(--savvy-navy));
-  }
-  .btn-savvy:hover,
-  .btn-navy:hover,
-  .btn-primary:hover,
-  .btn-vehicle-details:hover,
-  .btn-schedule-test-drive:hover {
-    background-color: hsl(var(--savvy-navy-light));
-    transform: translateY(-3px);
-  }
+  .border-savvy-orange { border-color: hsl(var(--savvy-orange)) !important; }
+  .border-savvy-navy { border-color: hsl(var(--savvy-navy)) !important; }
 
   .focus-ring-orange:focus {
-    @apply ring-4 ring-orange-500/30 outline-none;
+    outline: none !important;
+    ring: 4px solid hsl(22 100% 50% / 0.3) !important;
   }
 
   .hero-title {
@@ -184,14 +232,6 @@
     letter-spacing: -0.02em;
     line-height: 1.02;
     text-shadow: 0 6px 18px hsl(210 95% 18% / 0.12);
-  }
-
-  .badge-savvy,
-  .trusted-badge {
-    @apply inline-flex items-center gap-4 px-10 py-5 text-xl font-black rounded-full;
-    background-color: hsl(var(--savvy-orange));
-    color: white;
-    box-shadow: 0 15px 40px -10px hsl(var(--savvy-orange) / 0.6);
   }
 
   .card-accent {
@@ -215,6 +255,7 @@
   .icon-quality,
   .icon-financing,
   .icon-service {
-    @apply text-savvy-orange text-6xl;
+    color: hsl(var(--savvy-orange)) !important;
+    font-size: 3.75rem !important;
   }
 }

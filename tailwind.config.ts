@@ -23,8 +23,8 @@ export default {
         foreground: "hsl(var(--foreground))",
 
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#032a52",
+          foreground: "#ffffff",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -39,8 +39,8 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#ff6b1a",
+          foreground: "#ffffff",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -57,17 +57,16 @@ export default {
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          primary: "#032a52",
+          "primary-foreground": "#ffffff",
+          accent: "#ff6b1a",
+          "accent-foreground": "#ffffff",
           border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+          ring: "#ff6b1a",
         },
 
-        // Savvy brand colors for direct use
-        "savvy-navy": "hsl(var(--savvy-navy))",
-        "savvy-orange": "hsl(var(--savvy-orange))",
+        "savvy-navy": "#032a52",
+        "savvy-orange": "#ff6b1a",
       },
       borderRadius: {
         lg: "var(--radius)",

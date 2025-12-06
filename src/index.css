@@ -2,37 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================
+   SavvyOS - COMPLETE WORKING VERSION
+   Orange buttons that actually show up
+   ============================ */
+
 @layer base {
   :root {
+    /* Base / Text */
     --background: 210 20% 98%;
     --foreground: 216 18% 12%;
+
+    /* Cards / Surfaces */
     --card: 0 0% 100%;
     --card-foreground: 216 18% 12%;
     --popover: 0 0% 100%;
     --popover-foreground: 216 18% 12%;
-    
+
+    /* Savvy Navy */
+    --savvy-navy-h: 210;
     --savvy-navy: 210 95% 18%;
     --savvy-navy-light: 210 95% 28%;
+    --savvy-navy-dark: 210 95% 12%;
+
+    /* Savvy Orange */
+    --savvy-orange-h: 22;
     --savvy-orange: 22 100% 50%;
     --savvy-orange-light: 22 100% 60%;
-    
+    --savvy-orange-dark: 22 100% 40%;
+
+    /* Primary (Navy) */
     --primary: 210 95% 18%;
     --primary-foreground: 0 0% 100%;
+
+    /* Secondary */
     --secondary: 210 30% 94%;
     --secondary-foreground: 216 18% 12%;
+
+    /* Accent (Orange) */
     --accent: 22 100% 50%;
     --accent-foreground: 0 0% 100%;
+
+    /* Muted */
     --muted: 210 30% 94%;
     --muted-foreground: 210 20% 35%;
+
+    /* Semantic */
     --success: 142 72% 36%;
     --warning: 38 92% 50%;
     --destructive: 0 82% 60%;
     --destructive-foreground: 0 0% 100%;
+
+    /* Inputs / borders / rings */
     --border: 210 30% 88%;
     --input: 210 25% 96%;
     --ring: 22 100% 50%;
+
+    /* Radius */
     --radius: 0.75rem;
-    
+
+    /* Shadows */
+    --shadow-premium: 0 18px 50px -12px hsl(210 95% 18% / 0.30);
+    --shadow-card: 0 8px 30px -10px hsl(210 95% 18% / 0.12);
+    --shadow-hover: 0 20px 50px -14px hsl(22 100% 50% / 0.25);
+    --shadow-orange: 0 10px 40px -12px hsl(22 100% 50% / 0.35);
+    --shadow-navy: 0 10px 40px -12px hsl(210 95% 18% / 0.35);
+
+    /* Sidebar */
     --sidebar-background: 210 30% 97%;
     --sidebar-foreground: 216 16% 12%;
     --sidebar-primary: 210 95% 18%;
@@ -43,54 +79,81 @@
     --sidebar-ring: 22 100% 50%;
   }
 
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground antialiased; }
+  .dark {
+    --background: 210 20% 7%;
+    --foreground: 210 15% 96%;
+    --card: 210 22% 10%;
+    --card-foreground: 210 15% 96%;
+    --savvy-navy: 210 95% 22%;
+    --savvy-navy-light: 210 95% 32%;
+    --savvy-orange: 22 100% 55%;
+    --savvy-orange-light: 22 100% 65%;
+    --primary: 210 95% 22%;
+    --muted: 210 20% 15%;
+    --muted-foreground: 210 15% 65%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-synthesis: none;
+  }
 }
 
 @layer components {
-  /* ORANGE BUTTONS */
+  /* ORANGE HERO BUTTONS */
   .btn-apply-financing,
   .btn-get-directions,
   .btn-browse-inventory {
-    background-color: #ff6b1a !important;
-    color: white !important;
-    padding: 1.25rem 2.5rem !important;
-    border-radius: 0.75rem !important;
-    font-weight: 700 !important;
-    font-size: 1.125rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    padding: 1.25rem 2.5rem;
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    transition: all 0.3s ease;
+    background-color: #ff6b1a;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px 0 rgba(255, 107, 26, 0.4);
   }
   
   .btn-apply-financing:hover,
   .btn-get-directions:hover,
   .btn-browse-inventory:hover {
-    background-color: #ff8547 !important;
-    transform: translateY(-2px) !important;
+    background-color: #ff8547;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(255, 107, 26, 0.5);
   }
 
-  /* NAVY BUTTONS */
+  /* NAVY SECONDARY BUTTONS */
   .btn-vehicle-details,
   .btn-schedule-test-drive,
   .btn-savvy,
   .btn-navy,
   .btn-primary {
-    background-color: #032a52 !important;
-    color: white !important;
-    padding: 1rem 2rem !important;
-    border-radius: 0.75rem !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: all 0.3s ease;
+    background-color: #032a52;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px 0 rgba(3, 42, 82, 0.3);
   }
   
   .btn-vehicle-details:hover,
@@ -98,40 +161,158 @@
   .btn-savvy:hover,
   .btn-navy:hover,
   .btn-primary:hover {
-    background-color: #054a8a !important;
-    transform: translateY(-2px) !important;
+    background-color: #054a8a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(3, 42, 82, 0.4);
   }
 
   /* ORANGE BADGE */
   .badge-savvy,
   .trusted-badge {
-    background-color: #ff6b1a !important;
-    color: white !important;
-    padding: 0.625rem 1.5rem !important;
-    border-radius: 9999px !important;
-    font-weight: 700 !important;
-    font-size: 0.875rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border-radius: 9999px;
+    background-color: #ff6b1a;
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(255, 107, 26, 0.4);
   }
 }
 
 @layer utilities {
-  .text-savvy-orange { color: #ff6b1a !important; }
-  .text-savvy-navy { color: #032a52 !important; }
-  .bg-savvy-orange { background-color: #ff6b1a !important; }
-  .bg-savvy-navy { background-color: #032a52 !important; }
-  .border-savvy-orange { border-color: #ff6b1a !important; }
-  
-  .price-highlight {
-    color: #ff6b1a !important;
-    font-weight: 900 !important;
-    font-size: 1.875rem !important;
+  /* Shadows */
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
   }
   
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .shadow-orange {
+    box-shadow: var(--shadow-orange);
+  }
+  
+  .shadow-navy {
+    box-shadow: var(--shadow-navy);
+  }
+
+  /* Savvy brand colors */
+  .text-savvy-orange {
+    color: #ff6b1a;
+  }
+  
+  .text-savvy-navy {
+    color: #032a52;
+  }
+
+  .bg-savvy-orange {
+    background-color: #ff6b1a;
+  }
+  
+  .bg-savvy-orange-light {
+    background-color: #ff8547;
+  }
+  
+  .bg-savvy-orange-dark {
+    background-color: #cc5614;
+  }
+
+  .bg-savvy-navy {
+    background-color: #032a52;
+  }
+  
+  .bg-savvy-navy-light {
+    background-color: #054a8a;
+  }
+  
+  .bg-savvy-navy-dark {
+    background-color: #021a34;
+  }
+
+  .border-savvy-orange {
+    border-color: #ff6b1a;
+  }
+  
+  .border-savvy-navy {
+    border-color: #032a52;
+  }
+
+  .focus-ring-orange:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 107, 26, 0.3);
+  }
+
+  .hero-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    text-shadow: 0 6px 18px rgba(3, 42, 82, 0.12);
+  }
+
   .card-accent {
-    border-left: 4px solid #ff6b1a !important;
-    padding-left: 1rem !important;
+    border-left: 4px solid #ff6b1a;
+    padding-left: 1rem;
+  }
+
+  .separator-metal {
+    background-color: hsl(210 12% 88%);
+    height: 1px;
+  }
+
+  .logo-frame {
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    background-color: rgba(3, 42, 82, 0.04);
+    box-shadow: 0 6px 30px -12px rgba(3, 42, 82, 0.14);
+  }
+
+  .icon-quality,
+  .icon-financing,
+  .icon-service {
+    color: #ff6b1a;
+    font-size: 3.75rem;
+  }
+
+  .price-highlight {
+    color: #ff6b1a;
+    font-weight: 900;
+    font-size: 1.875rem;
+  }
+
+  .stat-number {
+    color: #ff6b1a;
+    font-weight: 900;
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .heading-accent::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #ff6b1a;
+    margin-top: 1rem;
+    border-radius: 2px;
+  }
+
+  .accent-dot::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ff6b1a;
+    border-radius: 50%;
+    margin-right: 0.75rem;
   }
 }

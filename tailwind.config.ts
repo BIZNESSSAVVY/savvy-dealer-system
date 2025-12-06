@@ -30,7 +30,6 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
-
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -65,6 +64,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+
+        // Savvy brand colors for direct use
+        "savvy-navy": "hsl(var(--savvy-navy))",
+        "savvy-orange": "hsl(var(--savvy-orange))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -105,15 +108,12 @@ export default {
         "scale-in": "scale-in 0.3s ease-out",
         shine: "shine 2s ease-in-out infinite",
       },
-      backgroundImage: {
-        "gradient-primary": "var(--gradient-primary)",
-        "gradient-silver": "var(--gradient-silver)",
-        "gradient-hero": "var(--gradient-hero)",
-      },
       boxShadow: {
         premium: "var(--shadow-premium)",
         card: "var(--shadow-card)",
         hover: "var(--shadow-hover)",
+        orange: "var(--shadow-orange)",
+        navy: "var(--shadow-navy)",
       },
     },
   },

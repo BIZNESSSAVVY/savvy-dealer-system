@@ -23,13 +23,14 @@ export default {
         foreground: "hsl(var(--foreground))",
 
         primary: {
-          DEFAULT: "#032a52",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -39,8 +40,8 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#ff6b1a",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -57,16 +58,13 @@ export default {
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
-          primary: "#032a52",
-          "primary-foreground": "#ffffff",
-          accent: "#ff6b1a",
-          "accent-foreground": "#ffffff",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
-          ring: "#ff6b1a",
+          ring: "hsl(var(--sidebar-ring))",
         },
-
-        "savvy-navy": "#032a52",
-        "savvy-orange": "#ff6b1a",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -107,12 +105,15 @@ export default {
         "scale-in": "scale-in 0.3s ease-out",
         shine: "shine 2s ease-in-out infinite",
       },
+      backgroundImage: {
+        "gradient-primary": "var(--gradient-primary)",
+        "gradient-silver": "var(--gradient-silver)",
+        "gradient-hero": "var(--gradient-hero)",
+      },
       boxShadow: {
         premium: "var(--shadow-premium)",
         card: "var(--shadow-card)",
         hover: "var(--shadow-hover)",
-        orange: "var(--shadow-orange)",
-        navy: "var(--shadow-navy)",
       },
     },
   },

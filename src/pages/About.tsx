@@ -40,7 +40,7 @@ const About = () => {
             </div>
             <div className="relative">
               <img
-                src="/placeholder-dealership.png" // Consider updating this image to a modern dealership or tech interface
+                src="/dealership.png" // Consider updating this image to a modern dealership or tech interface
                 alt="Savvy Dealer platform interface"
                 className="rounded-lg shadow-hover w-full"
               />

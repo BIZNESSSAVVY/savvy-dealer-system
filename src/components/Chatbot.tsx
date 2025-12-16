@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 
-const LOCALSTORAGE_KEY = 'cece-chat-messages-v1';
+const LOCALSTORAGE_KEY = 'savvy-chat-messages-v1';
 
 const leadSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -31,15 +31,15 @@ interface Message {
 
 const FAQ_RESPONSES: Record<string, string> = {
   financing:
-    "We offer competitive financing options with flexible terms! Apply on the financing page or speak to our finance team at (302) 409-4992.",
+    "The Savvy Dealer platform offers integrated financing tools with automated approvals. Test the financing form on this demo or request a platform walkthrough.",
   hours:
-    "We're open Mon-Fri 10AM-5PM, Sat 10AM-4PM, Sun closed. Call (302) 409-4992 for special appointments.",
-  warranty: "Ask our service team about available warranty and extended coverage options.",
+    "The demo platform is available 24/7. For information about live dealership hours, please use the contact form to request specific dealer information.",
+  warranty: "Warranty options are managed through the platform's vehicle management system. Ask your dealer about available coverage.",
   directions:
-    "We're at 123 Auto Blvd, USA 19943 (off Route 13). Call (302) 409-4992 if you need step-by-step directions.",
-  trade: "Yes — we accept trade-ins. Get a quick online quote or bring the vehicle by for an appraisal.",
-  test_drive: "Absolutely — tell us which vehicle you'd like and we'll book a test drive for you.",
-  contact: "Great — share your contact info and our team will reach out within 24 hours.",
+    "This is a demo platform for the Savvy Dealer system. For directions to specific dealerships, please use the contact form for more information.",
+  trade: "Yes — trade-in valuation tools are integrated into the platform. Dealers can provide instant online quotes using our system.",
+  test_drive: "Test drive scheduling is managed through the platform's appointment system. Use the contact form to request a demo of this feature.",
+  contact: "Great — share your contact info and we'll demonstrate how the platform manages and responds to customer leads.",
 };
 
 const QUICK_REPLIES = [
@@ -65,7 +65,7 @@ export default function Chatbot() {
     return [
       {
         id: 'init-1',
-        text: "Hi! I'm here to help you with questions about Savvy Dealer System. Ask me about financing, hours, warranties, or anything else!",
+        text: "Hi! I'm your Savvy Dealer demo assistant. I can show you how the platform handles customer inquiries, financing questions, and lead generation. What would you like to explore?",
         sender: 'bot',
         timestamp: new Date().toISOString(),
       },
@@ -153,7 +153,7 @@ export default function Chatbot() {
     }
 
     // fallback
-    return "Thanks for your question! For specific inquiries, I can connect you with our team. Try quick options below or type 'Contact' to leave your details.";
+    return "This demo shows how the Savvy Dealer platform handles customer inquiries. Try the quick options below to see different response types, or type 'Contact' to test the lead capture form.";
   };
 
   // central send function: user sends text
@@ -208,12 +208,12 @@ export default function Chatbot() {
     // in production -> POST to backend here
     console.log('Lead submitted (demo):', data);
     toast({
-      title: 'Thanks — we received your info',
-      description: 'Our team will contact you within 24 hours.',
+      title: 'Demo Lead Captured',
+      description: 'This shows how the platform processes and stores customer inquiries.',
     });
 
     // Add a friendly bot message after form submit
-    addMessage(`Thanks ${data.name}! Our team will reach out at ${data.phone} or ${data.email}.`, 'bot', {
+    addMessage(`Thanks ${data.name}! This demonstrates how the platform captures and routes leads to the dealer's CRM.`, 'bot', {
       lead: true,
     });
 
@@ -228,12 +228,12 @@ export default function Chatbot() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `cece-chat-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `savvy-chat-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      toast({ title: 'Saved', description: 'Conversation downloaded.' });
+      toast({ title: 'Conversation Saved', description: 'Demo chat downloaded.' });
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Could not save conversation.' });
@@ -244,13 +244,13 @@ export default function Chatbot() {
     setMessages([
       {
         id: 'init-1',
-        text: "Hi! I'm here to help you with questions about Savvy Dealer System. Ask me about financing, hours, warranties, or anything else!",
+        text: "Hi! I'm your Savvy Dealer demo assistant. I can show you how the platform handles customer inquiries, financing questions, and lead generation. What would you like to explore?",
         sender: 'bot',
         timestamp: new Date().toISOString(),
       },
     ]);
     localStorage.removeItem(LOCALSTORAGE_KEY);
-    toast({ title: 'Cleared', description: 'Conversation reset.' });
+    toast({ title: 'Conversation Reset', description: 'Demo chat cleared.' });
   };
 
   // helper: format timestamp to human short form
@@ -278,8 +278,8 @@ export default function Chatbot() {
           <DialogHeader className="p-3 border-b bg-primary text-primary-foreground">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3">
-                <span className="font-semibold">Chat with Savvy Dealer System</span>
-                <span className="text-xs opacity-80">Premium</span>
+                <span className="font-semibold">Savvy Dealer Platform Demo</span>
+                <span className="text-xs opacity-80">Interactive Demo</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -317,7 +317,7 @@ export default function Chatbot() {
                     className={`flex items-start gap-3 ${
                       message.sender === 'user' ? 'flex-row-reverse' : ''
                     }`}
-                    aria-label={`${message.sender === 'user' ? 'You' : 'Savvy Dealer System'} at ${formatTime(
+                    aria-label={`${message.sender === 'user' ? 'You' : 'Savvy Dealer'} at ${formatTime(
                       message.timestamp
                     )}`}
                   >
@@ -360,7 +360,7 @@ export default function Chatbot() {
                           <span className="w-2 h-2 rounded-full animate-bounce inline-block" style={{ animationDelay: '0.12s' }} />
                           <span className="w-2 h-2 rounded-full animate-bounce inline-block" style={{ animationDelay: '0.24s' }} />
                         </span>
-                        <span className="text-xs opacity-80">Cece is typing…</span>
+                        <span className="text-xs opacity-80">Savvy Assistant is typing…</span>
                       </div>
                     </div>
                   </div>
@@ -429,7 +429,7 @@ export default function Chatbot() {
                         />
 
                         <div className="flex gap-2">
-                          <Button type="submit" className="flex-1">Submit</Button>
+                          <Button type="submit" className="flex-1">Test Lead Capture</Button>
                           <Button
                             type="button"
                             variant="outline"
@@ -488,8 +488,8 @@ export default function Chatbot() {
                 </Button>
               </div>
               <div className="mt-2 text-xs opacity-70 flex items-center justify-between">
-                <div>Powered by Savvy Dealer System • Secure</div>
-                <div className="opacity-60">Tip: try "Financing" or "Contact"</div>
+                <div>Powered by Savvy Dealer Platform • Demo System</div>
+                <div className="opacity-60">Try: "Financing" or "Contact" to see features</div>
               </div>
             </div>
           </div>

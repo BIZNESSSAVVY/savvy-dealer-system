@@ -20,7 +20,7 @@ const Navigation = () => {
 
   // Function to handle the call action
   const handleCallNow = () => {
-    window.location.href = "tel:+13022847114"; // +1 country code for US, no spaces or dashes
+    window.location.href = "tel:+13024094994"; // +1 country code for US, no spaces or dashes
   };
 
   return (
@@ -57,7 +57,7 @@ const Navigation = () => {
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Phone className="h-4 w-4" />
-              <span>(317) 741-7443</span>
+              <span>(302) 409-4992</span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
@@ -102,7 +102,7 @@ const Navigation = () => {
               <div className="px-4 py-2 border-t border-border mt-4">
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                   <Phone className="h-4 w-4" />
-                  <span>(317) 741-7443</span>
+                  <span>(302) 409-4992</span>
                 </div>
                 <Button variant="hero" size="sm" className="w-full" onClick={handleCallNow}>
                   Call Now

@@ -104,8 +104,8 @@ const Contact = () => {
   };
 
   const handleCallNow = () => {
-    console.log("Call initiated to (317) 741-7443");
-    window.location.href = "tel:+13022847114";
+    console.log("Call initiated to (302) 409-4992");
+    window.location.href = "tel:+13024094992";
   };
 
   const handleStartChat = () => {
@@ -155,9 +155,9 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-lg font-semibold">(317) 741-7443</p>
+                  <p className="text-lg font-semibold">(302) 409-4992</p>
                   <p className="text-sm text-muted-foreground">Sales & General Inquiries</p>
-                  <p className="text-lg font-semibold">(317) 741-7443</p>
+                  <p className="text-lg font-semibold">(302) 409-4992</p>
                   <p className="text-sm text-muted-foreground">Service & Parts</p>
                 </div>
                 <Button variant="default" className="w-full mt-4" onClick={handleCallNow}>
@@ -378,7 +378,7 @@ const Contact = () => {
               <h3 className="text-xl font-semibold mb-2">Call for Immediate Assistance</h3>
               <p className="text-muted-foreground mb-4">Speak directly with our sales team</p>
               <Button variant="default" className="w-full" onClick={handleCallNow}>
-                (317) 741-7443              </Button>
+                (302) 409-4992              </Button>
             </CardContent>
           </Card>
 

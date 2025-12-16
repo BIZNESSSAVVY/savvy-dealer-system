@@ -62,7 +62,7 @@ const Footer = () => {
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <Phone className="h-4 w-4 text-primary" />
             </span>
-            (317) 741-7443          </p>
+            (302) 409-4992          </p>
           <p className="flex items-center mb-2">
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <Clock className="h-4 w-4 text-primary" />

@@ -31,12 +31,12 @@ interface Message {
 
 const FAQ_RESPONSES: Record<string, string> = {
   financing:
-    "We offer competitive financing options with flexible terms! Apply on the financing page or speak to our finance team at (317) 741-7443.",
+    "We offer competitive financing options with flexible terms! Apply on the financing page or speak to our finance team at (302) 409-4992.",
   hours:
-    "We're open Mon-Fri 10AM-5PM, Sat 10AM-4PM, Sun closed. Call (317) 741-7443 for special appointments.",
+    "We're open Mon-Fri 10AM-5PM, Sat 10AM-4PM, Sun closed. Call (302) 409-4992 for special appointments.",
   warranty: "Ask our service team about available warranty and extended coverage options.",
   directions:
-    "We're at 123 Auto Blvd, USA 19943 (off Route 13). Call (317) 741-7443 if you need step-by-step directions.",
+    "We're at 123 Auto Blvd, USA 19943 (off Route 13). Call (302) 409-4992 if you need step-by-step directions.",
   trade: "Yes — we accept trade-ins. Get a quick online quote or bring the vehicle by for an appraisal.",
   test_drive: "Absolutely — tell us which vehicle you'd like and we'll book a test drive for you.",
   contact: "Great — share your contact info and our team will reach out within 24 hours.",

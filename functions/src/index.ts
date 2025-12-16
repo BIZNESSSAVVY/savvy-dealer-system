@@ -94,7 +94,7 @@ ${additionalImages}
             <component name="country">US</component>
         </address>
         <dealer_name>Savvy Dealer System Sales</dealer_name>
-        <dealer_phone>(317) 741-7443</dealer_phone>
+        <dealer_phone>(302) 409-4992</dealer_phone>
     </listing>`;
     }).join('\n');
 

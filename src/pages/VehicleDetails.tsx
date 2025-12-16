@@ -57,7 +57,7 @@ const VehicleDetails = () => {
     const [interestRate, setInterestRate] = useState("11.9");
     const [loanTerm, setLoanTerm] = useState("60");
 
-    const phoneNumber = "tel:+13022847114";
+    const phoneNumber = "tel:+13024094992";
 
     useEffect(() => {
         if (!id) {

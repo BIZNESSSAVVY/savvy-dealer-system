@@ -67,18 +67,18 @@ const Hero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
         <div className="animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Quality Used Cars in{" "}
-            <span className="text-automotive-gold">USA</span>
+            Experience the{" "}
+            <span className="text-automotive-gold">Future of Automotive Retail</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Your trusted local dealership for affordable, reliable vehicles with
-            financing options that work for you.
+            A complete demo platform showcasing intelligent inventory management, 
+            transparent pricing, and streamlined customer experiences.
           </p>
 
           {/* Search Bar */}
           <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-premium max-w-4xl mx-auto mb-8 animate-slide-up">
             <h3 className="text-lg font-semibold text-primary mb-4">
-              Find Your Perfect Car
+              Explore the Demo Inventory
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Select value={searchMake} onValueChange={setSearchMake} disabled={loading}>
@@ -121,7 +121,7 @@ const Hero = () => {
                 onClick={handleSearch}
               >
                 <Search className="h-5 w-5 mr-2" />
-                Search Cars
+                Search Vehicles
               </Button>
             </div>
           </div>
@@ -134,7 +134,7 @@ const Hero = () => {
               className="text-lg px-8"
               onClick={() => navigate("/inventory")}
             >
-              View Our Inventory
+              View Demo Inventory
             </Button>
             <Button
               variant="outline"
@@ -142,7 +142,7 @@ const Hero = () => {
               className="text-lg px-8 bg-white/10 border-white text-white hover:bg-white hover:text-primary"
               onClick={() => navigate("/contact")}
             >
-              Contact Us Today
+              Request Platform Demo
             </Button>
           </div>
 
@@ -153,10 +153,10 @@ const Hero = () => {
                 <DollarSign className="h-8 w-8" />
               </div>
               <h3 className="text-lg font-semibold mb-2">
-                Affordable Quality Cars
+                Transparent Pricing
               </h3>
               <p className="text-white/80 text-sm">
-                Best prices on quality pre-owned vehicles
+                Clear, upfront pricing with no hidden fees or surprises
               </p>
             </div>
 
@@ -164,9 +164,9 @@ const Hero = () => {
               <div className="bg-white/20 p-4 rounded-full mb-4">
                 <Shield className="h-8 w-8" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Financing Options</h3>
+              <h3 className="text-lg font-semibold mb-2">Smart Financing</h3>
               <p className="text-white/80 text-sm">
-                Flexible payment plans for every budget
+                Integrated tools for fast approvals and flexible terms
               </p>
             </div>
 
@@ -175,10 +175,10 @@ const Hero = () => {
                 <Star className="h-8 w-8" />
               </div>
               <h3 className="text-lg font-semibold mb-2">
-                Trusted Nationwide
+                Dealer-First Platform
               </h3>
               <p className="text-white/80 text-sm">
-                Serving our community with integrity
+                Technology built to empower modern dealerships
               </p>
             </div>
           </div>

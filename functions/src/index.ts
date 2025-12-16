@@ -22,7 +22,7 @@ interface Vehicle {
     bodyStyle?: string;
 }
 
-const WEBSITE_URL = 'https://ceceauto.com';
+const WEBSITE_URL = 'https://savvy-dealer-system.vercel.app';
 
 export const facebookFeed = functions.https.onRequest(async (req, res) => {
     try {

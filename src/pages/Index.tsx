@@ -72,16 +72,16 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Featured Vehicles
+              Demo Vehicle Showcase
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Hand-picked quality vehicles from our inventory, ready for their new owners
+              Live demo vehicles showcasing the platform's real-time inventory management
             </p>
           </div>
           
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-lg text-muted-foreground">Loading featured vehicles...</p>
+              <p className="text-lg text-muted-foreground">Loading demo vehicles...</p>
             </div>
           ) : featuredVehicles.length > 0 ? (
             <>
@@ -103,28 +103,28 @@ const Index = () => {
                   className="text-lg px-8"
                   onClick={() => navigate('/inventory')}
                 >
-                  View All Inventory
+                  View All Demo Inventory
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
             </>
           ) : (
             <div className="text-center py-12">
-              <p className="text-lg text-muted-foreground">No vehicles available at the moment.</p>
+              <p className="text-lg text-muted-foreground">No demo vehicles available at the moment.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
+      {/* Platform Features Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Choose Savvy Dealer System?
+              Why Choose the Savvy Dealer Platform?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We're not just a car dealership - we're your trusted automotive partner Nationwidelaware
+              A complete digital solution built to transform automotive retail
             </p>
           </div>
           
@@ -133,9 +133,9 @@ const Index = () => {
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Quality Assured</h3>
+              <h3 className="text-xl font-semibold mb-3">Live Inventory Management</h3>
               <p className="text-muted-foreground">
-                Every vehicle undergoes thorough inspection and comes with our quality guarantee
+                Real-time vehicle listings, automated updates, and seamless integration with your sales workflow
               </p>
             </div>
             
@@ -143,9 +143,9 @@ const Index = () => {
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Local Expertise</h3>
+              <h3 className="text-xl font-semibold mb-3">Intuitive Customer Tools</h3>
               <p className="text-muted-foreground">
-                Proudly serving Felton and surrounding communities with personalized service
+                Built-in financing applications, contact forms, and customer relationship management
               </p>
             </div>
             
@@ -153,9 +153,9 @@ const Index = () => {
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Quick Financing</h3>
+              <h3 className="text-xl font-semibold mb-3">Automated Notifications</h3>
               <p className="text-muted-foreground">
-                Fast approval process with flexible payment options to fit your budget
+                Instant SMS and email alerts for leads, financing applications, and customer inquiries
               </p>
             </div>
           </div>
@@ -166,10 +166,10 @@ const Index = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-primary">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Find Your Perfect Car?
+            Ready to Explore the Platform?
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Browse our inventory or contact us today to discuss your automotive needs
+            Test the interactive features or request a full platform demo for your dealership
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -178,7 +178,7 @@ const Index = () => {
               className="text-lg px-8"
               onClick={() => navigate('/inventory')}
             >
-              Browse Inventory
+              Explore Demo Inventory
             </Button>
             <Button 
               variant="outline" 
@@ -186,7 +186,7 @@ const Index = () => {
               className="text-lg px-8 bg-white/10 border-white text-white hover:bg-white hover:text-primary"
               onClick={() => navigate('/contact')}
             >
-              Contact Us Now
+              Request Platform Demo
             </Button>
           </div>
         </div>

@@ -6,13 +6,13 @@ import { getAuth } from "firebase/auth"; // 🎯 NEW: Auth import
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCl0j6-CxUBhgZrFCJRuRbqaeRDcypyvBg",
-    authDomain: "ceceauto-86008.firebaseapp.com",
-    projectId: "ceceauto-86008",
-    storageBucket: "ceceauto-86008.firebasestorage.app",
-    messagingSenderId: "562046029503",
-    appId: "1:562046029503:web:b8e0825613f1decb9ac00a",
-    measurementId: "G-8XH18KC1Y4"
+  apiKey: "AIzaSyB0KpMbEaAJfmrDUCeROXDp-K9sp6VZ-6E",
+  authDomain: "savvy-ds-49b12.firebaseapp.com",
+  projectId: "savvy-ds-49b12",
+  storageBucket: "savvy-ds-49b12.firebasestorage.app",
+  messagingSenderId: "1036747803556",
+  appId: "1:1036747803556:web:9aa34c2fc0d6634c408f31",
+  measurementId: "G-4G1957VNGL"
 };
 
 // Initialize Firebase only if it hasn't been initialized

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Mock Vehicles to Firestore</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px;">
+    <h1>Upload Mock Vehicles to Firestore</h1>
+    <p>1. Make sure your <strong>mock-vehicles.json</strong> file is ready</p>
+    <p>2. Select the file below and click upload</p>
+    
+    <input type="file" id="fileInput" accept=".json">
+    <br><br>
+    <button onclick="uploadData()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Upload to Firestore
+    </button>
+    
+    <div id="status" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; min-height: 60px;"></div>
+
+    <script>
+        // Your exact Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0KpMbEaAJfmrDUCeROXDp-K9sp6VZ-6E",
+            authDomain: "savvy-ds-49b12.firebaseapp.com",
+            projectId: "savvy-ds-49b12",
+            storageBucket: "savvy-ds-49b12.firebasestorage.app",
+            messagingSenderId: "1036747803556",
+            appId: "1:1036747803556:web:9aa34c2fc0d6634c408f31",
+            measurementId: "G-4G1957VNGL"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function uploadData() {
+            const fileInput = document.getElementById('fileInput');
+            const statusDiv = document.getElementById('status');
+            
+            // Reset status
+            statusDiv.innerHTML = '';
+            statusDiv.style.color = 'black';
+            
+            // Check if file is selected
+            if (!fileInput.files[0]) {
+                statusDiv.innerHTML = '<span style="color: red;">Please select a JSON file first.</span>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async function(e) {
+                try {
+                    statusDiv.innerHTML = 'Step 1: Reading JSON file...';
+                    
+                    // Parse the JSON data
+                    const jsonData = JSON.parse(e.target.result);
+                    
+                    // Check if the data has the expected structure
+                    if (!jsonData.vehicles || typeof jsonData.vehicles !== 'object') {
+                        throw new Error('JSON must have a "vehicles" object. Check your file structure.');
+                    }
+                    
+                    // Get the vehicles object and convert it to an array
+                    const vehiclesObject = jsonData.vehicles;
+                    const vehicleArray = Object.values(vehiclesObject);
+                    
+                    statusDiv.innerHTML = `Step 2: Found ${vehicleArray.length} vehicles. Starting upload...`;
+                    
+                    // Upload each vehicle to Firestore
+                    let uploaded = 0;
+                    let errors = 0;
+                    
+                    for (const vehicle of vehicleArray) {
+                        try {
+                            // Use the vehicle's id as the Firestore document ID
+                            const vehicleId = vehicle.id ? vehicle.id.toString() : null;
+                            
+                            if (!vehicleId) {
+                                errors++;
+                                continue;
+                            }
+                            
+                            const docRef = db.collection('vehicles').doc(vehicleId);
+                            await docRef.set(vehicle);
+                            uploaded++;
+                            
+                            // Update progress every 2 vehicles
+                            if (uploaded % 2 === 0 || uploaded === vehicleArray.length) {
+                                statusDiv.innerHTML = `Step 2: Uploading... ${uploaded}/${vehicleArray.length} vehicles`;
+                            }
+                            
+                        } catch (err) {
+                            console.error('Error uploading vehicle:', err);
+                            errors++;
+                        }
+                    }
+                    
+                    // Show final result
+                    if (errors === 0) {
+                        statusDiv.innerHTML = `
+                            <div style="color: green; font-weight: bold;">
+                                ✅ SUCCESS! Uploaded ${uploaded} vehicles to Firestore.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                Go to <a href="https://console.firebase.google.com/project/savvy-ds-49b12/firestore" target="_blank">Firebase Console</a> to verify.
+                            </div>
+                        `;
+                    } else {
+                        statusDiv.innerHTML = `
+                            <div style="color: orange; font-weight: bold;">
+                                ⚠️ Partial success: Uploaded ${uploaded} vehicles, ${errors} errors.
+                            </div>
+                            <div style="margin-top: 10px;">
+                                Check browser console for error details.
+                            </div>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    statusDiv.innerHTML = `<span style="color: red;">❌ Error: ${error.message}</span>`;
+                    console.error('Full error:', error);
+                }
+            };
+
+            reader.onerror = function() {
+                statusDiv.innerHTML = '<span style="color: red;">❌ Failed to read the file.</span>';
+            };
+
+            // Start reading the file
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>

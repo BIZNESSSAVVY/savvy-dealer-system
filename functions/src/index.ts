@@ -87,10 +87,10 @@ ${additionalImages}
         <fuel_type>${mapFuel(v.fuelType)}</fuel_type>
         <drivetrain>${mapDrivetrain(v.transmission)}</drivetrain>
         <address format="simple">
-            <component name="addr1">102 Lombard</component>
-            <component name="city">Felton</component>
-            <component name="region">DE</component>
-            <component name="postal_code">19943</component>
+            <component name="addr1">102 USA BLVD</component>
+            <component name="city">USA</component>
+            <component name="region">US</component>
+            <component name="postal_code">12345</component>
             <component name="country">US</component>
         </address>
         <dealer_name>Savvy Dealer System Sales</dealer_name>

@@ -13,7 +13,7 @@ const Footer = () => {
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">
               <MapPin className="h-4 w-4 text-primary" />
             </span>
-            102 Lombard St, USA 19943
+            123 USA BLVD, USA 19943
           </p>
           <p className="flex items-center">
             <span className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-2">

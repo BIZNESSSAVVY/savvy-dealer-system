@@ -72,7 +72,7 @@ const DealershipHighlight: React.FC = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center text-muted-foreground">
                   <MapPin className="h-5 w-5 text-automotive-gold mr-3 flex-shrink-0" />
-                  <span>102 Lombard St, USA 19943</span>
+                  <span>123 USA BLVD, USA 19943</span>
                 </div>
                 <div className="flex items-center text-muted-foreground">
                   <Phone className="h-5 w-5 text-automotive-gold mr-3 flex-shrink-0" />

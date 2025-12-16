@@ -177,7 +177,7 @@ const Contact = () => {
               <CardContent>
                 <div className="space-y-2">
                   <p className="font-semibold">Savvy Dealer System</p>
-                  <p>102 Lombard St</p>
+                  <p>123 USA BLVD</p>
                   <p>USA 19943</p>
                 </div>
                 <Button variant="outline" className="w-full mt-4" onClick={openGoogleMaps}>

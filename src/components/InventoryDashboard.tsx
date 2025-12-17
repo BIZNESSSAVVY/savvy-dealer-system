@@ -1776,19 +1776,34 @@ export const InventoryDashboard: React.FC = () => {
                         />
 
                         <Input
-                            type="text"
-                            placeholder="Customer Phone"
-                            className="w-full border p-2 mt-3"
-                            value={customerPhone}
-                            onChange={(e) => setCustomerPhone(e.target.value)}
-                        />
+    type="text"
+    placeholder="Customer Phone"
+    className="w-full border p-2 mt-3"
+    value={customerPhone}
+    onChange={(e) => setCustomerPhone(e.target.value)}
+/>
 
-                        <Button
-                            onClick={handleMarkSold}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white p-2 mt-4 rounded"
-                        >
-                            Save & Mark Sold
-                        </Button>
+{/* SAVVY FEEDBACK CHECKBOX - STEP 1 */}
+<div className="flex items-center space-x-2 mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+    <input
+        type="checkbox"
+        id="requestFeedback"
+        checked={true}
+        onChange={(e) => {}}
+        className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+    />
+    <label htmlFor="requestFeedback" className="text-sm cursor-pointer">
+        <span className="font-semibold">✓ Request feedback from buyer</span>
+        <span className="text-gray-600 ml-1">(Sends automated review request)</span>
+    </label>
+</div>
+
+<Button
+    onClick={handleMarkSold}
+    className="w-full bg-green-600 hover:bg-green-700 text-white p-2 mt-4 rounded"
+>
+    Save & Mark Sold
+</Button>
 
                         <Button
                             onClick={handleCloseSoldModal}

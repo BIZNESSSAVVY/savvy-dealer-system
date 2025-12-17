@@ -992,351 +992,209 @@ export const InventoryDashboard: React.FC = () => {
     // FORM RENDER
     // ====================================================================
 
-    const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<InventoryFormValues>>, isEdit: boolean = false) => {
-        const currentImages = isEdit ? existingImageUrls : [];
-        const totalImages = currentImages.length + filesToUpload.length;
-        const uploadDisabled = totalImages >= MAX_IMAGES;
+   const renderVehicleFormFields = (
+  formInstance: ReturnType<typeof useForm<InventoryFormValues>>,
+  isEdit: boolean = false
+) => {
+  const currentImages = isEdit ? existingImageUrls : [];
+  const totalImages = currentImages.length + filesToUpload.length;
+  const uploadDisabled = totalImages >= MAX_IMAGES;
 
-        return (
-            <>
-                {/* VIN SCANNER - Only for Add form */}
-                {!isEdit && (
-                    <div className="md:col-span-3 mb-6 p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Scan className="w-5 h-5 text-primary" />
-                            <h3 className="text-lg font-semibold">VIN Decoder</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Enter the 17-character VIN or scan the barcode.
-                        </p>
-                        
-                        <div className="flex flex-col gap-3 mb-3">
-                            <div className="flex flex-col sm:flex-row gap-3">
-                                <Input
-                                    placeholder="Enter 17-character VIN (e.g., 1HGBH41JXMN109186)"
-                                    value={vinInput}
-                                    onChange={(e) => setVinInput(e.target.value.toUpperCase())}
-                                    maxLength={17}
-                                    className="font-mono flex-1 text-lg"
-                                    disabled={isDecodingVin || isCameraOpen}
-                                    autoComplete="off"
-                                />
-                                <div className="flex gap-2">
-                                    <Button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            handleVinScan();
-                                        }}
-                                        disabled={isDecodingVin || vinInput.length !== 17 || isCameraOpen}
-                                        size="lg"
-                                        className="whitespace-nowrap touch-manipulation"
-                                    >
-                                        {isDecodingVin ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Decoding...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Scan className="mr-2 h-4 w-4" />
-                                                Decode VIN
-                                            </>
-                                        )}
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            handleOpenCamera();
-                                        }}
-                                        disabled={isDecodingVin || isCameraOpen}
-                                        variant="outline"
-                                        size="lg"
-                                        className="whitespace-nowrap touch-manipulation"
-                                        title="Scan VIN barcode with camera"
-                                    >
-                                        <Camera className="mr-2 h-4 w-4" />
-                                        Scan
-                                    </Button>
-                                </div>
-                            </div>
-                            
-                            {/* Tips */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-                                <p className="font-semibold text-blue-900 mb-2">🎯 Quick Tips:</p>
-                                <ul className="text-blue-800 space-y-1 ml-4 list-disc">
-                                    <li><strong>Barcode Scanner:</strong> Point camera at VIN barcode (door jamb sticker)</li>
-                                    <li><strong>Manual Entry:</strong> Type or paste VIN for instant results (most reliable!)</li>
-                                    <li><strong>After Decode:</strong> Add price, mileage, colors & photos</li>
-                                </ul>
-                            </div>
-                        </div>
+  const decodedFieldClass =
+    "bg-emerald-50 border-emerald-300 ring-1 ring-emerald-200 focus-visible:ring-emerald-400";
 
-                        {/* Camera View */}
-                        {isCameraOpen && (
-                            <div className="relative mb-4 bg-black rounded-lg overflow-hidden">
-                                <video
-                                    ref={videoRef}
-                                    className="w-full h-64 sm:h-96 object-cover"
-                                    playsInline
-                                    muted
-                                />
-                                
-                                {/* Scanning Overlay */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <div className="border-4 border-green-500/70 rounded-lg w-4/5 h-40 relative shadow-lg">
-                                        <div className="absolute -top-2 -left-2 w-10 h-10 border-t-4 border-l-4 border-green-400"></div>
-                                        <div className="absolute -top-2 -right-2 w-10 h-10 border-t-4 border-r-4 border-green-400"></div>
-                                        <div className="absolute -bottom-2 -left-2 w-10 h-10 border-b-4 border-l-4 border-green-400"></div>
-                                        <div className="absolute -bottom-2 -right-2 w-10 h-10 border-b-4 border-r-4 border-green-400"></div>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-full h-0.5 bg-green-400/80 animate-pulse shadow-lg"></div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4 bg-black/90 px-6 py-3 rounded-lg max-w-md mx-4 text-center backdrop-blur-sm">
-                                        <p className="text-white text-base font-bold mb-1">
-                                            📸 {scanStatus}
-                                        </p>
-                                        <p className="text-green-300 text-sm font-medium">
-                                            Position VIN barcode in frame
-                                        </p>
-                                        <p className="text-yellow-200 text-xs mt-2">
-                                            Location: Door jamb sticker (driver side)
-                                        </p>
-                                    </div>
-                                </div>
+  const emptyFieldClass =
+    "bg-white border-slate-300 focus-visible:ring-primary";
 
-                                {/* Close Button */}
-                                <Button
-                                    type="button"
-                                    onClick={handleCloseCamera}
-                                    variant="destructive"
-                                    size="icon"
-                                    className="absolute top-3 right-3 z-10 shadow-lg"
-                                >
-                                    <XCircle className="h-5 w-5" />
-                                </Button>
-                                
-                                {/* Manual Entry Button */}
-                                <Button
-                                    type="button"
-                                    onClick={() => {
-                                        handleCloseCamera();
-                                        toast({ 
-                                            title: "Camera Closed", 
-                                            description: "Enter VIN manually above.",
-                                        });
-                                    }}
-                                    variant="secondary"
-                                    size="lg"
-                                    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 shadow-lg"
-                                >
-                                    Enter VIN Manually
-                                </Button>
-                            </div>
-                        )}
+  return (
+    <>
+      {/* VIN DECODER PANEL */}
+      {!isEdit && (
+        <div className="md:col-span-3 mb-8 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/5 to-white p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Scan className="w-6 h-6 text-primary" />
+              <h3 className="text-xl font-semibold tracking-tight">
+                VIN Decoder
+              </h3>
+            </div>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              Step 1: Decode Vehicle
+            </span>
+          </div>
 
-                        {/* Camera Error */}
-                        {cameraError && (
-                            <Alert variant="default" className="mb-3 bg-amber-50 border-amber-200">
-                                <AlertCircle className="h-4 w-4 text-amber-600" />
-                                <AlertDescription className="text-amber-800">
-                                    <strong>Camera unavailable:</strong> {cameraError}
-                                    <br />
-                                    <span className="text-sm mt-1 inline-block">Use manual entry above instead.</span>
-                                </AlertDescription>
-                            </Alert>
-                        )}
+          <p className="text-sm text-muted-foreground mb-5 max-w-2xl">
+            Scan or enter a VIN to instantly populate vehicle details. Fields
+            filled from VIN decoding will be visually highlighted.
+          </p>
 
-                        {/* Success */}
-                        {vinDecodeStatus === 'success' && (
-                            <Alert className="bg-green-50 border-green-200">
-                                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                <AlertDescription className="text-green-800 font-medium">
-                                    {vinDecodeMessage}
-                                </AlertDescription>
-                            </Alert>
-                        )}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Input
+                placeholder="17-character VIN"
+                value={vinInput}
+                onChange={(e) => setVinInput(e.target.value.toUpperCase())}
+                maxLength={17}
+                className="font-mono text-lg tracking-wider"
+                disabled={isDecodingVin || isCameraOpen}
+                autoComplete="off"
+              />
 
-                        {/* Error */}
-                        {vinDecodeStatus === 'error' && (
-                            <Alert variant="destructive">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertDescription>{vinDecodeMessage}</AlertDescription>
-                            </Alert>
-                        )}
-                    </div>
+              <Button
+                type="button"
+                size="lg"
+                disabled={isDecodingVin || vinInput.length !== 17 || isCameraOpen}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleVinScan();
+                }}
+                className="min-w-[160px]"
+              >
+                {isDecodingVin ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Decoding
+                  </>
+                ) : (
+                  <>
+                    <Scan className="mr-2 h-4 w-4" />
+                    Decode VIN
+                  </>
                 )}
+              </Button>
 
-                {/* BASIC INFORMATION */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:col-span-3 border-b pb-6">
-                    <FormField control={formInstance.control} name="make" render={({ field }) => (
-                        <FormItem><FormLabel>Make *</FormLabel><FormControl><Input placeholder="Toyota" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="model" render={({ field }) => (
-                        <FormItem><FormLabel>Model *</FormLabel><FormControl><Input placeholder="Camry" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="year" render={({ field }) => (
-                        <FormItem><FormLabel>Year *</FormLabel><FormControl><Input type="number" placeholder="2024" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="price" render={({ field }) => (
-                        <FormItem><FormLabel>Price ($) *</FormLabel><FormControl><Input type="number" placeholder="25000" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="mileage" render={({ field }) => (
-                        <FormItem><FormLabel>Mileage *</FormLabel><FormControl><Input type="number" placeholder="10000" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="vin" render={({ field }) => (
-                        <FormItem><FormLabel>VIN *</FormLabel><FormControl><Input placeholder="1HGBH41JXMN109186" maxLength={17} className="font-mono" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                </div>
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleOpenCamera();
+                }}
+              >
+                <Camera className="mr-2 h-4 w-4" />
+                Scan
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
-                {/* MECHANICAL SPECS */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:col-span-3 border-b pb-6">
-                    <FormField control={formInstance.control} name="engine" render={({ field }) => (
-                        <FormItem><FormLabel>Engine *</FormLabel><FormControl><Input placeholder="2.5L 4-Cylinder" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="fuelType" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Fuel Type *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select fuel type" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                    <SelectItem value="Gas">Gas</SelectItem>
-                                    <SelectItem value="Diesel">Diesel</SelectItem>
-                                    <SelectItem value="Electric">Electric</SelectItem>
-                                    <SelectItem value="Hybrid">Hybrid</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={formInstance.control} name="transmission" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Transmission *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select transmission" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                    <SelectItem value="Automatic">Automatic</SelectItem>
-                                    <SelectItem value="Manual">Manual</SelectItem>
-                                    <SelectItem value="FWD">FWD</SelectItem>
-                                    <SelectItem value="RWD">RWD</SelectItem>
-                                    <SelectItem value="AWD">AWD</SelectItem>
-                                    <SelectItem value="4WD">4WD</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                </div>
+      {/* BASIC INFORMATION */}
+      <section className="md:col-span-3">
+        <div className="mb-4 flex items-center justify-between">
+          <h4 className="text-lg font-semibold">Basic Vehicle Information</h4>
+          <span className="text-xs text-muted-foreground">
+            Auto-filled fields are highlighted
+          </span>
+        </div>
 
-                {/* BODY STYLE & COLORS */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-3 border-b pb-6">
-                    <FormField control={formInstance.control} name="bodyStyle" render={({ field }) => (
-                        <FormItem><FormLabel>Body Style *</FormLabel><FormControl><Input placeholder="Sedan" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="exteriorColor" render={({ field }) => (
-                        <FormItem><FormLabel>Exterior Color *</FormLabel><FormControl><Input placeholder="Black" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={formInstance.control} name="interiorColor" render={({ field }) => (
-                        <FormItem><FormLabel>Interior Color *</FormLabel><FormControl><Input placeholder="Beige" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-b pb-8">
+          {[
+            ["make", "Make *", "Toyota"],
+            ["model", "Model *", "Camry"],
+            ["year", "Year *", "2024"],
+            ["price", "Price ($) *", "25000"],
+            ["mileage", "Mileage *", "10000"],
+            ["vin", "VIN *", "1HGBH41JXMN109186"],
+          ].map(([name, label, placeholder]) => (
+            <FormField
+              key={name}
+              control={formInstance.control}
+              name={name as any}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center justify-between">
+                    {label}
+                    {field.value && (
+                      <span className="text-xs font-semibold text-emerald-700">
+                        AUTO
+                      </span>
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder={placeholder}
+                      className={
+                        field.value ? decodedFieldClass : emptyFieldClass
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
+      </section>
 
-                {/* STATUS */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-3 border-b pb-6">
-                    <FormField control={formInstance.control} name="condition" render={({ field }) => (
-                        <FormItem><FormLabel>Condition</FormLabel><FormControl><Input placeholder="Excellent" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="flex flex-col gap-4 pt-2">
-                        <p className="text-sm font-medium">Badges</p>
-                        <div className="flex items-center space-x-6">
-                            <FormField control={formInstance.control} name="isNew" render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                                    <FormLabel>New Arrival</FormLabel>
-                                </FormItem>
-                            )} />
-                            <FormField control={formInstance.control} name="isFeatured" render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                                    <FormLabel>Featured</FormLabel>
-                                </FormItem>
-                            )} />
-                        </div>
-                    </div>
-                </div>
+      {/* DESCRIPTION */}
+      <FormField
+        control={formInstance.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem className="md:col-span-3 mt-6">
+            <FormLabel>Description *</FormLabel>
+            <FormControl>
+              <Textarea
+                {...field}
+                rows={4}
+                placeholder="Describe condition, highlights, and selling points..."
+                className={
+                  field.value ? decodedFieldClass : emptyFieldClass
+                }
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-                {/* DESCRIPTION & FEATURES */}
-                <FormField control={formInstance.control} name="description" render={({ field }) => (
-                    <FormItem className="md:col-span-3">
-                        <FormLabel>Description *</FormLabel>
-                        <FormControl><Textarea placeholder="Vehicle description..." {...field} rows={4} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
+      {/* IMAGE UPLOAD */}
+      <div className="md:col-span-3 mt-8 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-6">
+        <FormLabel className="flex items-center gap-2 mb-2">
+          <Upload className="w-5 h-5 text-primary" />
+          Vehicle Images ({totalImages}/{MAX_IMAGES})
+        </FormLabel>
 
-                <FormField control={formInstance.control} name="featuresInput" render={({ field }) => (
-                    <FormItem className="md:col-span-3">
-                        <FormLabel>Features (comma-separated)</FormLabel>
-                        <FormControl><Input placeholder="Leather Seats, Sunroof, Backup Camera" {...field} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileChange}
+          disabled={uploadDisabled}
+          className="mb-4 block w-full file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary/90"
+        />
 
-                <FormField control={formInstance.control} name="optionsInput" render={({ field }) => (
-                    <FormItem className="md:col-span-3">
-                        <FormLabel>Options (comma-separated)</FormLabel>
-                        <FormControl><Input placeholder="Navigation, Heated Seats" {...field} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-
-                {/* IMAGE UPLOAD */}
-                <div className="md:col-span-3 pt-4 border-t mt-4">
-                    <FormLabel className="flex items-center gap-2">
-                        <Upload className="w-4 h-4" /> Upload Images (Max {MAX_IMAGES})
-                    </FormLabel>
-                    <p className="text-sm text-muted-foreground mb-4">
-                        Images: {totalImages} / {MAX_IMAGES}
-                    </p>
-                    
-                    <input
-                       type="file"
-                       accept="image/*"
-                       multiple
-                       onChange={handleFileChange}
-                       disabled={uploadDisabled}
-                       className="mb-4 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1E3A8A] file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-[#172554] file:cursor-pointer"
-                       />
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                        {currentImages.map((url, index) => (
-                            <div key={`existing-${index}`} className="relative group">
-                                <img src={url} alt={`Image ${index + 1}`} className="w-full h-24 object-cover rounded border-2 border-gray-200" />
-                                <Button 
-                                    type="button"
-                                    variant="destructive" 
-                                    size="icon" 
-                                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleRemoveExistingImage(url)}
-                                >
-                                    <X className="h-3 w-3" />
-                                </Button>
-                                <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1 rounded">#{index + 1}</span>
-                            </div>
-                        ))}
-                        {filesToUpload.map((file, index) => (
-                            <div key={`new-${index}`} className="relative group border-2 border-primary border-dashed rounded overflow-hidden">
-                                <img src={URL.createObjectURL(file)} alt={`New ${index + 1}`} className="w-full h-24 object-cover" />
-                                <Button 
-                                    type="button"
-                                    variant="destructive" 
-                                    size="icon" 
-                                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleRemoveFileToUpload(index)}
-                                >
-                                    <X className="h-3 w-3" />
-                                </Button>
-                                <span className="absolute bottom-1 left-1 bg-primary text-white text-xs px-1 rounded font-semibold">NEW</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </>
-        );
-    };
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          {[...currentImages, ...filesToUpload].map((item, index) => {
+            const src =
+              typeof item === "string"
+                ? item
+                : URL.createObjectURL(item);
+            return (
+              <div
+                key={index}
+                className="relative overflow-hidden rounded-lg border shadow-sm group"
+              >
+                <img
+                  src={src}
+                  className="h-28 w-full object-cover"
+                />
+                <span className="absolute bottom-1 left-1 rounded bg-black/70 px-2 py-0.5 text-xs text-white">
+                  #{index + 1}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+};
 
     // ====================================================================
     // RENDER

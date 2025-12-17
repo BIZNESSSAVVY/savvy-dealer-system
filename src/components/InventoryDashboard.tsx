@@ -992,210 +992,623 @@ export const InventoryDashboard: React.FC = () => {
     // FORM RENDER
     // ====================================================================
 
-   const renderVehicleFormFields = (
-  formInstance: ReturnType<typeof useForm<InventoryFormValues>>,
-  isEdit: boolean = false
-) => {
-  const currentImages = isEdit ? existingImageUrls : [];
-  const totalImages = currentImages.length + filesToUpload.length;
-  const uploadDisabled = totalImages >= MAX_IMAGES;
+   const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<InventoryFormValues>>, isEdit: boolean = false) => {
+    const currentImages = isEdit ? existingImageUrls : [];
+    const totalImages = currentImages.length + filesToUpload.length;
+    const uploadDisabled = totalImages >= MAX_IMAGES;
 
-  const decodedFieldClass =
-    "bg-emerald-50 border-emerald-300 ring-1 ring-emerald-200 focus-visible:ring-emerald-400";
+    // Helper function to determine field styling based on value state
+    const getFieldClassName = (value: any, isRequired: boolean = true) => {
+        if (!isRequired) return "";
+        if (value && value !== "" && value !== 0) {
+            return "border-l-4 border-l-emerald-500 bg-emerald-50/30 transition-all duration-200";
+        }
+        return "border-l-4 border-l-amber-400/60 transition-all duration-200";
+    };
 
-  const emptyFieldClass =
-    "bg-white border-slate-300 focus-visible:ring-primary";
+    return (
+        <>
+            {/* VIN SCANNER - Only for Add form */}
+            {!isEdit && (
+                <div className="md:col-span-3 mb-8">
+                    <div className="relative p-6 border-2 border-primary/50 rounded-xl bg-gradient-to-br from-primary/8 via-primary/5 to-transparent shadow-lg shadow-primary/10 hover:shadow-xl hover:shadow-primary/15 transition-all duration-300">
+                        {/* Header */}
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 bg-primary/15 rounded-lg">
+                                <Scan className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground">VIN Decoder</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Fast-track your inventory entry
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex flex-col gap-4 mb-4">
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <Input
+                                    placeholder="Enter 17-character VIN (e.g., 1HGBH41JXMN109186)"
+                                    value={vinInput}
+                                    onChange={(e) => setVinInput(e.target.value.toUpperCase())}
+                                    maxLength={17}
+                                    className="font-mono flex-1 text-lg h-12 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                    disabled={isDecodingVin || isCameraOpen}
+                                    autoComplete="off"
+                                />
+                                <div className="flex gap-2">
+                                    <Button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleVinScan();
+                                        }}
+                                        disabled={isDecodingVin || vinInput.length !== 17 || isCameraOpen}
+                                        size="lg"
+                                        className="whitespace-nowrap touch-manipulation h-12 px-6 shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
+                                    >
+                                        {isDecodingVin ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                Decoding...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Scan className="mr-2 h-5 w-5" />
+                                                Decode VIN
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleOpenCamera();
+                                        }}
+                                        disabled={isDecodingVin || isCameraOpen}
+                                        variant="outline"
+                                        size="lg"
+                                        className="whitespace-nowrap touch-manipulation h-12 px-6 shadow-md hover:shadow-lg hover:bg-primary/5 active:scale-95 transition-all duration-200"
+                                        title="Scan VIN barcode with camera"
+                                    >
+                                        <Camera className="mr-2 h-5 w-5" />
+                                        Scan
+                                    </Button>
+                                </div>
+                            </div>
+                            
+                            {/* Tips */}
+                            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-2 border-blue-200/60 rounded-xl p-4 shadow-sm">
+                                <p className="font-bold text-blue-900 mb-3 text-base flex items-center gap-2">
+                                    <span className="text-xl">🎯</span> Quick Tips
+                                </p>
+                                <ul className="text-blue-800 space-y-2 ml-1">
+                                    <li className="flex items-start gap-2">
+                                        <span className="font-bold min-w-fit text-sm mt-0.5">📷 Barcode Scanner:</span>
+                                        <span className="text-sm">Point camera at VIN barcode (door jamb sticker)</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="font-bold min-w-fit text-sm mt-0.5">⌨️ Manual Entry:</span>
+                                        <span className="text-sm">Type or paste VIN for instant results (most reliable!)</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="font-bold min-w-fit text-sm mt-0.5">✅ After Decode:</span>
+                                        <span className="text-sm">Add price, mileage, colors & photos</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 
-  return (
-    <>
-      {/* VIN DECODER PANEL */}
-      {!isEdit && (
-        <div className="md:col-span-3 mb-8 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/5 to-white p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Scan className="w-6 h-6 text-primary" />
-              <h3 className="text-xl font-semibold tracking-tight">
-                VIN Decoder
-              </h3>
+                        {/* Camera View */}
+                        {isCameraOpen && (
+                            <div className="relative mb-4 bg-black rounded-xl overflow-hidden shadow-2xl">
+                                <video
+                                    ref={videoRef}
+                                    className="w-full h-64 sm:h-96 object-cover"
+                                    playsInline
+                                    muted
+                                />
+                                
+                                {/* Scanning Overlay */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <div className="border-4 border-green-500/70 rounded-xl w-4/5 h-40 relative shadow-2xl shadow-green-500/30">
+                                        <div className="absolute -top-2 -left-2 w-12 h-12 border-t-4 border-l-4 border-green-400 rounded-tl-lg"></div>
+                                        <div className="absolute -top-2 -right-2 w-12 h-12 border-t-4 border-r-4 border-green-400 rounded-tr-lg"></div>
+                                        <div className="absolute -bottom-2 -left-2 w-12 h-12 border-b-4 border-l-4 border-green-400 rounded-bl-lg"></div>
+                                        <div className="absolute -bottom-2 -right-2 w-12 h-12 border-b-4 border-r-4 border-green-400 rounded-br-lg"></div>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse shadow-lg shadow-green-400/50"></div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 bg-black/95 px-8 py-4 rounded-xl max-w-md mx-4 text-center backdrop-blur-md shadow-2xl border border-white/10">
+                                        <p className="text-white text-lg font-bold mb-1">
+                                            📸 {scanStatus}
+                                        </p>
+                                        <p className="text-green-300 text-base font-semibold">
+                                            Position VIN barcode in frame
+                                        </p>
+                                        <p className="text-yellow-200 text-sm mt-2 font-medium">
+                                            Location: Door jamb sticker (driver side)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Close Button */}
+                                <Button
+                                    type="button"
+                                    onClick={handleCloseCamera}
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-4 right-4 z-10 shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 h-12 w-12"
+                                >
+                                    <XCircle className="h-6 w-6" />
+                                </Button>
+                                
+                                {/* Manual Entry Button */}
+                                <Button
+                                    type="button"
+                                    onClick={() => {
+                                        handleCloseCamera();
+                                        toast({ 
+                                            title: "Camera Closed", 
+                                            description: "Enter VIN manually above.",
+                                        });
+                                    }}
+                                    variant="secondary"
+                                    size="lg"
+                                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 h-12"
+                                >
+                                    Enter VIN Manually
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* Camera Error */}
+                        {cameraError && (
+                            <Alert variant="default" className="mb-4 bg-gradient-to-br from-amber-50 to-amber-100/50 border-2 border-amber-300/60 shadow-md">
+                                <AlertCircle className="h-5 w-5 text-amber-600" />
+                                <AlertDescription className="text-amber-900 font-medium">
+                                    <strong className="font-bold">Camera unavailable:</strong> {cameraError}
+                                    <br />
+                                    <span className="text-sm mt-2 inline-block">Use manual entry above instead.</span>
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        {/* Success */}
+                        {vinDecodeStatus === 'success' && (
+                            <Alert className="bg-gradient-to-br from-green-50 to-green-100/50 border-2 border-green-300/60 shadow-md">
+                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                <AlertDescription className="text-green-900 font-bold text-base">
+                                    {vinDecodeMessage}
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        {/* Error */}
+                        {vinDecodeStatus === 'error' && (
+                            <Alert variant="destructive" className="shadow-md border-2">
+                                <AlertCircle className="h-5 w-5" />
+                                <AlertDescription className="font-semibold">{vinDecodeMessage}</AlertDescription>
+                            </Alert>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* BASIC INFORMATION */}
+            <div className="md:col-span-3 bg-gradient-to-br from-gray-50/50 to-transparent p-6 rounded-xl border border-gray-200/60 shadow-sm mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2 border-b pb-3">
+                    <span className="text-primary">📋</span> Basic Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <FormField control={formInstance.control} name="make" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Make <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Toyota" 
+                                    {...field} 
+                                    className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="model" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Model <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Camry" 
+                                    {...field} 
+                                    className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="year" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Year <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    type="number" 
+                                    placeholder="2024" 
+                                    {...field} 
+                                    className={`h-11 font-mono shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="price" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Price ($) <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    type="number" 
+                                    placeholder="25000" 
+                                    {...field} 
+                                    className={`h-11 font-mono text-lg shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="mileage" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Mileage <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    type="number" 
+                                    placeholder="10000" 
+                                    {...field} 
+                                    className={`h-11 font-mono shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="vin" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                VIN <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="1HGBH41JXMN109186" 
+                                    maxLength={17} 
+                                    className={`font-mono h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                    {...field} 
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                </div>
             </div>
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              Step 1: Decode Vehicle
-            </span>
-          </div>
 
-          <p className="text-sm text-muted-foreground mb-5 max-w-2xl">
-            Scan or enter a VIN to instantly populate vehicle details. Fields
-            filled from VIN decoding will be visually highlighted.
-          </p>
-
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Input
-                placeholder="17-character VIN"
-                value={vinInput}
-                onChange={(e) => setVinInput(e.target.value.toUpperCase())}
-                maxLength={17}
-                className="font-mono text-lg tracking-wider"
-                disabled={isDecodingVin || isCameraOpen}
-                autoComplete="off"
-              />
-
-              <Button
-                type="button"
-                size="lg"
-                disabled={isDecodingVin || vinInput.length !== 17 || isCameraOpen}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleVinScan();
-                }}
-                className="min-w-[160px]"
-              >
-                {isDecodingVin ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Decoding
-                  </>
-                ) : (
-                  <>
-                    <Scan className="mr-2 h-4 w-4" />
-                    Decode VIN
-                  </>
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                size="lg"
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleOpenCamera();
-                }}
-              >
-                <Camera className="mr-2 h-4 w-4" />
-                Scan
-              </Button>
+            {/* MECHANICAL SPECS */}
+            <div className="md:col-span-3 bg-white p-6 rounded-xl border border-gray-200/60 shadow-sm mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2 border-b pb-3">
+                    <span className="text-primary">⚙️</span> Mechanical Specifications
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <FormField control={formInstance.control} name="engine" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Engine <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="2.5L 4-Cylinder" 
+                                    {...field} 
+                                    className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="fuelType" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Fuel Type <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}>
+                                        <SelectValue placeholder="Select fuel type" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="Gas">Gas</SelectItem>
+                                    <SelectItem value="Diesel">Diesel</SelectItem>
+                                    <SelectItem value="Electric">Electric</SelectItem>
+                                    <SelectItem value="Hybrid">Hybrid</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="transmission" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Transmission <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}>
+                                        <SelectValue placeholder="Select transmission" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="Automatic">Automatic</SelectItem>
+                                    <SelectItem value="Manual">Manual</SelectItem>
+                                    <SelectItem value="FWD">FWD</SelectItem>
+                                    <SelectItem value="RWD">RWD</SelectItem>
+                                    <SelectItem value="AWD">AWD</SelectItem>
+                                    <SelectItem value="4WD">4WD</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* BASIC INFORMATION */}
-      <section className="md:col-span-3">
-        <div className="mb-4 flex items-center justify-between">
-          <h4 className="text-lg font-semibold">Basic Vehicle Information</h4>
-          <span className="text-xs text-muted-foreground">
-            Auto-filled fields are highlighted
-          </span>
-        </div>
+            {/* BODY STYLE & COLORS */}
+            <div className="md:col-span-3 bg-gradient-to-br from-gray-50/50 to-transparent p-6 rounded-xl border border-gray-200/60 shadow-sm mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2 border-b pb-3">
+                    <span className="text-primary">🎨</span> Appearance
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <FormField control={formInstance.control} name="bodyStyle" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Body Style <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Sedan" 
+                                    {...field} 
+                                    className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="exteriorColor" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Exterior Color <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Black" 
+                                    {...field} 
+                                    className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={formInstance.control} name="interiorColor" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Interior Color <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Beige" 
+                                    {...field} 
+                                    className={`h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                </div>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-b pb-8">
-          {[
-            ["make", "Make *", "Toyota"],
-            ["model", "Model *", "Camry"],
-            ["year", "Year *", "2024"],
-            ["price", "Price ($) *", "25000"],
-            ["mileage", "Mileage *", "10000"],
-            ["vin", "VIN *", "1HGBH41JXMN109186"],
-          ].map(([name, label, placeholder]) => (
-            <FormField
-              key={name}
-              control={formInstance.control}
-              name={name as any}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center justify-between">
-                    {label}
-                    {field.value && (
-                      <span className="text-xs font-semibold text-emerald-700">
-                        AUTO
-                      </span>
-                    )}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={placeholder}
-                      className={
-                        field.value ? decodedFieldClass : emptyFieldClass
-                      }
+            {/* STATUS & BADGES */}
+            <div className="md:col-span-3 bg-white p-6 rounded-xl border border-gray-200/60 shadow-sm mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2 border-b pb-3">
+                    <span className="text-primary">🏷️</span> Status & Badges
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <FormField control={formInstance.control} name="condition" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">Condition</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Excellent" 
+                                    {...field} 
+                                    className="h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <div className="flex flex-col gap-4 justify-center">
+                        <p className="text-sm font-semibold text-foreground">Display Badges</p>
+                        <div className="flex items-center gap-8">
+                            <FormField control={formInstance.control} name="isNew" render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox 
+                                            checked={field.value} 
+                                            onCheckedChange={field.onChange}
+                                            className="h-5 w-5 transition-all duration-200 hover:scale-110"
+                                        />
+                                    </FormControl>
+                                    <FormLabel className="font-semibold cursor-pointer hover:text-primary transition-colors duration-200">
+                                        New Arrival
+                                    </FormLabel>
+                                </FormItem>
+                            )} />
+                            <FormField control={formInstance.control} name="isFeatured" render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox 
+                                            checked={field.value} 
+                                            onCheckedChange={field.onChange}
+                                            className="h-5 w-5 transition-all duration-200 hover:scale-110"
+                                        />
+                                    </FormControl>
+                                    <FormLabel className="font-semibold cursor-pointer hover:text-primary transition-colors duration-200">
+                                        Featured
+                                    </FormLabel>
+                                </FormItem>
+                            )} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* DESCRIPTION & FEATURES */}
+            <div className="md:col-span-3 bg-gradient-to-br from-gray-50/50 to-transparent p-6 rounded-xl border border-gray-200/60 shadow-sm mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2 border-b pb-3">
+                    <span className="text-primary">📝</span> Details & Features
+                </h3>
+                <div className="space-y-5">
+                    <FormField control={formInstance.control} name="description" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">
+                                Description <span className="text-red-500 text-base">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Textarea 
+                                    placeholder="Detailed vehicle description..." 
+                                    {...field} 
+                                    rows={4} 
+                                    className={`shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none ${getFieldClassName(field.value)}`}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+
+                    <FormField control={formInstance.control} name="featuresInput" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">Features (comma-separated)</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Leather Seats, Sunroof, Backup Camera, Navigation" 
+                                    {...field} 
+                                    className="h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+
+                    <FormField control={formInstance.control} name="optionsInput" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="font-semibold text-sm">Options (comma-separated)</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Navigation, Heated Seats, Premium Sound System" 
+                                    {...field} 
+                                    className="h-11 shadow-sm focus:shadow-md focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                </div>
+            </div>
+
+            {/* IMAGE UPLOAD */}
+            <div className="md:col-span-3 bg-white p-6 rounded-xl border-2 border-dashed border-gray-300/60 shadow-sm hover:border-primary/40 hover:bg-primary/5 transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2">
+                    <Upload className="w-5 h-5 text-primary" />
+                    <FormLabel className="text-lg font-bold text-foreground">
+                        Vehicle Images
+                    </FormLabel>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                    <span className="font-semibold text-foreground">{totalImages} / {MAX_IMAGES}</span> images uploaded
+                    {uploadDisabled && <span className="text-amber-600 font-semibold ml-2">(Maximum reached)</span>}
+                </p>
+                
+                <div className="relative mb-6">
+                    <input
+                       type="file"
+                       accept="image/*"
+                       multiple
+                       onChange={handleFileChange}
+                       disabled={uploadDisabled}
+                       className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer file:shadow-md hover:file:shadow-lg file:transition-all file:duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-        </div>
-      </section>
+                </div>
 
-      {/* DESCRIPTION */}
-      <FormField
-        control={formInstance.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem className="md:col-span-3 mt-6">
-            <FormLabel>Description *</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                rows={4}
-                placeholder="Describe condition, highlights, and selling points..."
-                className={
-                  field.value ? decodedFieldClass : emptyFieldClass
-                }
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* IMAGE UPLOAD */}
-      <div className="md:col-span-3 mt-8 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-6">
-        <FormLabel className="flex items-center gap-2 mb-2">
-          <Upload className="w-5 h-5 text-primary" />
-          Vehicle Images ({totalImages}/{MAX_IMAGES})
-        </FormLabel>
-
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileChange}
-          disabled={uploadDisabled}
-          className="mb-4 block w-full file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary/90"
-        />
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {[...currentImages, ...filesToUpload].map((item, index) => {
-            const src =
-              typeof item === "string"
-                ? item
-                : URL.createObjectURL(item);
-            return (
-              <div
-                key={index}
-                className="relative overflow-hidden rounded-lg border shadow-sm group"
-              >
-                <img
-                  src={src}
-                  className="h-28 w-full object-cover"
-                />
-                <span className="absolute bottom-1 left-1 rounded bg-black/70 px-2 py-0.5 text-xs text-white">
-                  #{index + 1}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </>
-  );
+                {(currentImages.length > 0 || filesToUpload.length > 0) && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {currentImages.map((url, index) => (
+                            <div key={`existing-${index}`} className="relative group">
+                                <div className="aspect-square overflow-hidden rounded-lg border-2 border-gray-300 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                    <img 
+                                        src={url} 
+                                        alt={`Image ${index + 1}`} 
+                                        className="w-full h-full object-cover" 
+                                    />
+                                </div>
+                                <Button 
+                                    type="button"
+                                    variant="destructive" 
+                                    size="icon" 
+                                    className="absolute -top-2 -right-2 h-8 w-8 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg hover:scale-110 active:scale-95"
+                                    onClick={() => handleRemoveExistingImage(url)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                                <span className="absolute bottom-2 left-2 bg-black/80 text-white text-xs px-2 py-1 rounded-md font-semibold shadow-lg">
+                                    #{index + 1}
+                                </span>
+                            </div>
+                        ))}
+                        {filesToUpload.map((file, index) => (
+                            <div key={`new-${index}`} className="relative group">
+                                <div className="aspect-square overflow-hidden rounded-lg border-2 border-primary border-dashed shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary/5">
+                                    <img 
+                                        src={URL.createObjectURL(file)} 
+                                        alt={`New ${index + 1}`} 
+                                        className="w-full h-full object-cover" 
+                                    />
+                                </div>
+                                <Button 
+                                    type="button"
+                                    variant="destructive" 
+                                    size="icon" 
+                                    className="absolute -top-2 -right-2 h-8 w-8 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg hover:scale-110 active:scale-95"
+                                    onClick={() => handleRemoveFileToUpload(index)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                                <span className="absolute bottom-2 left-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-md font-bold shadow-lg animate-pulse">
+                                    NEW
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </>
+    );
 };
-
     // ====================================================================
     // RENDER
     // ====================================================================

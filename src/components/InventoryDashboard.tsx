@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // FIREBASE IMPORTS
 import { db, storage } from '@/firebaseConfig';
-import { collection, doc, getDocs, deleteDoc, updateDoc, setDoc, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, doc, getDocs, deleteDoc, updateDoc, setDoc, query, where, orderBy, limit, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Shadcn/UI Imports
@@ -300,42 +300,98 @@ export const InventoryDashboard: React.FC = () => {
     const handleMarkSold = async () => {
     if (!customerName || !customerPhone) {
         // Your existing alert/notification
+        alert('Please enter customer name and phone');
         return;
     }
 
     try {
         setIsSubmitting(true);
         
-        // Your existing API call - ADD requestFeedback to the data
-        const response = await fetch('/api/vehicles/mark-sold', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                vehicleId: selectedVehicle.id,
-                customerName,
-                customerPhone,
-                requestFeedback, // ADDED THIS LINE
-                // ... any other data you were already sending
-            })
+        console.log('🟢 SAVVY: Marking vehicle as sold:', {
+            vehicleId: selectedVehicle.id,
+            vehicle: `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`,
+            customerName,
+            customerPhone,
+            requestFeedback,
+            timestamp: new Date().toISOString()
         });
 
-        if (!response.ok) throw new Error('Failed to mark vehicle as sold');
+        // 1. ADD TO sold_vehicles COLLECTION
+        const soldVehiclesRef = collection(db, 'sold_vehicles');
+        const soldVehicleData = {
+            vehicleId: selectedVehicle.id,
+            customerName: customerName,
+            customerPhone: customerPhone,
+            requestFeedback: requestFeedback, // OUR SAVVY FIELD
+            vin: selectedVehicle.vin,
+            year: selectedVehicle.year,
+            make: selectedVehicle.make,
+            model: selectedVehicle.model,
+            price: selectedVehicle.price,
+            mileage: selectedVehicle.mileage,
+            stockNumber: selectedVehicle.stockNumber || '',
+            dateSold: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            // Add any other fields from selectedVehicle you want to preserve
+            images: selectedVehicle.images || [],
+            isNew: selectedVehicle.isNew || false,
+            isFeatured: selectedVehicle.isFeatured || false
+        };
+        
+        console.log('📝 Saving to sold_vehicles:', soldVehicleData);
+        await addDoc(soldVehiclesRef, soldVehicleData);
+        console.log('✅ Successfully added to sold_vehicles');
 
-        // Your existing success handling
+        // 2. REMOVE FROM INVENTORY (vehicles collection)
+        const vehicleRef = doc(db, 'vehicles', selectedVehicle.id);
+        console.log('🗑️ Removing vehicle from inventory:', selectedVehicle.id);
+        await deleteDoc(vehicleRef);
+        console.log('✅ Successfully removed from inventory');
+
+        // 3. UPDATE LOCAL STATE
+        // Remove from local inventory array
+        setInventory(prev => prev.filter(v => v.id !== selectedVehicle.id));
+        
+        // 4. RESET FORM
         setCustomerName('');
         setCustomerPhone('');
-        setRequestFeedback(true); // RESET checkbox
+        setRequestFeedback(true); // Reset checkbox to checked
         setShowSoldModal(false);
         setSelectedVehicle(null);
         
-        // Your existing refresh code
+        // 5. SHOW SUCCESS MESSAGE
+        console.log('🎉 Vehicle sale completed successfully!');
+        
+        // If you have toast system, use it:
+        // toast({
+        //     title: "Vehicle Sold!",
+        //     description: `${selectedVehicle.make} ${selectedVehicle.model} marked as sold to ${customerName}`,
+        // });
+        
+        // Or simple alert:
+        alert(`✅ SAVVY: ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model} marked as sold to ${customerName}
+        
+Feedback request: ${requestFeedback ? 'ENABLED' : 'DISABLED'}
+${requestFeedback ? '✅ Review request will be sent automatically' : '❌ No review request will be sent'}`);
 
     } catch (error) {
+        console.error('❌ SAVVY ERROR marking vehicle as sold:', error);
+        
+        // Show error alert
+        alert(`❌ Error marking vehicle as sold: ${error.message}
+        
+Please check:
+1. Firebase connection
+2. Database permissions
+3. Console for details`);
+        
         // Your existing error handling
     } finally {
         setIsSubmitting(false);
     }
 };
+
+
 
 
     // ====================================================================

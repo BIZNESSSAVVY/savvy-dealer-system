@@ -1000,20 +1000,17 @@ const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<Invento
 
     return (
         <>
-            {/* VIN SCANNER - Only for Add form (UNCHANGED) */}
+            {/* VIN SCANNER - Only for Add form (EXACTLY AS BEFORE - NO CHANGES) */}
             {!isEdit && (
-                <div className="md:col-span-3 mb-8 p-6 border-2 border-primary/20 rounded-2xl bg-gradient-to-br from-primary/5 via-white to-white shadow-lg">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                            <Scan className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900">VIN Scanner & Decoder</h3>
-                            <p className="text-sm text-gray-600">Scan barcode or enter 17-character VIN for instant auto-fill</p>
-                        </div>
+                <div className="md:col-span-3 mb-6 p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Scan className="w-5 h-5 text-primary" />
+                        <h3 className="text-lg font-semibold">VIN Decoder</h3>
                     </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Enter the 17-character VIN or scan the barcode.
+                    </p>
                     
-                    {/* Existing VIN scanner code remains exactly the same */}
                     <div className="flex flex-col gap-3 mb-3">
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Input
@@ -1021,7 +1018,7 @@ const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<Invento
                                 value={vinInput}
                                 onChange={(e) => setVinInput(e.target.value.toUpperCase())}
                                 maxLength={17}
-                                className="font-mono flex-1 text-lg bg-white border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 h-12 rounded-xl"
+                                className="font-mono flex-1 text-lg"
                                 disabled={isDecodingVin || isCameraOpen}
                                 autoComplete="off"
                             />
@@ -1035,7 +1032,7 @@ const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<Invento
                                     }}
                                     disabled={isDecodingVin || vinInput.length !== 17 || isCameraOpen}
                                     size="lg"
-                                    className="whitespace-nowrap touch-manipulation bg-primary hover:bg-primary/90 h-12 px-6 rounded-xl font-semibold"
+                                    className="whitespace-nowrap touch-manipulation"
                                 >
                                     {isDecodingVin ? (
                                         <>
@@ -1059,545 +1056,564 @@ const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<Invento
                                     disabled={isDecodingVin || isCameraOpen}
                                     variant="outline"
                                     size="lg"
-                                    className="whitespace-nowrap touch-manipulation h-12 px-6 rounded-xl border-2 font-semibold"
+                                    className="whitespace-nowrap touch-manipulation"
                                     title="Scan VIN barcode with camera"
                                 >
                                     <Camera className="mr-2 h-4 w-4" />
-                                    Scan Barcode
+                                    Scan
                                 </Button>
                             </div>
                         </div>
                         
                         {/* Tips */}
-                        <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500 rounded-r-lg p-4 text-sm">
-                            <div className="flex items-start gap-3">
-                                <div className="mt-0.5">
-                                    <AlertCircle className="w-5 h-5 text-blue-600" />
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-blue-900 mb-2">🎯 Pro Tips for Quick Entry:</p>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <span className="text-blue-800">Scan door jamb VIN barcode</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <span className="text-blue-800">Manual entry works instantly</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <span className="text-blue-800">NHTSA auto-fills 80% of fields</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                            <p className="font-semibold text-blue-900 mb-2">🎯 Quick Tips:</p>
+                            <ul className="text-blue-800 space-y-1 ml-4 list-disc">
+                                <li><strong>Barcode Scanner:</strong> Point camera at VIN barcode (door jamb sticker)</li>
+                                <li><strong>Manual Entry:</strong> Type or paste VIN for instant results (most reliable!)</li>
+                                <li><strong>After Decode:</strong> Add price, mileage, colors & photos</li>
+                            </ul>
                         </div>
                     </div>
 
-                    {/* Rest of existing VIN scanner code remains exactly the same */}
-                    {/* ... existing camera and status code ... */}
+                    {/* Camera View - EXACTLY AS BEFORE */}
+                    {isCameraOpen && (
+                        <div className="relative mb-4 bg-black rounded-lg overflow-hidden">
+                            <video
+                                ref={videoRef}
+                                className="w-full h-64 sm:h-96 object-cover"
+                                playsInline
+                                muted
+                            />
+                            
+                            {/* Scanning Overlay */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <div className="border-4 border-green-500/70 rounded-lg w-4/5 h-40 relative shadow-lg">
+                                    <div className="absolute -top-2 -left-2 w-10 h-10 border-t-4 border-l-4 border-green-400"></div>
+                                    <div className="absolute -top-2 -right-2 w-10 h-10 border-t-4 border-r-4 border-green-400"></div>
+                                    <div className="absolute -bottom-2 -left-2 w-10 h-10 border-b-4 border-l-4 border-green-400"></div>
+                                    <div className="absolute -bottom-2 -right-2 w-10 h-10 border-b-4 border-r-4 border-green-400"></div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-full h-0.5 bg-green-400/80 animate-pulse shadow-lg"></div>
+                                    </div>
+                                </div>
+                                <div className="mt-4 bg-black/90 px-6 py-3 rounded-lg max-w-md mx-4 text-center backdrop-blur-sm">
+                                    <p className="text-white text-base font-bold mb-1">
+                                        📸 {scanStatus}
+                                    </p>
+                                    <p className="text-green-300 text-sm font-medium">
+                                        Position VIN barcode in frame
+                                    </p>
+                                    <p className="text-yellow-200 text-xs mt-2">
+                                        Location: Door jamb sticker (driver side)
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Close Button */}
+                            <Button
+                                type="button"
+                                onClick={handleCloseCamera}
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-3 right-3 z-10 shadow-lg"
+                            >
+                                <XCircle className="h-5 w-5" />
+                            </Button>
+                            
+                            {/* Manual Entry Button */}
+                            <Button
+                                type="button"
+                                onClick={() => {
+                                    handleCloseCamera();
+                                    toast({ 
+                                        title: "Camera Closed", 
+                                        description: "Enter VIN manually above.",
+                                    });
+                                }}
+                                variant="secondary"
+                                size="lg"
+                                className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 shadow-lg"
+                            >
+                                Enter VIN Manually
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* Camera Error */}
+                    {cameraError && (
+                        <Alert variant="default" className="mb-3 bg-amber-50 border-amber-200">
+                            <AlertCircle className="h-4 w-4 text-amber-600" />
+                            <AlertDescription className="text-amber-800">
+                                <strong>Camera unavailable:</strong> {cameraError}
+                                <br />
+                                <span className="text-sm mt-1 inline-block">Use manual entry above instead.</span>
+                            </AlertDescription>
+                        </Alert>
+                    )}
+
+                    {/* Success */}
+                    {vinDecodeStatus === 'success' && (
+                        <Alert className="bg-green-50 border-green-200">
+                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            <AlertDescription className="text-green-800 font-medium">
+                                {vinDecodeMessage}
+                            </AlertDescription>
+                        </Alert>
+                    )}
+
+                    {/* Error */}
+                    {vinDecodeStatus === 'error' && (
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{vinDecodeMessage}</AlertDescription>
+                        </Alert>
+                    )}
                 </div>
             )}
 
-            {/* PREMIUM DATA ENTRY SECTIONS */}
+            {/* IMPROVED DATA ENTRY LAYOUT - GROUPED FOR FASTER INPUT */}
             <div className="space-y-8 md:col-span-3">
-                
-                {/* SECTION 1: CORE VEHICLE INFO */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="border-b border-gray-100 bg-gradient-to-r from-gray-900 to-gray-800 p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <Car className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Vehicle Information</h3>
-                                <p className="text-sm text-gray-300">Basic vehicle identification details</p>
-                            </div>
-                        </div>
+                {/* SECTION 1: CORE VEHICLE INFO - 2x3 Grid for better visual flow */}
+                <div className="bg-gradient-to-r from-gray-50 to-white p-6 rounded-xl border">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-8 bg-primary rounded-full"></div>
+                        <h3 className="text-xl font-semibold">Vehicle Information</h3>
                     </div>
-                    
-                    <div className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {[
-                                { name: 'make', label: 'Make *', placeholder: 'Toyota', icon: null },
-                                { name: 'model', label: 'Model *', placeholder: 'Camry', icon: null },
-                                { name: 'year', label: 'Year *', placeholder: '2024', icon: null, type: 'number' },
-                                { name: 'price', label: 'Price *', placeholder: '25000', icon: <DollarSign className="w-4 h-4" />, type: 'number' },
-                                { name: 'mileage', label: 'Mileage *', placeholder: '10000', icon: null, type: 'number' },
-                                isEdit ? { name: 'vin', label: 'VIN *', placeholder: '1HGBH41JXMN109186', icon: null } : null
-                            ].filter(Boolean).map((field: any) => (
-                                <FormField 
-                                    key={field.name}
-                                    control={formInstance.control} 
-                                    name={field.name}
-                                    render={({ field: formField }) => (
-                                        <FormItem>
-                                            <FormLabel className="font-semibold text-gray-700 flex items-center gap-2">
-                                                {field.icon}
-                                                {field.label}
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    {field.name === 'price' && (
-                                                        <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                                    )}
-                                                    <Input 
-                                                        type={field.type || 'text'} 
-                                                        placeholder={field.placeholder} 
-                                                        {...formField}
-                                                        className={`h-12 text-base bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl transition-all ${
-                                                            field.name === 'price' ? 'pl-10' : 'px-4'
-                                                        } ${field.name === 'mileage' ? 'pr-12' : ''}`}
-                                                        autoComplete="off"
-                                                    />
-                                                    {field.name === 'mileage' && (
-                                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium text-sm">
-                                                            mi
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage className="text-red-600 font-medium" />
-                                        </FormItem>
-                                    )} 
-                                />
-                            ))}
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FormField control={formInstance.control} name="make" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Make *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="Toyota" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="model" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Model *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="Camry" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="year" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Year *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="2024" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="price" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold flex items-center gap-2">
+                                    <DollarSign className="w-4 h-4" /> Price ($) *
+                                </FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="25000" 
+                                            {...field} 
+                                            className="h-11 text-base pl-8"
+                                            autoComplete="off"
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="mileage" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Mileage *</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Input 
+                                            type="number" 
+                                            placeholder="10000" 
+                                            {...field} 
+                                            className="h-11 text-base pr-12"
+                                            autoComplete="off"
+                                        />
+                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                                            mi
+                                        </span>
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        {isEdit && (
+                            <FormField control={formInstance.control} name="vin" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">VIN *</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            placeholder="1HGBH41JXMN109186" 
+                                            maxLength={17} 
+                                            className="h-11 text-base font-mono"
+                                            autoComplete="off"
+                                            {...field} 
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        )}
                     </div>
                 </div>
 
-                {/* SECTION 2: MECHANICAL SPECS */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="border-b border-gray-100 bg-gradient-to-r from-blue-900 to-blue-800 p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Mechanical Specifications</h3>
-                                <p className="text-sm text-blue-300">Engine, transmission & fuel details</p>
-                            </div>
-                        </div>
+                {/* SECTION 2: MECHANICAL SPECS - Compact 3-column layout */}
+                <div className="bg-gradient-to-r from-blue-50 to-white p-6 rounded-xl border">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
+                        <h3 className="text-xl font-semibold">Mechanical Specifications</h3>
                     </div>
-                    
-                    <div className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <FormField control={formInstance.control} name="engine" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700">Engine *</FormLabel>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FormField control={formInstance.control} name="engine" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Engine *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="2.5L 4-Cylinder" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="fuelType" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Fuel Type *</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
-                                        <Input 
-                                            placeholder="2.5L 4-Cylinder" 
-                                            {...field} 
-                                            className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4"
-                                            autoComplete="off"
-                                        />
+                                        <SelectTrigger className="h-11 text-base">
+                                            <SelectValue placeholder="Select fuel type" />
+                                        </SelectTrigger>
                                     </FormControl>
-                                    <FormMessage className="text-red-600 font-medium" />
-                                </FormItem>
-                            )} />
-                            
-                            <FormField control={formInstance.control} name="fuelType" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700">Fuel Type *</FormLabel>
+                                    <SelectContent>
+                                        <SelectItem value="Gas" className="text-base py-2">Gas</SelectItem>
+                                        <SelectItem value="Diesel" className="text-base py-2">Diesel</SelectItem>
+                                        <SelectItem value="Electric" className="text-base py-2">Electric</SelectItem>
+                                        <SelectItem value="Hybrid" className="text-base py-2">Hybrid</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="transmission" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Transmission *</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="h-11 text-base">
+                                            <SelectValue placeholder="Select transmission" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Automatic" className="text-base py-2">Automatic</SelectItem>
+                                        <SelectItem value="Manual" className="text-base py-2">Manual</SelectItem>
+                                        <SelectItem value="FWD" className="text-base py-2">FWD</SelectItem>
+                                        <SelectItem value="RWD" className="text-base py-2">RWD</SelectItem>
+                                        <SelectItem value="AWD" className="text-base py-2">AWD</SelectItem>
+                                        <SelectItem value="4WD" className="text-base py-2">4WD</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
+                </div>
+
+                {/* SECTION 3: STYLING & APPEARANCE */}
+                <div className="bg-gradient-to-r from-purple-50 to-white p-6 rounded-xl border">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-8 bg-purple-500 rounded-full"></div>
+                        <h3 className="text-xl font-semibold">Appearance & Style</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <FormField control={formInstance.control} name="bodyStyle" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Body Style *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="Sedan, SUV, Truck" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="exteriorColor" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Exterior Color *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="Black, White, Red" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <FormField control={formInstance.control} name="interiorColor" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Interior Color *</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="Beige, Black, Gray" 
+                                        {...field} 
+                                        className="h-11 text-base"
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
+                </div>
+
+                {/* SECTION 4: STATUS & BADGES - Side by side */}
+                <div className="bg-gradient-to-r from-amber-50 to-white p-6 rounded-xl border">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-8 bg-amber-500 rounded-full"></div>
+                        <h3 className="text-xl font-semibold">Status & Badges</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField control={formInstance.control} name="condition" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Condition</FormLabel>
+                                <FormControl>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4">
-                                                <SelectValue placeholder="Select fuel type" />
+                                            <SelectTrigger className="h-11 text-base">
+                                                <SelectValue placeholder="Select condition" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent className="bg-white border-2 border-gray-200 rounded-xl shadow-lg">
-                                            {['Gas', 'Diesel', 'Electric', 'Hybrid'].map((type) => (
-                                                <SelectItem 
-                                                    key={type} 
-                                                    value={type} 
-                                                    className="text-base py-3 hover:bg-gray-50 rounded-lg cursor-pointer"
-                                                >
-                                                    {type}
-                                                </SelectItem>
-                                            ))}
+                                        <SelectContent>
+                                            <SelectItem value="Excellent" className="text-base py-2">Excellent</SelectItem>
+                                            <SelectItem value="Good" className="text-base py-2">Good</SelectItem>
+                                            <SelectItem value="Fair" className="text-base py-2">Fair</SelectItem>
+                                            <SelectItem value="Certified" className="text-base py-2">Certified</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <FormMessage className="text-red-600 font-medium" />
-                                </FormItem>
-                            )} />
-                            
-                            <FormField control={formInstance.control} name="transmission" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700">Transmission *</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        
+                        <div className="space-y-4 pt-2">
+                            <p className="font-semibold text-lg mb-3">Badges</p>
+                            <div className="flex flex-col gap-4">
+                                <FormField control={formInstance.control} name="isNew" render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 p-3 bg-white rounded-lg border">
                                         <FormControl>
-                                            <SelectTrigger className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4">
-                                                <SelectValue placeholder="Select transmission" />
-                                            </SelectTrigger>
+                                            <Checkbox 
+                                                checked={field.value} 
+                                                onCheckedChange={field.onChange}
+                                                className="h-5 w-5"
+                                            />
                                         </FormControl>
-                                        <SelectContent className="bg-white border-2 border-gray-200 rounded-xl shadow-lg">
-                                            {['Automatic', 'Manual', 'FWD', 'RWD', 'AWD', '4WD'].map((type) => (
-                                                <SelectItem 
-                                                    key={type} 
-                                                    value={type} 
-                                                    className="text-base py-3 hover:bg-gray-50 rounded-lg cursor-pointer"
-                                                >
-                                                    {type}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage className="text-red-600 font-medium" />
-                                </FormItem>
-                            )} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* SECTION 3: APPEARANCE & STYLE */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="border-b border-gray-100 bg-gradient-to-r from-purple-900 to-purple-800 p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Appearance & Style</h3>
-                                <p className="text-sm text-purple-300">Visual characteristics & colors</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <FormField control={formInstance.control} name="bodyStyle" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700">Body Style *</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Sedan, SUV, Truck" 
-                                            {...field} 
-                                            className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4"
-                                            autoComplete="off"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-red-600 font-medium" />
-                                </FormItem>
-                            )} />
-                            
-                            <FormField control={formInstance.control} name="exteriorColor" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700">Exterior Color *</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Black, White, Red" 
-                                            {...field} 
-                                            className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4"
-                                            autoComplete="off"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-red-600 font-medium" />
-                                </FormItem>
-                            )} />
-                            
-                            <FormField control={formInstance.control} name="interiorColor" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700">Interior Color *</FormLabel>
-                                    <FormControl>
-                                        <Input 
-                                            placeholder="Beige, Black, Gray" 
-                                            {...field} 
-                                            className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4"
-                                            autoComplete="off"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-red-600 font-medium" />
-                                </FormItem>
-                            )} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* SECTION 4: STATUS & MARKETING */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="border-b border-gray-100 bg-gradient-to-r from-amber-900 to-amber-800 p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Status & Marketing</h3>
-                                <p className="text-sm text-amber-300">Vehicle condition & promotional badges</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <FormField control={formInstance.control} name="condition" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold text-gray-700">Condition Rating</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger className="h-12 text-base bg-gray-50 border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4">
-                                                    <SelectValue placeholder="Select condition" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="bg-white border-2 border-gray-200 rounded-xl shadow-lg">
-                                                {['Excellent', 'Good', 'Fair', 'Certified', 'Like New'].map((condition) => (
-                                                    <SelectItem 
-                                                        key={condition} 
-                                                        value={condition} 
-                                                        className="text-base py-3 hover:bg-gray-50 rounded-lg cursor-pointer"
-                                                    >
-                                                        {condition}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage className="text-red-600 font-medium" />
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel className="font-semibold text-base">New Arrival</FormLabel>
+                                            <p className="text-sm text-muted-foreground">
+                                                Show as recently added
+                                            </p>
+                                        </div>
                                     </FormItem>
                                 )} />
-                            </div>
-                            
-                            <div>
-                                <p className="font-semibold text-gray-700 mb-4">Promotional Badges</p>
-                                <div className="space-y-4">
-                                    <FormField control={formInstance.control} name="isNew" render={({ field }) => (
-                                        <FormItem className="flex flex-row items-center space-x-4 space-y-0 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
-                                            <FormControl>
-                                                <Checkbox 
-                                                    checked={field.value} 
-                                                    onCheckedChange={field.onChange}
-                                                    className="h-5 w-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                />
-                                            </FormControl>
-                                            <div className="space-y-1 leading-none">
-                                                <FormLabel className="font-semibold text-gray-700 text-base cursor-pointer">
-                                                    New Arrival
-                                                </FormLabel>
-                                                <p className="text-sm text-gray-600">
-                                                    Show "NEW" badge for 30 days
-                                                </p>
-                                            </div>
-                                            <div className="ml-auto">
-                                                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
-                                                    Marketing
-                                                </span>
-                                            </div>
-                                        </FormItem>
-                                    )} />
-                                    
-                                    <FormField control={formInstance.control} name="isFeatured" render={({ field }) => (
-                                        <FormItem className="flex flex-row items-center space-x-4 space-y-0 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
-                                            <FormControl>
-                                                <Checkbox 
-                                                    checked={field.value} 
-                                                    onCheckedChange={field.onChange}
-                                                    className="h-5 w-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                />
-                                            </FormControl>
-                                            <div className="space-y-1 leading-none">
-                                                <FormLabel className="font-semibold text-gray-700 text-base cursor-pointer">
-                                                    Featured Vehicle
-                                                </FormLabel>
-                                                <p className="text-sm text-gray-600">
-                                                    Prominently displayed on homepage
-                                                </p>
-                                            </div>
-                                            <div className="ml-auto">
-                                                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
-                                                    Premium
-                                                </span>
-                                            </div>
-                                        </FormItem>
-                                    )} />
-                                </div>
+                                
+                                <FormField control={formInstance.control} name="isFeatured" render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 p-3 bg-white rounded-lg border">
+                                        <FormControl>
+                                            <Checkbox 
+                                                checked={field.value} 
+                                                onCheckedChange={field.onChange}
+                                                className="h-5 w-5"
+                                            />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel className="font-semibold text-base">Featured Vehicle</FormLabel>
+                                            <p className="text-sm text-muted-foreground">
+                                                Highlight on homepage
+                                            </p>
+                                        </div>
+                                    </FormItem>
+                                )} />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* SECTION 5: DESCRIPTION & FEATURES */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="border-b border-gray-100 bg-gradient-to-r from-emerald-900 to-emerald-800 p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Description & Features</h3>
-                                <p className="text-sm text-emerald-300">Detailed information & selling points</p>
-                            </div>
-                        </div>
+                <div className="bg-gradient-to-r from-emerald-50 to-white p-6 rounded-xl border">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-8 bg-emerald-500 rounded-full"></div>
+                        <h3 className="text-xl font-semibold">Description & Features</h3>
                     </div>
                     
-                    <div className="p-6">
-                        <FormField control={formInstance.control} name="description" render={({ field }) => (
-                            <FormItem className="mb-8">
-                                <FormLabel className="font-semibold text-gray-700">Vehicle Description *</FormLabel>
+                    <FormField control={formInstance.control} name="description" render={({ field }) => (
+                        <FormItem className="mb-6">
+                            <FormLabel className="font-semibold">Description *</FormLabel>
+                            <FormControl>
+                                <Textarea 
+                                    placeholder="Describe the vehicle's condition, history, and standout features..." 
+                                    {...field} 
+                                    rows={4}
+                                    className="text-base min-h-[120px] resize-y"
+                                />
+                            </FormControl>
+                            <div className="flex justify-between text-sm text-muted-foreground">
+                                <FormMessage />
+                                <span>{field.value?.length || 0} characters</span>
+                            </div>
+                        </FormItem>
+                    )} />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField control={formInstance.control} name="featuresInput" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Key Features</FormLabel>
                                 <FormControl>
-                                    <div className="relative">
-                                        <Textarea 
-                                            placeholder="Describe the vehicle's condition, history, features, and unique selling points. Include maintenance records, upgrades, and anything special about this vehicle..."
-                                            {...field} 
-                                            rows={5}
-                                            className="text-base min-h-[150px] resize-y bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl p-4"
-                                        />
-                                        <div className="absolute bottom-3 right-3 bg-white px-2 py-1 rounded-lg border border-gray-200 shadow-sm">
-                                            <span className="text-sm text-gray-500">{field.value?.length || 0}/2000</span>
-                                        </div>
-                                    </div>
+                                    <Textarea 
+                                        placeholder="Leather Seats, Sunroof, Backup Camera, Apple CarPlay" 
+                                        {...field} 
+                                        rows={3}
+                                        className="text-base resize-y"
+                                    />
                                 </FormControl>
-                                <FormMessage className="text-red-600 font-medium" />
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Separate with commas
+                                </p>
                             </FormItem>
                         )} />
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <FormField control={formInstance.control} name="featuresInput" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700 flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Key Features
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Textarea 
-                                            placeholder="Leather Seats, Sunroof, Backup Camera, Apple CarPlay, Heated Seats, Navigation System, Blind Spot Monitoring"
-                                            {...field} 
-                                            rows={4}
-                                            className="text-base resize-y bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl p-4"
-                                        />
-                                    </FormControl>
-                                    <p className="text-sm text-gray-500 mt-2">
-                                        Separate features with commas. These appear as bullet points.
-                                    </p>
-                                </FormItem>
-                            )} />
-                            
-                            <FormField control={formInstance.control} name="optionsInput" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold text-gray-700 flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                        </svg>
-                                        Options & Packages
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Textarea 
-                                            placeholder="Technology Package, Cold Weather Package, Premium Audio, Tow Package, Sport Package, Luxury Package"
-                                            {...field} 
-                                            rows={4}
-                                            className="text-base resize-y bg-gray-50 border-2 border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl p-4"
-                                        />
-                                    </FormControl>
-                                    <p className="text-sm text-gray-500 mt-2">
-                                        Factory-installed options and packages
-                                    </p>
-                                </FormItem>
-                            )} />
-                        </div>
+                        <FormField control={formInstance.control} name="optionsInput" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold">Options & Packages</FormLabel>
+                                <FormControl>
+                                    <Textarea 
+                                        placeholder="Technology Package, Cold Weather Package, Premium Audio" 
+                                        {...field} 
+                                        rows={3}
+                                        className="text-base resize-y"
+                                    />
+                                </FormControl>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Separate with commas
+                                </p>
+                            </FormItem>
+                        )} />
                     </div>
                 </div>
 
-                {/* SECTION 6: PHOTO UPLOAD - PREMIUM */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="border-b border-gray-100 bg-gradient-to-r from-rose-900 to-rose-800 p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <Upload className="w-6 h-6 text-white" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">Vehicle Photos</h3>
-                                        <p className="text-sm text-rose-300">Upload high-quality images ({totalImages}/{MAX_IMAGES})</p>
-                                    </div>
-                                    <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                                        uploadDisabled ? 'bg-red-500 text-white' : 'bg-white/20 text-white'
-                                    }`}>
-                                        {totalImages}/{MAX_IMAGES}
-                                    </div>
-                                </div>
-                            </div>
+                {/* SECTION 6: IMAGE UPLOAD */}
+                <div className="bg-gradient-to-r from-rose-50 to-white p-6 rounded-xl border">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-8 bg-rose-500 rounded-full"></div>
+                        <div>
+                            <h3 className="text-xl font-semibold">Photos</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Upload vehicle photos ({totalImages}/{MAX_IMAGES})
+                            </p>
                         </div>
                     </div>
                     
-                    <div className="p-6">
-                        <div className="mb-8">
-                            <div className="relative group">
-                                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <label className="relative block cursor-pointer">
-                                    <div className="border-3 border-dashed border-gray-300 hover:border-primary rounded-2xl p-8 text-center transition-all group-hover:border-primary/50 group-hover:bg-primary/5">
-                                        <div className="flex flex-col items-center justify-center gap-4">
-                                            <div className="p-4 bg-primary/10 rounded-full">
-                                                <Upload className="w-8 h-8 text-primary" />
-                                            </div>
-                                            <div>
-                                                <p className="text-lg font-semibold text-gray-800 mb-2">
-                                                    Click to upload or drag & drop
-                                                </p>
-                                                <p className="text-sm text-gray-600 mb-4">
-                                                    High-resolution JPG, PNG, or WebP (Max 10MB each)
-                                                </p>
-                                                <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors">
-                                                    Browse Files
-                                                </div>
-                                            </div>
-                                            <p className="text-xs text-gray-500">
-                                                Recommended: Exterior (front, back, sides), Interior (dashboard, seats, console), Engine, VIN sticker
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleFileChange}
-                                        disabled={uploadDisabled}
-                                        className="hidden"
-                                    />
-                                </label>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <FormLabel className="font-semibold flex items-center gap-2">
+                                    <Upload className="w-5 h-5" /> Upload Images
+                                </FormLabel>
+                                <p className="text-sm text-muted-foreground">
+                                    Recommended: High-quality photos in good lighting
+                                </p>
+                            </div>
+                            
+                            <div className="flex items-center gap-4">
+                                <div className={`px-3 py-1 rounded-full ${uploadDisabled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                                    {totalImages} / {MAX_IMAGES}
+                                </div>
                             </div>
                         </div>
+                        
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFileChange}
+                            disabled={uploadDisabled}
+                            className="w-full file:mr-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-primary file:to-primary/80 file:px-6 file:py-3 file:text-base file:font-semibold file:text-white hover:file:bg-gradient-to-r hover:file:from-primary/90 hover:file:to-primary/70 file:cursor-pointer file:transition-all"
+                        />
+                        
+                        {uploadDisabled && (
+                            <Alert className="bg-amber-50 border-amber-200">
+                                <AlertCircle className="h-4 w-4 text-amber-600" />
+                                <AlertDescription className="text-amber-800">
+                                    Maximum {MAX_IMAGES} images reached. Remove some before adding more.
+                                </AlertDescription>
+                            </Alert>
+                        )}
 
+                        {/* Image Preview Grid */}
                         {(currentImages.length > 0 || filesToUpload.length > 0) && (
-                            <div>
-                                <div className="flex items-center justify-between mb-6">
-                                    <h4 className="font-semibold text-gray-700 text-lg">Image Preview</h4>
-                                    <div className="text-sm text-gray-600">
-                                        {currentImages.length} existing, {filesToUpload.length} new
-                                    </div>
-                                </div>
-                                
+                            <div className="mt-6">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {currentImages.map((url, index) => (
                                         <div key={`existing-${index}`} className="relative group">
-                                            <div className="aspect-square overflow-hidden rounded-xl border-2 border-gray-200 bg-gray-50">
+                                            <div className="aspect-square overflow-hidden rounded-lg border-2 border-gray-200">
                                                 <img 
                                                     src={url} 
                                                     alt={`Image ${index + 1}`} 
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                             </div>
                                             <Button 
                                                 type="button"
                                                 variant="destructive" 
                                                 size="icon" 
-                                                className="absolute -top-2 -right-2 h-8 w-8 rounded-full p-0 shadow-lg hover:scale-110 transition-transform"
+                                                className="absolute -top-2 -right-2 h-7 w-7 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
                                                 onClick={() => handleRemoveExistingImage(url)}
                                             >
-                                                <X className="h-4 w-4" />
+                                                <X className="h-3 w-3" />
                                             </Button>
-                                            <span className="absolute bottom-2 left-2 bg-black/80 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
                                                 #{index + 1}
                                             </span>
                                         </div>
@@ -1605,48 +1621,36 @@ const renderVehicleFormFields = (formInstance: ReturnType<typeof useForm<Invento
                                     
                                     {filesToUpload.map((file, index) => (
                                         <div key={`new-${index}`} className="relative group">
-                                            <div className="aspect-square overflow-hidden rounded-xl border-2 border-dashed border-primary bg-primary/5">
+                                            <div className="aspect-square overflow-hidden rounded-lg border-2 border-primary border-dashed bg-primary/5">
                                                 <img 
                                                     src={URL.createObjectURL(file)} 
                                                     alt={`New ${index + 1}`} 
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                                 />
                                             </div>
                                             <Button 
                                                 type="button"
                                                 variant="destructive" 
                                                 size="icon" 
-                                                className="absolute -top-2 -right-2 h-8 w-8 rounded-full p-0 shadow-lg hover:scale-110 transition-transform"
+                                                className="absolute -top-2 -right-2 h-7 w-7 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
                                                 onClick={() => handleRemoveFileToUpload(index)}
                                             >
-                                                <X className="h-4 w-4" />
+                                                <X className="h-3 w-3" />
                                             </Button>
                                             <span className="absolute bottom-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded-full font-semibold">
                                                 NEW
                                             </span>
-                                            <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                                                UPLOADING
-                                            </div>
                                         </div>
                                     ))}
                                 </div>
                                 
-                                <div className="mt-8 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-                                    <div className="flex items-start gap-3">
-                                        <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <div>
-                                            <p className="font-semibold text-blue-900 mb-2">📸 Professional Photo Guidelines</p>
-                                            <ul className="text-blue-800 space-y-1 text-sm">
-                                                <li>• <strong>First image</strong> is the main thumbnail - use the best exterior shot</li>
-                                                <li>• Include all angles: front, back, sides, wheels, interior, engine</li>
-                                                <li>• Use natural lighting for true color representation</li>
-                                                <li>• Remove personal items from interior shots</li>
-                                                <li>• Capture the VIN sticker for documentation</li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                <div className="mt-4 text-sm text-muted-foreground">
+                                    <p>💡 Tips:</p>
+                                    <ul className="list-disc ml-5 mt-1 space-y-1">
+                                        <li>Drag and drop files or click to browse</li>
+                                        <li>Include exterior, interior, engine, and VIN sticker photos</li>
+                                        <li>First image will be used as the main thumbnail</li>
+                                    </ul>
                                 </div>
                             </div>
                         )}

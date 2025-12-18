@@ -26,6 +26,9 @@ import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import { InventoryDashboard } from "./components/InventoryDashboard";
 
+// 🎯 NEW: Feedback Page Import - FIXED: Capitalize component name
+import Feedback from "./pages/feedback";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,6 +49,10 @@ const App = () => (
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/financing" element={<Financing />} />
+                
+                {/* 🎯 NEW: Feedback Route (Public) - FIXED: Capital F */}
+                <Route path="/feedback" element={<Feedback />} />
+                <Route path="/feedback/:token" element={<Feedback />} />
 
                 {/* Admin Login Route (Public) */}
                 <Route path="/admin/login" element={<AdminLogin />} />

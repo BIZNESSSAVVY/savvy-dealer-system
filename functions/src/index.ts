@@ -1,6 +1,5 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { onRequest } from 'firebase-functions/v2/https';
-import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import * as admin from 'firebase-admin';
 import axios from 'axios';
 
@@ -88,93 +87,87 @@ export const facebookFeed = onRequest(async (req, res) => {
 });
 
 // ================ IMMEDIATE FEEDBACK ON VEHICLE SOLD ================
-export const sendFeedbackImmediately = onDocumentCreated(
-    "sold_vehicles/{vehicleId}",
-    async (event) => {
-        console.log('🚨 IMMEDIATE FEEDBACK: Vehicle sold, sending SMS NOW');
+// This listens for changes in sold_vehicles and sends SMS immediately
+export const sendFeedbackImmediately = onRequest(async (req, res) => {
+    try {
+        console.log('🚨 IMMEDIATE FEEDBACK: HTTP trigger called');
         
-        try {
-            // Debug log environment
-            console.log('🔧 DEBUG: ClickSend credentials exist:', {
-                username: !!CLICKSEND_USERNAME,
-                apiKey: !!CLICKSEND_API_KEY
-            });
-
-            const snapshot = event.data;
-            if (!snapshot) {
-                console.error('❌ No data in snapshot');
-                return;
-            }
-            
-            const vehicle = snapshot.data() as SoldVehicle;
-            
-            // Log what we received
-            console.log('📱 Vehicle data:', {
-                customerName: vehicle.customerName,
-                customerPhone: vehicle.customerPhone,
-                vehicle: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
-                feedbackSent: vehicle.feedbackSent,
-                smsStatus: vehicle.smsStatus
-            });
-            
-            // Skip if feedback already sent
-            if (vehicle.feedbackSent || vehicle.smsStatus === 'sent' || vehicle.smsStatus === 'test_sent') {
-                console.log('⏭️ Feedback already sent, skipping');
-                return;
-            }
-
-            // Generate feedback token and link
-            const feedbackToken = Math.random().toString(36).substring(2, 15);
-            const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
-            
-            // Create SMS message
-            const message = `Hi ${vehicle.customerName}, thanks for purchasing your ${vehicle.year} ${vehicle.make} ${vehicle.model} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
-            
-            console.log('📤 Sending SMS to:', vehicle.customerPhone);
-            console.log('🔗 Feedback link:', feedbackLink);
-            
-            // Send SMS immediately
-            const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
-            
-            console.log('✅ SMS send result:', smsSent ? 'SUCCESS' : 'FAILED');
-            
-            if (smsSent) {
-                // Update the document with feedback info
-                await snapshot.ref.update({
-                    feedbackSent: true,
-                    feedbackToken: feedbackToken,
-                    feedbackSentAt: new Date().toISOString(),
-                    feedbackLink: feedbackLink,
-                    smsStatus: 'sent'
-                });
-                
-                console.log(`🎉 Feedback SMS sent to ${vehicle.customerName}`);
-                
-            } else {
-                await snapshot.ref.update({ 
-                    smsStatus: 'failed',
-                    feedbackSent: false
-                });
-                console.log(`❌ Failed to send SMS to ${vehicle.customerName}`);
-            }
-            
-        } catch (error: unknown) {
-            console.error('🔥 CRITICAL ERROR in immediate feedback:', error);
-            
-            // Try to update with error status
-            try {
-                if (event.data) {
-                    await event.data.ref.update({
-                        smsStatus: 'error',
-                        error: error instanceof Error ? error.message : 'Unknown error'
-                    });
-                }
-            } catch (updateError) {
-                console.error('Failed to update error status:', updateError);
-            }
+        // IMPORTANT: This function will be called by your frontend when a vehicle is sold
+        if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
+            console.error('❌ Missing ClickSend credentials');
+            res.status(500).send('ClickSend credentials not configured');
+            return;
         }
+
+        // Get the vehicle data from the request
+        const { vehicleId, customerName, customerPhone, year, make, model } = req.body;
+        
+        if (!customerName || !customerPhone || !year || !make || !model) {
+            res.status(400).send('Missing required vehicle data');
+            return;
+        }
+
+        console.log('📱 Processing vehicle sale:', {
+            customerName,
+            customerPhone,
+            vehicle: `${year} ${make} ${model}`
+        });
+
+        // Generate feedback token and link
+        const feedbackToken = Math.random().toString(36).substring(2, 15);
+        const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
+        
+        // Create SMS message
+        const message = `Hi ${customerName}, thanks for purchasing your ${year} ${make} ${model} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
+        
+        console.log('📤 Sending SMS to:', customerPhone);
+        
+        // Send SMS immediately
+        const smsSent = await sendClickSendSMS(customerPhone, message);
+        
+        console.log('✅ SMS send result:', smsSent ? 'SUCCESS' : 'FAILED');
+        
+        if (smsSent) {
+            // Add to sold_vehicles collection
+            const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
+            await soldVehiclesRef.add({
+                customerName,
+                customerPhone,
+                year,
+                make,
+                model,
+                dateSold: new Date().toISOString(),
+                feedbackSent: true,
+                feedbackToken: feedbackToken,
+                feedbackSentAt: new Date().toISOString(),
+                feedbackLink: feedbackLink,
+                smsStatus: 'sent',
+                requestFeedback: true
+            });
+            
+            console.log(`🎉 Feedback SMS sent to ${customerName}`);
+            res.status(200).json({ 
+                success: true, 
+                message: `Feedback SMS sent to ${customerName}` 
+            });
+            
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to send SMS' 
+            });
+            console.log(`❌ Failed to send SMS to ${customerName}`);
+        }
+        
+    } catch (error: unknown) {
+        console.error('🔥 CRITICAL ERROR in immediate feedback:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
-);
+});
 
 // ================ DAILY FEEDBACK REQUESTS ================
 export const sendDailyFeedbackRequests = onSchedule({
@@ -341,58 +334,6 @@ export const sendManagerAlert = onRequest(async (req, res) => {
     } catch (error: unknown) {
         console.error('Manager alert error:', error);
         res.status(500).send('Error sending manager alert');
-    }
-});
-
-// ================ QUICK TEST FUNCTION ================
-export const testSendNow = onRequest(async (req, res) => {
-    console.log('🧪 QUICK TEST FUNCTION CALLED');
-    
-    try {
-        // Get the most recent sold vehicle
-        const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
-        const snapshot = await soldVehiclesRef
-            .orderBy('dateSold', 'desc')
-            .limit(1)
-            .get();
-        
-        if (snapshot.empty) {
-            res.status(404).send('No sold vehicles found');
-            return;
-        }
-        
-        const doc = snapshot.docs[0];
-        const vehicle = doc.data() as SoldVehicle;
-        
-        console.log('Testing with vehicle:', {
-            name: vehicle.customerName,
-            phone: vehicle.customerPhone,
-            vehicle: `${vehicle.year} ${vehicle.make} ${vehicle.model}`
-        });
-        
-        // Generate feedback token and link
-        const feedbackToken = Math.random().toString(36).substring(2, 15);
-        const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
-        
-        const message = `QUICK TEST from ${DEALERSHIP_NAME}: Hi ${vehicle.customerName}, feedback test for your ${vehicle.year} ${vehicle.make} ${vehicle.model}: ${feedbackLink}`;
-        
-        const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
-        
-        if (smsSent) {
-            await doc.ref.update({
-                feedbackSent: true,
-                feedbackToken: feedbackToken,
-                feedbackSentAt: new Date().toISOString(),
-                feedbackLink: feedbackLink,
-                smsStatus: 'test_sent'
-            });
-            res.send(`✅ TEST SMS SENT to ${vehicle.customerName} at ${vehicle.customerPhone}`);
-        } else {
-            res.status(500).send('❌ TEST FAILED - SMS not sent');
-        }
-    } catch (error: unknown) {
-        console.error('Test error:', error);
-        res.status(500).send('Test failed: ' + (error instanceof Error ? error.message : 'Unknown'));
     }
 });
 

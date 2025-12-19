@@ -1,5 +1,5 @@
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { onRequest } from 'firebase-functions/v2/https';
-import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import * as admin from 'firebase-admin';
 import axios from 'axios';
 
@@ -55,6 +55,7 @@ const CLICKSEND_URL = 'https://rest.clicksend.com/v3/sms/send';
 const DEALERSHIP_NAME = 'Savvy Dealer System';
 const FEEDBACK_BASE_URL = 'https://savvy-dealer-system.vercel.app/feedback';
 
+// Get ClickSend credentials from environment variables
 const CLICKSEND_USERNAME = process.env.CLICKSEND_USERNAME || '';
 const CLICKSEND_API_KEY = process.env.CLICKSEND_API_KEY || '';
 const CLICKSEND_MANAGER_PHONE = process.env.CLICKSEND_MANAGER_PHONE || '+13024094992';
@@ -81,58 +82,82 @@ export const facebookFeed = onRequest(async (req, res) => {
     }
 });
 
-// ================ IMMEDIATE FEEDBACK REQUEST ================
-export const sendImmediateFeedbackRequest = onDocumentCreated(
-    'sold_vehicles/{docId}',
-    async (event) => {
-        try {
-            if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
-                console.error('Missing ClickSend credentials');
-                return;
-            }
-
-            const snap = event.data;
-            if (!snap) return;
-
-            const vehicle = snap.data() as SoldVehicle;
-
-            if (!vehicle.requestFeedback || vehicle.feedbackSent) return;
-
-            const feedbackToken = Math.random().toString(36).substring(2, 15);
-            const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
-
-            const message = `Hi ${vehicle.customerName}, thanks for your ${vehicle.year} ${vehicle.make} ${vehicle.model} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
-
-            const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
-
-            if (smsSent) {
-                await snap.ref.update({
-                    feedbackSent: true,
-                    feedbackToken,
-                    feedbackLink,
-                    feedbackSentAt: new Date().toISOString(),
-                    smsStatus: 'sent'
-                });
-            } else {
-                await snap.ref.update({ smsStatus: 'failed' });
-            }
-
-        } catch (error) {
-            console.error('Immediate feedback error:', error);
+// ================ DAILY FEEDBACK REQUESTS ================
+export const sendDailyFeedbackRequests = onSchedule({
+    schedule: '* * * * *',
+    timeZone: 'America/New_York',
+}, async () => {
+    console.log('Starting daily feedback request check...');
+    
+    try {
+        if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
+            console.error('Missing ClickSend credentials');
+            return;
         }
+
+        const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
+        const snapshot = await soldVehiclesRef
+            .where('requestFeedback', '==', true)
+            .where('feedbackSent', '!=', true)
+            .get();
+
+        console.log(`Found ${snapshot.size} vehicles ready for feedback`);
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const doc of snapshot.docs) {
+            try {
+                const vehicle = doc.data() as SoldVehicle;
+                
+                const feedbackToken = Math.random().toString(36).substring(2, 15);
+                const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
+                
+                const message = `Hi ${vehicle.customerName}, thanks for your ${vehicle.year} ${vehicle.make} ${vehicle.model} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
+                
+                const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
+
+                if (smsSent) {
+                    await doc.ref.update({
+                        feedbackSent: true,
+                        feedbackToken: feedbackToken,
+                        feedbackSentAt: new Date().toISOString(),
+                        feedbackLink: feedbackLink,
+                        smsStatus: 'sent'
+                    });
+                    console.log(`SMS sent to ${vehicle.customerName}`);
+                    successCount++;
+                } else {
+                    await doc.ref.update({ smsStatus: 'failed' });
+                    console.log(`Failed to send to ${vehicle.customerName}`);
+                    failCount++;
+                }
+
+            } catch (error: unknown) {
+                console.error(`Error processing vehicle ${doc.id}:`, error);
+                failCount++;
+            }
+        }
+
+        console.log(`Daily feedback job: ${successCount} sent, ${failCount} failed`);
+
+    } catch (error: unknown) {
+        console.error('Critical error in daily feedback job:', error);
     }
-);
+});
 
 // ================ TEST FEEDBACK FUNCTION ================
 export const testFeedback = onRequest(async (req, res) => {
     try {
+        console.log('Test feedback function triggered');
+        
         if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
             res.status(500).send('ClickSend credentials not configured');
             return;
         }
 
-        const snapshot = await admin.firestore()
-            .collection('sold_vehicles')
+        const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
+        const snapshot = await soldVehiclesRef
             .where('requestFeedback', '==', true)
             .where('feedbackSent', '!=', true)
             .limit(1)
@@ -145,28 +170,28 @@ export const testFeedback = onRequest(async (req, res) => {
 
         const doc = snapshot.docs[0];
         const vehicle = doc.data() as SoldVehicle;
-
+        
         const feedbackToken = Math.random().toString(36).substring(2, 15);
         const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
-
+        
         const message = `TEST from ${DEALERSHIP_NAME}: Hi ${vehicle.customerName}, thanks for your ${vehicle.year} ${vehicle.make} ${vehicle.model}! Share your experience: ${feedbackLink}`;
-
+        
         const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
 
         if (smsSent) {
             await doc.ref.update({
                 feedbackSent: true,
-                feedbackToken,
-                feedbackLink,
+                feedbackToken: feedbackToken,
                 feedbackSentAt: new Date().toISOString(),
+                feedbackLink: feedbackLink,
                 smsStatus: 'test_sent'
             });
-            res.send('Test SMS sent');
+            res.send(`TEST SMS sent to ${vehicle.customerName} for ${vehicle.make} ${vehicle.model}`);
         } else {
             res.status(500).send('Failed to send test SMS');
         }
 
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Test error:', error);
         res.status(500).send('Test failed');
     }
@@ -180,19 +205,21 @@ export const sendManagerAlert = onRequest(async (req, res) => {
             return;
         }
 
-        const { customerName, customerPhone, vehicle, feedback } = req.body as ManagerAlertRequest;
-
+        const requestBody = req.body as ManagerAlertRequest;
+        const { customerName, customerPhone, vehicle, feedback } = requestBody;
+        
         if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
             res.status(500).send('ClickSend credentials not configured');
             return;
         }
 
         const managerMessage = `NEGATIVE FEEDBACK ALERT: ${customerName} (${customerPhone}) for ${vehicle}. Feedback: "${feedback.substring(0, 150)}..."`;
-
+        
         const smsSent = await sendClickSendSMS(CLICKSEND_MANAGER_PHONE, managerMessage);
 
         if (smsSent) {
-            await admin.firestore().collection('manager_alerts').add({
+            const alertsRef = admin.firestore().collection('manager_alerts');
+            await alertsRef.add({
                 type: 'negative_feedback',
                 customerName,
                 customerPhone,
@@ -204,12 +231,12 @@ export const sendManagerAlert = onRequest(async (req, res) => {
                 smsSent: true
             });
 
-            res.json({ success: true });
+            res.status(200).json({ success: true, message: 'Manager alerted via SMS' });
         } else {
-            res.status(500).json({ success: false });
+            res.status(500).json({ success: false, message: 'Failed to send manager alert' });
         }
 
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Manager alert error:', error);
         res.status(500).send('Error sending manager alert');
     }
@@ -218,8 +245,16 @@ export const sendManagerAlert = onRequest(async (req, res) => {
 // ================ HELPER FUNCTIONS ================
 async function sendClickSendSMS(toNumber: string, message: string): Promise<boolean> {
     try {
+        if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
+            console.error('Missing ClickSend credentials');
+            return false;
+        }
+
         const cleanNumber = toNumber.replace(/\D/g, '');
-        if (!cleanNumber || cleanNumber.length < 10) return false;
+        if (!cleanNumber || cleanNumber.length < 10) {
+            console.error(`Invalid phone number: ${toNumber}`);
+            return false;
+        }
 
         const response = await axios.post<ClickSendResponse>(
             CLICKSEND_URL,
@@ -235,19 +270,21 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
                     username: CLICKSEND_USERNAME,
                     password: CLICKSEND_API_KEY
                 },
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }
         );
 
         return response.data.response_code === 'SUCCESS';
 
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('ClickSend API Error:', error);
         return false;
     }
 }
 
-// ================ FACEBOOK FEED HELPERS ================
+// ================ FACEBOOK FEED HELPER FUNCTIONS ================
 function generateFacebookFeed(vehicles: Vehicle[]): string {
     const listings = vehicles.map(v => {
         const mainImage = v.images?.[0] || '';
@@ -333,25 +370,28 @@ function mapFuel(fuel?: string): string {
 function mapBodyStyle(style?: string): string {
     if (!style) return 'OTHER';
     const s = style.toUpperCase().trim();
-
+    
     const validStyles = [
-        'CONVERTIBLE', 'COUPE', 'CROSSOVER', 'HATCHBACK',
-        'MINIBUS', 'MINIVAN', 'PICKUP', 'SEDAN', 'SUV',
+        'CONVERTIBLE', 'COUPE', 'CROSSOVER', 'HATCHBACK', 
+        'MINIBUS', 'MINIVAN', 'PICKUP', 'SEDAN', 'SUV', 
         'TRUCK', 'VAN', 'WAGON', 'OTHER'
     ];
-
+    
     if (validStyles.includes(s)) return s;
+    
     if (s.includes('SPORT') && s.includes('UTILITY')) return 'SUV';
     if (s.includes('MPV') || s.includes('MULTIPURPOSE')) return 'MINIVAN';
-
+    
     return 'OTHER';
 }
 
 function mapDrivetrain(transmission?: string): string {
     if (!transmission) return 'FWD';
     const t = transmission.toUpperCase();
+    
     if (t.includes('4WD') || t.includes('4X4')) return '4WD';
     if (t.includes('AWD')) return 'AWD';
     if (t.includes('RWD')) return 'RWD';
+    
     return 'FWD';
 }

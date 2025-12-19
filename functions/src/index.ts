@@ -1,4 +1,3 @@
-import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import * as admin from 'firebase-admin';
@@ -82,7 +81,7 @@ export const facebookFeed = onRequest(async (req, res) => {
     }
 });
 
-// ================ IMMEDIATE FEEDBACK REQUEST (REPLACEMENT) ================
+// ================ IMMEDIATE FEEDBACK REQUEST ================
 export const sendImmediateFeedbackRequest = onDocumentCreated(
     'sold_vehicles/{docId}',
     async (event) => {
@@ -97,9 +96,7 @@ export const sendImmediateFeedbackRequest = onDocumentCreated(
 
             const vehicle = snap.data() as SoldVehicle;
 
-            if (!vehicle.requestFeedback || vehicle.feedbackSent) {
-                return;
-            }
+            if (!vehicle.requestFeedback || vehicle.feedbackSent) return;
 
             const feedbackToken = Math.random().toString(36).substring(2, 15);
             const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
@@ -111,16 +108,16 @@ export const sendImmediateFeedbackRequest = onDocumentCreated(
             if (smsSent) {
                 await snap.ref.update({
                     feedbackSent: true,
-                    feedbackToken: feedbackToken,
+                    feedbackToken,
+                    feedbackLink,
                     feedbackSentAt: new Date().toISOString(),
-                    feedbackLink: feedbackLink,
                     smsStatus: 'sent'
                 });
             } else {
                 await snap.ref.update({ smsStatus: 'failed' });
             }
 
-        } catch (error: unknown) {
+        } catch (error) {
             console.error('Immediate feedback error:', error);
         }
     }
@@ -134,8 +131,8 @@ export const testFeedback = onRequest(async (req, res) => {
             return;
         }
 
-        const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
-        const snapshot = await soldVehiclesRef
+        const snapshot = await admin.firestore()
+            .collection('sold_vehicles')
             .where('requestFeedback', '==', true)
             .where('feedbackSent', '!=', true)
             .limit(1)
@@ -159,17 +156,17 @@ export const testFeedback = onRequest(async (req, res) => {
         if (smsSent) {
             await doc.ref.update({
                 feedbackSent: true,
-                feedbackToken: feedbackToken,
+                feedbackToken,
+                feedbackLink,
                 feedbackSentAt: new Date().toISOString(),
-                feedbackLink: feedbackLink,
                 smsStatus: 'test_sent'
             });
-            res.send(`TEST SMS sent to ${vehicle.customerName}`);
+            res.send('Test SMS sent');
         } else {
             res.status(500).send('Failed to send test SMS');
         }
 
-    } catch (error: unknown) {
+    } catch (error) {
         console.error('Test error:', error);
         res.status(500).send('Test failed');
     }
@@ -183,8 +180,7 @@ export const sendManagerAlert = onRequest(async (req, res) => {
             return;
         }
 
-        const requestBody = req.body as ManagerAlertRequest;
-        const { customerName, customerPhone, vehicle, feedback } = requestBody;
+        const { customerName, customerPhone, vehicle, feedback } = req.body as ManagerAlertRequest;
 
         if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
             res.status(500).send('ClickSend credentials not configured');
@@ -196,8 +192,7 @@ export const sendManagerAlert = onRequest(async (req, res) => {
         const smsSent = await sendClickSendSMS(CLICKSEND_MANAGER_PHONE, managerMessage);
 
         if (smsSent) {
-            const alertsRef = admin.firestore().collection('manager_alerts');
-            await alertsRef.add({
+            await admin.firestore().collection('manager_alerts').add({
                 type: 'negative_feedback',
                 customerName,
                 customerPhone,
@@ -209,12 +204,12 @@ export const sendManagerAlert = onRequest(async (req, res) => {
                 smsSent: true
             });
 
-            res.status(200).json({ success: true, message: 'Manager alerted via SMS' });
+            res.json({ success: true });
         } else {
-            res.status(500).json({ success: false, message: 'Failed to send manager alert' });
+            res.status(500).json({ success: false });
         }
 
-    } catch (error: unknown) {
+    } catch (error) {
         console.error('Manager alert error:', error);
         res.status(500).send('Error sending manager alert');
     }
@@ -223,16 +218,8 @@ export const sendManagerAlert = onRequest(async (req, res) => {
 // ================ HELPER FUNCTIONS ================
 async function sendClickSendSMS(toNumber: string, message: string): Promise<boolean> {
     try {
-        if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
-            console.error('Missing ClickSend credentials');
-            return false;
-        }
-
         const cleanNumber = toNumber.replace(/\D/g, '');
-        if (!cleanNumber || cleanNumber.length < 10) {
-            console.error(`Invalid phone number: ${toNumber}`);
-            return false;
-        }
+        if (!cleanNumber || cleanNumber.length < 10) return false;
 
         const response = await axios.post<ClickSendResponse>(
             CLICKSEND_URL,
@@ -248,21 +235,19 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
                     username: CLICKSEND_USERNAME,
                     password: CLICKSEND_API_KEY
                 },
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             }
         );
 
         return response.data.response_code === 'SUCCESS';
 
-    } catch (error: unknown) {
+    } catch (error) {
         console.error('ClickSend API Error:', error);
         return false;
     }
 }
 
-// ================ FACEBOOK FEED HELPER FUNCTIONS ================
+// ================ FACEBOOK FEED HELPERS ================
 function generateFacebookFeed(vehicles: Vehicle[]): string {
     const listings = vehicles.map(v => {
         const mainImage = v.images?.[0] || '';

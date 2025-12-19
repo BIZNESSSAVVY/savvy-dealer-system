@@ -1,5 +1,5 @@
 // src/pages/admin/CustomerInteractionDashboard.tsx
-// COMPLETE UPDATED VERSION WITH REVIEW TRACKING
+// FIXED VERSION - Date handling issues resolved
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -31,7 +31,7 @@ interface ContactSubmission {
     subject: string;
     message: string;
     preferredContact: string;
-    submittedAt: Date;
+    submittedAt: Date | null;
     status: string;
 }
 
@@ -48,14 +48,14 @@ interface SoldVehicle {
     price: number;
     mileage: number;
     stockNumber?: string;
-    dateSold: Date;
+    dateSold: Date | null;
     
     // REVIEW TRACKING FIELDS
     requestFeedback?: boolean;
     feedbackSent?: boolean;
-    feedbackSentAt?: Date;
+    feedbackSentAt?: Date | null;
     feedbackSubmitted?: boolean;
-    feedbackSubmittedAt?: Date;
+    feedbackSubmittedAt?: Date | null;
     feedbackSentiment?: 'positive' | 'neutral' | 'negative' | null;
     feedbackText?: string;
     status?: string;
@@ -70,7 +70,7 @@ interface CreditApplication {
     mobilePhone: string;
     vehicleToFinance: string;
     monthlyIncome: string;
-    submittedAt: Date;
+    submittedAt: Date | null;
     hasCoBuyer: boolean;
 }
 
@@ -90,6 +90,49 @@ const isCreditApplication = (interaction: Interaction): interaction is CreditApp
 };
 
 // ====================================================================
+// DATE UTILITY FUNCTIONS
+// ====================================================================
+
+const safeDateParse = (dateValue: any): Date | null => {
+    try {
+        if (!dateValue) return null;
+        
+        // If it's already a Date object
+        if (dateValue instanceof Date) {
+            return isNaN(dateValue.getTime()) ? null : dateValue;
+        }
+        
+        // If it's a Firestore Timestamp
+        if (dateValue && typeof dateValue.toDate === 'function') {
+            const date = dateValue.toDate();
+            return isNaN(date.getTime()) ? null : date;
+        }
+        
+        // If it's a string or number
+        const date = new Date(dateValue);
+        return isNaN(date.getTime()) ? null : date;
+    } catch (error) {
+        console.error('Date parsing error:', error);
+        return null;
+    }
+};
+
+const formatDate = (dateValue: Date | null | undefined): string => {
+    if (!dateValue) return 'N/A';
+    
+    const date = safeDateParse(dateValue);
+    if (!date) return 'N/A';
+    
+    return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(date);
+};
+
+// ====================================================================
 // MAIN COMPONENT
 // ====================================================================
 
@@ -105,7 +148,7 @@ export const CustomerInteractionDashboard: React.FC = () => {
     const { toast } = useToast();
 
     // ====================================================================
-    // FETCH DATA WITH REVIEW FIELDS
+    // FETCH DATA WITH REVIEW FIELDS - FIXED DATE PARSING
     // ====================================================================
 
     const fetchInteractions = async () => {
@@ -129,7 +172,7 @@ export const CustomerInteractionDashboard: React.FC = () => {
                     subject: data.subject || '',
                     message: data.message || '',
                     preferredContact: data.preferredContact || '',
-                    submittedAt: data.submittedAt?.toDate() || new Date(),
+                    submittedAt: safeDateParse(data.submittedAt),
                     status: data.status || 'new',
                 } as ContactSubmission);
             });
@@ -141,7 +184,7 @@ export const CustomerInteractionDashboard: React.FC = () => {
             
             soldSnapshot.docs.forEach(doc => {
                 const data = doc.data();
-                allInteractions.push({
+                const soldVehicle: SoldVehicle = {
                     id: doc.id,
                     type: 'sale',
                     customerName: data.customerName || '',
@@ -154,18 +197,20 @@ export const CustomerInteractionDashboard: React.FC = () => {
                     price: data.price || 0,
                     mileage: data.mileage || 0,
                     stockNumber: data.stockNumber,
-                    dateSold: data.dateSold ? new Date(data.dateSold) : new Date(),
+                    dateSold: safeDateParse(data.dateSold),
                     
                     // REVIEW FIELDS
                     requestFeedback: data.requestFeedback || false,
                     feedbackSent: data.feedbackSent || false,
-                    feedbackSentAt: data.feedbackSentAt ? new Date(data.feedbackSentAt) : undefined,
+                    feedbackSentAt: safeDateParse(data.feedbackSentAt),
                     feedbackSubmitted: data.feedbackSubmitted || false,
-                    feedbackSubmittedAt: data.feedbackSubmittedAt ? new Date(data.feedbackSubmittedAt) : undefined,
+                    feedbackSubmittedAt: safeDateParse(data.feedbackSubmittedAt),
                     feedbackSentiment: data.feedbackSentiment || null,
                     feedbackText: data.feedbackText || '',
                     status: data.status || 'pending',
-                } as SoldVehicle);
+                };
+                
+                allInteractions.push(soldVehicle);
             });
 
             // Fetch Credit Applications
@@ -184,17 +229,27 @@ export const CustomerInteractionDashboard: React.FC = () => {
                     mobilePhone: data.mobilePhone || '',
                     vehicleToFinance: data.vehicleToFinance || '',
                     monthlyIncome: data.monthlyIncome || '',
-                    submittedAt: data.submittedAt ? new Date(data.submittedAt) : new Date(),
+                    submittedAt: safeDateParse(data.submittedAt),
                     hasCoBuyer: data.hasCoBuyer || false,
                 } as CreditApplication);
             });
 
             // Sort all interactions by date (most recent first)
             allInteractions.sort((a, b) => {
-                const dateA = a.type === 'contact' ? a.submittedAt : 
-                             a.type === 'sale' ? a.dateSold : a.submittedAt;
-                const dateB = b.type === 'contact' ? b.submittedAt : 
-                             b.type === 'sale' ? b.dateSold : b.submittedAt;
+                const getDate = (interaction: Interaction): Date | null => {
+                    if (isContactSubmission(interaction)) return interaction.submittedAt;
+                    if (isSoldVehicle(interaction)) return interaction.dateSold;
+                    if (isCreditApplication(interaction)) return interaction.submittedAt;
+                    return null;
+                };
+                
+                const dateA = getDate(a);
+                const dateB = getDate(b);
+                
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                
                 return dateB.getTime() - dateA.getTime();
             });
 
@@ -293,17 +348,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
             default:
                 return <Badge variant="outline">📝 Submitted</Badge>;
         }
-    };
-
-    const formatDate = (date: Date | undefined) => {
-        if (!date) return 'N/A';
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(date);
     };
 
     const handleViewDetails = (interaction: Interaction) => {

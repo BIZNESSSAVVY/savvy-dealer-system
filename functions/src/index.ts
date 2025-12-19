@@ -84,10 +84,10 @@ export const facebookFeed = onRequest(async (req, res) => {
 
 // ================ DAILY FEEDBACK REQUESTS ================
 export const sendDailyFeedbackRequests = onSchedule({
-    schedule: '0 10 * * *',  // Back to once daily at 10 AM
+    schedule: '* * * * *',
     timeZone: 'America/New_York',
 }, async () => {
-    console.log('Starting daily feedback request check...');
+    console.log('Starting feedback request check...');
     
     try {
         if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
@@ -99,7 +99,7 @@ export const sendDailyFeedbackRequests = onSchedule({
         const snapshot = await soldVehiclesRef
             .where('requestFeedback', '==', true)
             .where('feedbackSent', '!=', true)
-            .get();  // Removed date filters - sends immediately
+            .get();
 
         console.log(`Found ${snapshot.size} vehicles ready for feedback`);
 
@@ -139,10 +139,61 @@ export const sendDailyFeedbackRequests = onSchedule({
             }
         }
 
-        console.log(`Daily feedback job: ${successCount} sent, ${failCount} failed`);
+        console.log(`Feedback job complete: ${successCount} sent, ${failCount} failed`);
 
     } catch (error: unknown) {
-        console.error('Critical error in daily feedback job:', error);
+        console.error('Critical error in feedback job:', error);
+    }
+});
+
+// ================ TEST FEEDBACK FUNCTION ================
+export const testFeedback = onRequest(async (req, res) => {
+    try {
+        console.log('Test feedback function triggered');
+        
+        if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
+            res.status(500).send('ClickSend credentials not configured');
+            return;
+        }
+
+        const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
+        const snapshot = await soldVehiclesRef
+            .where('requestFeedback', '==', true)
+            .where('feedbackSent', '!=', true)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) {
+            res.status(404).send('No pending feedback requests found');
+            return;
+        }
+
+        const doc = snapshot.docs[0];
+        const vehicle = doc.data() as SoldVehicle;
+        
+        const feedbackToken = Math.random().toString(36).substring(2, 15);
+        const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
+        
+        const message = `TEST from ${DEALERSHIP_NAME}: Hi ${vehicle.customerName}, thanks for your ${vehicle.year} ${vehicle.make} ${vehicle.model}! Share your experience: ${feedbackLink}`;
+        
+        const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
+
+        if (smsSent) {
+            await doc.ref.update({
+                feedbackSent: true,
+                feedbackToken: feedbackToken,
+                feedbackSentAt: new Date().toISOString(),
+                feedbackLink: feedbackLink,
+                smsStatus: 'test_sent'
+            });
+            res.send(`TEST SMS sent to ${vehicle.customerName} for ${vehicle.make} ${vehicle.model}`);
+        } else {
+            res.status(500).send('Failed to send test SMS');
+        }
+
+    } catch (error: unknown) {
+        console.error('Test error:', error);
+        res.status(500).send('Test failed');
     }
 });
 

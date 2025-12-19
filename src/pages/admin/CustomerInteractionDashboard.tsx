@@ -16,7 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // FIREBASE IMPORTS
 import { db } from '@/firebaseConfig';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 // ====================================================================
 // UPDATED TYPES WITH REVIEW FIELDS
@@ -75,6 +75,19 @@ interface CreditApplication {
 }
 
 type Interaction = ContactSubmission | SoldVehicle | CreditApplication;
+
+// Type guard functions
+const isContactSubmission = (interaction: Interaction): interaction is ContactSubmission => {
+    return interaction.type === 'contact';
+};
+
+const isSoldVehicle = (interaction: Interaction): interaction is SoldVehicle => {
+    return interaction.type === 'sale';
+};
+
+const isCreditApplication = (interaction: Interaction): interaction is CreditApplication => {
+    return interaction.type === 'financing';
+};
 
 // ====================================================================
 // MAIN COMPONENT
@@ -219,17 +232,16 @@ export const CustomerInteractionDashboard: React.FC = () => {
         if (searchTerm) {
             filtered = filtered.filter(i => {
                 const searchLower = searchTerm.toLowerCase();
-                if (i.type === 'contact') {
+                if (isContactSubmission(i)) {
                     return i.name.toLowerCase().includes(searchLower) ||
                            i.email.toLowerCase().includes(searchLower) ||
                            i.phone.includes(searchTerm);
-                } else if (i.type === 'sale') {
-                    const sale = i as SoldVehicle;
-                    return sale.customerName.toLowerCase().includes(searchLower) ||
-                           sale.customerPhone.includes(searchTerm) ||
-                           `${sale.year} ${sale.make} ${sale.model}`.toLowerCase().includes(searchLower) ||
-                           sale.vin.toLowerCase().includes(searchLower) ||
-                           (sale.feedbackText && sale.feedbackText.toLowerCase().includes(searchLower));
+                } else if (isSoldVehicle(i)) {
+                    return i.customerName.toLowerCase().includes(searchLower) ||
+                           i.customerPhone.includes(searchTerm) ||
+                           `${i.year} ${i.make} ${i.model}`.toLowerCase().includes(searchLower) ||
+                           i.vin.toLowerCase().includes(searchLower) ||
+                           (i.feedbackText && i.feedbackText.toLowerCase().includes(searchLower));
                 } else {
                     return `${i.firstName} ${i.lastName}`.toLowerCase().includes(searchLower) ||
                            i.email.toLowerCase().includes(searchLower) ||
@@ -583,7 +595,7 @@ export const CustomerInteractionDashboard: React.FC = () => {
                 </CardContent>
             </Card>
 
-            {/* ENHANCED DETAIL DIALOG WITH REVIEW INFO */}
+            {/* ENHANCED DETAIL DIALOG WITH REVIEW INFO - FIXED VERSION */}
             <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
                 <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
@@ -592,9 +604,10 @@ export const CustomerInteractionDashboard: React.FC = () => {
                             {selectedInteraction && getInteractionBadge(selectedInteraction.type)}
                         </DialogDescription>
                     </DialogHeader>
+                    
                     {selectedInteraction && (
                         <div className="space-y-4">
-                            {selectedInteraction.type === 'contact' && (
+                            {isContactSubmission(selectedInteraction) && (
                                 <>
                                     <div><strong>Name:</strong> {selectedInteraction.name}</div>
                                     <div><strong>Email:</strong> {selectedInteraction.email}</div>
@@ -607,94 +620,91 @@ export const CustomerInteractionDashboard: React.FC = () => {
                                 </>
                             )}
                             
-                            {selectedInteraction.type === 'sale' && (() => {
-                                const sale = selectedInteraction as SoldVehicle;
-                                return (
-                                    <>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div><strong>Customer:</strong> {sale.customerName}</div>
-                                            <div><strong>Phone:</strong> {sale.customerPhone}</div>
-                                            <div><strong>Vehicle:</strong> {sale.year} {sale.make} {sale.model}</div>
-                                            <div><strong>VIN:</strong> {sale.vin}</div>
-                                            <div><strong>Stock #:</strong> {sale.stockNumber || 'N/A'}</div>
-                                            <div><strong>Sale Price:</strong> ${sale.price.toLocaleString()}</div>
-                                            <div><strong>Mileage:</strong> {sale.mileage.toLocaleString()} mi</div>
-                                            <div><strong>Date Sold:</strong> {formatDate(sale.dateSold)}</div>
-                                        </div>
-                                        
-                                        {/* REVIEW STATUS SECTION */}
-                                        <div className="pt-4 border-t mt-4">
-                                            <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                                <Star className="w-4 h-4" /> Review Status
-                                            </h4>
-                                            {sale.requestFeedback ? (
-                                                <div className="space-y-3">
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <strong>Review Request:</strong> 
-                                                            <span className={`ml-2 ${sale.feedbackSent ? 'text-green-600' : 'text-amber-600'}`}>
-                                                                {sale.feedbackSent ? '✅ Sent' : '⏳ Pending'}
-                                                            </span>
-                                                        </div>
-                                                        {sale.feedbackSentAt && (
-                                                            <div><strong>Sent At:</strong> {formatDate(sale.feedbackSentAt)}</div>
-                                                        )}
+                            {isSoldVehicle(selectedInteraction) && (
+                                <>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div><strong>Customer:</strong> {selectedInteraction.customerName}</div>
+                                        <div><strong>Phone:</strong> {selectedInteraction.customerPhone}</div>
+                                        <div><strong>Vehicle:</strong> {selectedInteraction.year} {selectedInteraction.make} {selectedInteraction.model}</div>
+                                        <div><strong>VIN:</strong> {selectedInteraction.vin}</div>
+                                        <div><strong>Stock #:</strong> {selectedInteraction.stockNumber || 'N/A'}</div>
+                                        <div><strong>Sale Price:</strong> ${selectedInteraction.price.toLocaleString()}</div>
+                                        <div><strong>Mileage:</strong> {selectedInteraction.mileage.toLocaleString()} mi</div>
+                                        <div><strong>Date Sold:</strong> {formatDate(selectedInteraction.dateSold)}</div>
+                                    </div>
+                                    
+                                    {/* REVIEW STATUS SECTION */}
+                                    <div className="pt-4 border-t mt-4">
+                                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                            <Star className="w-4 h-4" /> Review Status
+                                        </h4>
+                                        {selectedInteraction.requestFeedback ? (
+                                            <div className="space-y-3">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <strong>Review Request:</strong> 
+                                                        <span className={`ml-2 ${selectedInteraction.feedbackSent ? 'text-green-600' : 'text-amber-600'}`}>
+                                                            {selectedInteraction.feedbackSent ? '✅ Sent' : '⏳ Pending'}
+                                                        </span>
                                                     </div>
-                                                    
-                                                    {sale.feedbackSubmitted && (
-                                                        <>
-                                                            <div className="grid grid-cols-2 gap-4">
-                                                                <div>
-                                                                    <strong>Customer Response:</strong>
-                                                                    <div className="mt-1">
-                                                                        {getReviewBadge(sale)}
-                                                                    </div>
-                                                                </div>
-                                                                {sale.feedbackSubmittedAt && (
-                                                                    <div><strong>Response Date:</strong> {formatDate(sale.feedbackSubmittedAt)}</div>
-                                                                )}
-                                                            </div>
-                                                            
-                                                            {sale.feedbackText && (
-                                                                <div>
-                                                                    <strong>Feedback:</strong>
-                                                                    <div className="mt-2 p-3 bg-gray-50 rounded border">
-                                                                        {sale.feedbackText}
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                            
-                                                            {sale.feedbackSentiment === 'negative' && (
-                                                                <Alert className="bg-red-50 border-red-200">
-                                                                    <AlertCircle className="h-4 w-4 text-red-600" />
-                                                                    <AlertDescription className="text-red-800 font-medium">
-                                                                        Manager has been alerted via SMS
-                                                                    </AlertDescription>
-                                                                </Alert>
-                                                            )}
-                                                            
-                                                            {sale.feedbackSentiment === 'positive' && (
-                                                                <Alert className="bg-green-50 border-green-200">
-                                                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                                    <AlertDescription className="text-green-800 font-medium">
-                                                                        Customer was redirected to Google Reviews
-                                                                    </AlertDescription>
-                                                                </Alert>
-                                                            )}
-                                                        </>
+                                                    {selectedInteraction.feedbackSentAt && (
+                                                        <div><strong>Sent At:</strong> {formatDate(selectedInteraction.feedbackSentAt)}</div>
                                                     )}
                                                 </div>
-                                            ) : (
-                                                <div className="text-gray-500 italic">
-                                                    No review was requested for this sale
-                                                </div>
-                                            )}
-                                        </div>
-                                    </>
-                                );
-                            })()}
+                                                
+                                                {selectedInteraction.feedbackSubmitted && (
+                                                    <>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <strong>Customer Response:</strong>
+                                                                <div className="mt-1">
+                                                                    {getReviewBadge(selectedInteraction)}
+                                                                </div>
+                                                            </div>
+                                                            {selectedInteraction.feedbackSubmittedAt && (
+                                                                <div><strong>Response Date:</strong> {formatDate(selectedInteraction.feedbackSubmittedAt)}</div>
+                                                            )}
+                                                        </div>
+                                                        
+                                                        {selectedInteraction.feedbackText && (
+                                                            <div>
+                                                                <strong>Feedback:</strong>
+                                                                <div className="mt-2 p-3 bg-gray-50 rounded border">
+                                                                    {selectedInteraction.feedbackText}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {selectedInteraction.feedbackSentiment === 'negative' && (
+                                                            <Alert className="bg-red-50 border-red-200">
+                                                                <AlertCircle className="h-4 w-4 text-red-600" />
+                                                                <AlertDescription className="text-red-800 font-medium">
+                                                                    Manager has been alerted via SMS
+                                                                </AlertDescription>
+                                                            </Alert>
+                                                        )}
+                                                        
+                                                        {selectedInteraction.feedbackSentiment === 'positive' && (
+                                                            <Alert className="bg-green-50 border-green-200">
+                                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                                <AlertDescription className="text-green-800 font-medium">
+                                                                    Customer was redirected to Google Reviews
+                                                                </AlertDescription>
+                                                            </Alert>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="text-gray-500 italic">
+                                                No review was requested for this sale
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                             
-                            {selectedInteraction.type === 'financing' && (
+                            {isCreditApplication(selectedInteraction) && (
                                 <>
                                     <div><strong>Name:</strong> {selectedInteraction.firstName} {selectedInteraction.lastName}</div>
                                     <div><strong>Email:</strong> {selectedInteraction.email}</div>
@@ -707,6 +717,7 @@ export const CustomerInteractionDashboard: React.FC = () => {
                             )}
                         </div>
                     )}
+                    
                     <DialogFooter>
                         <Button onClick={() => setIsDetailDialogOpen(false)}>Close</Button>
                     </DialogFooter>

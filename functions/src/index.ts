@@ -32,10 +32,6 @@ interface SoldVehicle {
     model: string;
     requestFeedback?: boolean;
     feedbackSent?: boolean;
-    feedbackToken?: string;
-    feedbackSentAt?: string;
-    feedbackLink?: string;
-    smsStatus?: string;
     dateSold?: string;
     [key: string]: unknown;
 }
@@ -86,72 +82,6 @@ export const facebookFeed = onRequest(async (req, res) => {
     }
 });
 
-// ================ IMMEDIATE FEEDBACK ON VEHICLE SOLD ================
-export const sendFeedbackImmediately = onRequest(async (req, res) => {
-    console.log('🚨 IMMEDIATE FEEDBACK: HTTP trigger called');
-    
-    try {
-        if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
-            console.error('❌ Missing ClickSend credentials');
-            res.status(500).send('ClickSend credentials not configured');
-            return;
-        }
-
-        // Get the vehicle data from the request
-        const { customerName, customerPhone, year, make, model, requestFeedback } = req.body;
-        
-        console.log('📱 Processing vehicle sale:', {
-            customerName,
-            customerPhone,
-            vehicle: `${year} ${make} ${model}`,
-            requestFeedback
-        });
-
-        // Check if feedback is requested
-        if (!requestFeedback) {
-            console.log('⏭️ Feedback not requested for this sale');
-            res.status(200).json({ success: true, message: 'Sale processed, no feedback requested' });
-            return;
-        }
-
-        // Generate feedback token and link
-        const feedbackToken = Math.random().toString(36).substring(2, 15);
-        const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
-        
-        // Create SMS message
-        const message = `Hi ${customerName}, thanks for purchasing your ${year} ${make} ${model} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
-        
-        console.log('📤 Sending SMS to:', customerPhone);
-        
-        // Send SMS immediately
-        const smsSent = await sendClickSendSMS(customerPhone, message);
-        
-        console.log('✅ SMS send result:', smsSent ? 'SUCCESS' : 'FAILED');
-        
-        if (smsSent) {
-            res.status(200).json({ 
-                success: true, 
-                message: `Feedback SMS sent to ${customerName}` 
-            });
-            console.log(`🎉 Feedback SMS sent to ${customerName}`);
-        } else {
-            res.status(500).json({ 
-                success: false, 
-                message: 'Failed to send SMS' 
-            });
-            console.log(`❌ Failed to send SMS to ${customerName}`);
-        }
-        
-    } catch (error: unknown) {
-        console.error('🔥 CRITICAL ERROR in immediate feedback:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
-});
-
 // ================ DAILY FEEDBACK REQUESTS ================
 export const sendDailyFeedbackRequests = onSchedule({
     schedule: '0 10 * * *',
@@ -165,18 +95,10 @@ export const sendDailyFeedbackRequests = onSchedule({
             return;
         }
 
-        const fortyEightHoursAgo = new Date();
-        fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
-        
-        const twentyFourHoursAgo = new Date();
-        twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
-
         const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
         const snapshot = await soldVehiclesRef
             .where('requestFeedback', '==', true)
             .where('feedbackSent', '!=', true)
-            .where('dateSold', '<=', twentyFourHoursAgo.toISOString())
-            .where('dateSold', '>=', fortyEightHoursAgo.toISOString())
             .get();
 
         console.log(`Found ${snapshot.size} vehicles ready for feedback`);
@@ -306,7 +228,7 @@ export const sendManagerAlert = onRequest(async (req, res) => {
                 createdAt: new Date().toISOString(),
                 status: 'unread',
                 priority: 'high',
-                smsStatus: 'sent'
+                smsSent: true
             });
 
             res.status(200).json({ success: true, message: 'Manager alerted via SMS' });
@@ -323,18 +245,14 @@ export const sendManagerAlert = onRequest(async (req, res) => {
 // ================ HELPER FUNCTIONS ================
 async function sendClickSendSMS(toNumber: string, message: string): Promise<boolean> {
     try {
-        console.log('📲 Attempting to send ClickSend SMS to:', toNumber);
-        
         if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
-            console.error('❌ Missing ClickSend credentials');
+            console.error('Missing ClickSend credentials');
             return false;
         }
 
         const cleanNumber = toNumber.replace(/\D/g, '');
-        console.log('🔢 Cleaned number:', cleanNumber);
-        
         if (!cleanNumber || cleanNumber.length < 10) {
-            console.error(`❌ Invalid phone number: ${toNumber} -> ${cleanNumber}`);
+            console.error(`Invalid phone number: ${toNumber}`);
             return false;
         }
 
@@ -354,30 +272,14 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
                 },
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                timeout: 10000
+                }
             }
         );
-
-        console.log('📡 ClickSend response:', {
-            status: response.status,
-            responseCode: response.data.response_code,
-            data: response.data
-        });
 
         return response.data.response_code === 'SUCCESS';
 
     } catch (error: unknown) {
-        console.error('🔥 ClickSend API Error:', error);
-        
-        if (axios.isAxiosError(error)) {
-            console.error('Axios error details:', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
-        }
-        
+        console.error('ClickSend API Error:', error);
         return false;
     }
 }

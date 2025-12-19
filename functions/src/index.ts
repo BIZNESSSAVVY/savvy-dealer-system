@@ -84,8 +84,10 @@ export const facebookFeed = onRequest(async (req, res) => {
 
 // ================ DAILY FEEDBACK REQUESTS ================
 export const sendDailyFeedbackRequests = onSchedule({
-    schedule: '* * * * *',
+    schedule: '* * * * *', // Running every minute for testing
     timeZone: 'America/New_York',
+    retryCount: 2,
+    maxInstances: 1
 }, async () => {
     console.log('Starting feedback request check...');
     
@@ -95,46 +97,72 @@ export const sendDailyFeedbackRequests = onSchedule({
             return;
         }
 
+        // FIXED QUERY: Using multiple queries instead of composite query
         const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
-        const snapshot = await soldVehiclesRef
+        
+        // First, get vehicles that need feedback
+        const requestFeedbackSnapshot = await soldVehiclesRef
             .where('requestFeedback', '==', true)
-            .where('feedbackSent', '!=', true)
             .get();
 
-        console.log(`Found ${snapshot.size} vehicles ready for feedback`);
+        // Then filter in memory for vehicles not sent yet
+        const pendingVehicles = requestFeedbackSnapshot.docs.filter(doc => {
+            const vehicle = doc.data() as SoldVehicle;
+            return vehicle.feedbackSent !== true;
+        });
+
+        console.log(`Found ${pendingVehicles.length} vehicles ready for feedback`);
 
         let successCount = 0;
         let failCount = 0;
 
-        for (const doc of snapshot.docs) {
+        for (const doc of pendingVehicles) {
             try {
                 const vehicle = doc.data() as SoldVehicle;
+                
+                // Validate phone number
+                if (!vehicle.customerPhone || vehicle.customerPhone.replace(/\D/g, '').length < 10) {
+                    console.error(`Invalid phone number for ${vehicle.customerName}: ${vehicle.customerPhone}`);
+                    failCount++;
+                    continue;
+                }
                 
                 const feedbackToken = Math.random().toString(36).substring(2, 15);
                 const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
                 
                 const message = `Hi ${vehicle.customerName}, thanks for your ${vehicle.year} ${vehicle.make} ${vehicle.model} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
                 
+                console.log(`Attempting to send SMS to ${vehicle.customerPhone}`);
                 const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
 
                 if (smsSent) {
                     await doc.ref.update({
                         feedbackSent: true,
                         feedbackToken: feedbackToken,
-                        feedbackSentAt: new Date().toISOString(),
+                        feedbackSentAt: admin.firestore.FieldValue.serverTimestamp(),
                         feedbackLink: feedbackLink,
                         smsStatus: 'sent'
                     });
-                    console.log(`SMS sent to ${vehicle.customerName}`);
+                    console.log(`✓ SMS sent to ${vehicle.customerName} (${vehicle.customerPhone})`);
                     successCount++;
                 } else {
-                    await doc.ref.update({ smsStatus: 'failed' });
-                    console.log(`Failed to send to ${vehicle.customerName}`);
+                    await doc.ref.update({ 
+                        smsStatus: 'failed',
+                        lastAttempt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log(`✗ Failed to send to ${vehicle.customerName}`);
                     failCount++;
                 }
 
             } catch (error: unknown) {
-                console.error(`Error processing vehicle ${doc.id}:`, error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                console.error(`Error processing vehicle ${doc.id}:`, errorMessage);
+                
+                await doc.ref.update({ 
+                    smsStatus: 'error',
+                    error: errorMessage,
+                    lastAttempt: admin.firestore.FieldValue.serverTimestamp()
+                });
                 failCount++;
             }
         }
@@ -142,7 +170,9 @@ export const sendDailyFeedbackRequests = onSchedule({
         console.log(`Feedback job complete: ${successCount} sent, ${failCount} failed`);
 
     } catch (error: unknown) {
-        console.error('Critical error in feedback job:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Critical error in feedback job:', errorMessage);
+        // Don't throw error to prevent Cloud Scheduler from retrying too aggressively
     }
 });
 
@@ -156,44 +186,47 @@ export const testFeedback = onRequest(async (req, res) => {
             return;
         }
 
-        const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
-        const snapshot = await soldVehiclesRef
-            .where('requestFeedback', '==', true)
-            .where('feedbackSent', '!=', true)
-            .limit(1)
-            .get();
+        // Simple test - create a test record
+        const testData: SoldVehicle = {
+            customerName: 'Test Customer',
+            customerPhone: process.env.TEST_PHONE || CLICKSEND_MANAGER_PHONE, // Use manager phone for testing
+            year: 2024,
+            make: 'Test Make',
+            model: 'Test Model',
+            requestFeedback: true,
+            feedbackSent: false
+        };
 
-        if (snapshot.empty) {
-            res.status(404).send('No pending feedback requests found');
-            return;
-        }
-
-        const doc = snapshot.docs[0];
-        const vehicle = doc.data() as SoldVehicle;
-        
         const feedbackToken = Math.random().toString(36).substring(2, 15);
         const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
         
-        const message = `TEST from ${DEALERSHIP_NAME}: Hi ${vehicle.customerName}, thanks for your ${vehicle.year} ${vehicle.make} ${vehicle.model}! Share your experience: ${feedbackLink}`;
+        const message = `TEST from ${DEALERSHIP_NAME}: Hi ${testData.customerName}, thanks for your ${testData.year} ${testData.make} ${testData.model}! Share your experience: ${feedbackLink}`;
         
-        const smsSent = await sendClickSendSMS(vehicle.customerPhone, message);
+        console.log(`Test SMS content: ${message}`);
+        const smsSent = await sendClickSendSMS(testData.customerPhone, message);
 
         if (smsSent) {
-            await doc.ref.update({
-                feedbackSent: true,
-                feedbackToken: feedbackToken,
-                feedbackSentAt: new Date().toISOString(),
-                feedbackLink: feedbackLink,
-                smsStatus: 'test_sent'
+            res.status(200).json({
+                success: true,
+                message: `Test SMS sent to ${testData.customerPhone}`,
+                content: message,
+                link: feedbackLink
             });
-            res.send(`TEST SMS sent to ${vehicle.customerName} for ${vehicle.make} ${vehicle.model}`);
         } else {
-            res.status(500).send('Failed to send test SMS');
+            res.status(500).json({
+                success: false,
+                message: 'Failed to send test SMS - Check ClickSend credentials'
+            });
         }
 
     } catch (error: unknown) {
-        console.error('Test error:', error);
-        res.status(500).send('Test failed');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Test error:', errorMessage);
+        res.status(500).json({
+            success: false,
+            message: 'Test failed',
+            error: errorMessage
+        });
     }
 });
 
@@ -215,6 +248,7 @@ export const sendManagerAlert = onRequest(async (req, res) => {
 
         const managerMessage = `NEGATIVE FEEDBACK ALERT: ${customerName} (${customerPhone}) for ${vehicle}. Feedback: "${feedback.substring(0, 150)}..."`;
         
+        console.log(`Sending manager alert: ${managerMessage}`);
         const smsSent = await sendClickSendSMS(CLICKSEND_MANAGER_PHONE, managerMessage);
 
         if (smsSent) {
@@ -225,7 +259,7 @@ export const sendManagerAlert = onRequest(async (req, res) => {
                 customerPhone,
                 vehicle,
                 feedback,
-                createdAt: new Date().toISOString(),
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 status: 'unread',
                 priority: 'high',
                 smsSent: true
@@ -237,8 +271,9 @@ export const sendManagerAlert = onRequest(async (req, res) => {
         }
 
     } catch (error: unknown) {
-        console.error('Manager alert error:', error);
-        res.status(500).send('Error sending manager alert');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Manager alert error:', errorMessage);
+        res.status(500).json({ success: false, message: 'Error sending manager alert', error: errorMessage });
     }
 });
 
@@ -256,13 +291,18 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
             return false;
         }
 
+        // Format as E.164 if not already
+        const formattedNumber = cleanNumber.startsWith('+') ? cleanNumber : `+${cleanNumber}`;
+        
+        console.log(`Sending SMS to ${formattedNumber}, message length: ${message.length}`);
+
         const response = await axios.post<ClickSendResponse>(
             CLICKSEND_URL,
             {
                 messages: [{
                     source: 'php',
                     body: message,
-                    to: cleanNumber
+                    to: formattedNumber
                 }]
             },
             {
@@ -272,14 +312,25 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
                 },
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                timeout: 10000 // 10 second timeout
             }
         );
 
+        console.log(`ClickSend response: ${response.data.response_code}`);
         return response.data.response_code === 'SUCCESS';
 
     } catch (error: unknown) {
-        console.error('ClickSend API Error:', error);
+        if (axios.isAxiosError(error)) {
+            console.error('ClickSend API Error:', {
+                status: error.response?.status,
+                data: error.response?.data,
+                message: error.message
+            });
+        } else {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error('ClickSend Error:', errorMessage);
+        }
         return false;
     }
 }

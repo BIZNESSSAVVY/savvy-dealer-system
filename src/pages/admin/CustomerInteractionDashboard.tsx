@@ -1,5 +1,5 @@
 // src/pages/admin/CustomerInteractionDashboard.tsx
-// PRACTICAL DEALER VERSION - Clean, intuitive, with date filtering
+// POLISHED DEALER VERSION - Clean, professional, easy to scan
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -25,7 +25,7 @@ import { db } from '@/firebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 // ====================================================================
-// ENHANCED TYPES
+// TYPES
 // ====================================================================
 
 interface ContactSubmission {
@@ -55,8 +55,6 @@ interface SoldVehicle {
     mileage: number;
     stockNumber?: string;
     dateSold: Date | null;
-    
-    // REVIEW TRACKING
     requestFeedback?: boolean;
     feedbackSent?: boolean;
     feedbackSentAt?: Date | null;
@@ -82,7 +80,6 @@ interface CreditApplication {
 
 type Interaction = ContactSubmission | SoldVehicle | CreditApplication;
 
-// Customer Group Type
 interface CustomerGroup {
     customerId: string;
     primaryPhone: string;
@@ -100,7 +97,6 @@ interface CustomerGroup {
     };
 }
 
-// Type guards
 const isContactSubmission = (interaction: Interaction): interaction is ContactSubmission => interaction.type === 'contact';
 const isSoldVehicle = (interaction: Interaction): interaction is SoldVehicle => interaction.type === 'sale';
 const isCreditApplication = (interaction: Interaction): interaction is CreditApplication => interaction.type === 'financing';
@@ -177,7 +173,7 @@ const getDateRangeFilter = (range: string): { start: Date | null; end: Date | nu
 };
 
 // ====================================================================
-// MAIN COMPONENT - PRACTICAL DEALER VERSION
+// MAIN COMPONENT
 // ====================================================================
 
 export const CustomerInteractionDashboard: React.FC = () => {
@@ -195,23 +191,17 @@ export const CustomerInteractionDashboard: React.FC = () => {
     
     const { toast } = useToast();
 
-    // ====================================================================
-    // DATA FETCHING & GROUPING
-    // ====================================================================
-
     const fetchInteractions = async () => {
         setIsLoading(true);
         try {
             const allInteractions: Interaction[] = [];
 
-            // Fetch all data in parallel
             const [contactSnapshot, soldSnapshot, creditSnapshot] = await Promise.all([
                 getDocs(query(collection(db, 'contact_submissions'), orderBy('submittedAt', 'desc'))),
                 getDocs(query(collection(db, 'sold_vehicles'), orderBy('dateSold', 'desc'))),
                 getDocs(query(collection(db, 'creditApplications'), orderBy('submittedAt', 'desc')))
             ]);
 
-            // Process contacts
             contactSnapshot.docs.forEach(doc => {
                 const data = doc.data();
                 allInteractions.push({
@@ -228,7 +218,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
                 });
             });
 
-            // Process sales
             soldSnapshot.docs.forEach(doc => {
                 const data = doc.data();
                 allInteractions.push({
@@ -256,7 +245,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
                 });
             });
 
-            // Process credit apps
             creditSnapshot.docs.forEach(doc => {
                 const data = doc.data();
                 allInteractions.push({
@@ -327,7 +315,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
             group.interactions.push(interaction);
             group.totalInteractions++;
             
-            // Update last activity
             const interactionDate = isContactSubmission(interaction) ? interaction.submittedAt :
                                   isSoldVehicle(interaction) ? interaction.dateSold :
                                   interaction.submittedAt;
@@ -336,7 +323,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
                 group.lastActivity = interactionDate;
             }
             
-            // Update stats for sales
             if (isSoldVehicle(interaction)) {
                 group.stats.totalSales++;
                 group.stats.totalRevenue += interaction.price || 0;
@@ -353,14 +339,12 @@ export const CustomerInteractionDashboard: React.FC = () => {
             }
         });
         
-        // Calculate averages
         Array.from(phoneMap.values()).forEach(group => {
             if (group.stats.totalSales > 0) {
                 group.stats.averageSalePrice = Math.round(group.stats.totalRevenue / group.stats.totalSales);
             }
         });
         
-        // Sort by last activity (most recent first)
         const sortedGroups = Array.from(phoneMap.values()).sort((a, b) => {
             if (!a.lastActivity && !b.lastActivity) return 0;
             if (!a.lastActivity) return 1;
@@ -374,10 +358,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
     useEffect(() => {
         fetchInteractions();
     }, []);
-
-    // ====================================================================
-    // FILTERED DATA
-    // ====================================================================
 
     const filteredCustomerGroups = useMemo(() => {
         let filtered = [...customerGroups];
@@ -397,7 +377,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
             );
         }
         
-        // Apply date filter for sales view
         if (dateRange !== 'all' && viewMode === 'sales') {
             filtered = filtered.map(group => {
                 const filteredInteractions = group.interactions.filter(interaction => {
@@ -423,14 +402,12 @@ export const CustomerInteractionDashboard: React.FC = () => {
         return filtered;
     }, [customerGroups, searchTerm, filterType, dateRange, viewMode]);
 
-    // Get sales data for sales view
     const salesData = useMemo(() => {
         return interactions
             .filter(isSoldVehicle)
             .sort((a, b) => (b.dateSold?.getTime() || 0) - (a.dateSold?.getTime() || 0));
     }, [interactions]);
 
-    // Filter sales by date range
     const filteredSales = useMemo(() => {
         if (dateRange === 'all') return salesData;
         
@@ -442,10 +419,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
             return sale.dateSold >= dateFilter.start!;
         });
     }, [salesData, dateRange]);
-
-    // ====================================================================
-    // QUICK STATS
-    // ====================================================================
 
     const quickStats = useMemo(() => {
         const totalSales = filteredSales.length;
@@ -460,10 +433,6 @@ export const CustomerInteractionDashboard: React.FC = () => {
         
         return { totalSales, totalRevenue, pendingReviews, negativeReviews, avgSalePrice };
     }, [filteredSales]);
-
-    // ====================================================================
-    // INTERACTION HANDLERS
-    // ====================================================================
 
     const handleViewInteraction = (interaction: Interaction) => {
         setSelectedInteraction(interaction);
@@ -485,625 +454,664 @@ export const CustomerInteractionDashboard: React.FC = () => {
         window.open(`tel:+1${cleanPhone}`, '_blank');
     };
 
-    // ====================================================================
-    // RENDER - CLEAN PRACTICAL UI
-    // ====================================================================
-
     return (
-        <div className="container mx-auto p-4 md:p-6 space-y-6">
-            {/* HEADER */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                        <Users className="w-6 h-6" /> Customer & Sales Dashboard
-                    </h1>
-                    <p className="text-gray-600 mt-1 text-sm">
-                        Track customer interactions and sales performance
-                    </p>
-                </div>
-                
-                <Button variant="outline" size="sm" onClick={() => fetchInteractions()} className="gap-2">
-                    <History className="w-4 h-4" /> Refresh
-                </Button>
-            </div>
-
-            {/* SALES PERFORMANCE CARDS */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <Card className="border border-gray-200 shadow-sm">
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Sales This Period</p>
-                                <p className="text-xl font-bold text-gray-900">{quickStats.totalSales}</p>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+            <div className="container mx-auto p-6 space-y-6 max-w-7xl">
+                {/* HEADER */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                            <div className="p-2 bg-blue-600 rounded-lg">
+                                <Users className="w-6 h-6 text-white" />
                             </div>
-                            <Car className="w-5 h-5 text-blue-600 opacity-80" />
-                        </div>
-                    </CardContent>
-                </Card>
-                
-                <Card className="border border-gray-200 shadow-sm">
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Revenue</p>
-                                <p className="text-xl font-bold text-green-700">{formatCurrency(quickStats.totalRevenue)}</p>
-                            </div>
-                            <DollarSign className="w-5 h-5 text-green-600 opacity-80" />
-                        </div>
-                    </CardContent>
-                </Card>
-                
-                <Card className={`border ${quickStats.pendingReviews > 0 ? 'border-amber-300 bg-amber-50' : 'border-gray-200'} shadow-sm`}>
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Pending Reviews</p>
-                                <p className={`text-xl font-bold ${quickStats.pendingReviews > 0 ? 'text-amber-700' : 'text-gray-900'}`}>
-                                    {quickStats.pendingReviews}
-                                </p>
-                            </div>
-                            {quickStats.pendingReviews > 0 ? (
-                                <AlertTriangle className="w-5 h-5 text-amber-600 animate-pulse" />
-                            ) : (
-                                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-                
-                <Card className={`border ${quickStats.negativeReviews > 0 ? 'border-red-300 bg-red-50' : 'border-gray-200'} shadow-sm`}>
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Needs Follow-up</p>
-                                <p className={`text-xl font-bold ${quickStats.negativeReviews > 0 ? 'text-red-700' : 'text-gray-900'}`}>
-                                    {quickStats.negativeReviews}
-                                </p>
-                            </div>
-                            {quickStats.negativeReviews > 0 ? (
-                                <AlertTriangle className="w-5 h-5 text-red-600 animate-pulse" />
-                            ) : (
-                                <ThumbsUp className="w-5 h-5 text-green-600" />
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-                
-                <Card className="border border-gray-200 shadow-sm">
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Avg Sale Price</p>
-                                <p className="text-xl font-bold text-gray-900">{formatCurrency(quickStats.avgSalePrice)}</p>
-                            </div>
-                            <TrendingUp className="w-5 h-5 text-blue-600 opacity-80" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* FILTER BAR */}
-            <Card className="border border-gray-200 shadow-sm">
-                <CardContent className="p-4">
-                    <div className="flex flex-col md:flex-row gap-3">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <Input
-                                placeholder="Search by name or phone..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 border-gray-300"
-                            />
-                        </div>
-                        
-                        <div className="flex gap-2">
-                            <Select value={viewMode} onValueChange={(v: any) => setViewMode(v)}>
-                                <SelectTrigger className="w-[140px] border-gray-300">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="customers">By Customer</SelectItem>
-                                    <SelectItem value="sales">Sales List</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            
-                            <Select value={filterType} onValueChange={(v: any) => setFilterType(v)}>
-                                <SelectTrigger className="w-[140px] border-gray-300">
-                                    <Filter className="h-4 w-4 mr-2" />
-                                    <SelectValue placeholder="Type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Types</SelectItem>
-                                    <SelectItem value="contact">Contacts</SelectItem>
-                                    <SelectItem value="sale">Sales</SelectItem>
-                                    <SelectItem value="financing">Financing</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            
-                            <Select value={dateRange} onValueChange={setDateRange}>
-                                <SelectTrigger className="w-[140px] border-gray-300">
-                                    <CalendarDays className="h-4 w-4 mr-2" />
-                                    <SelectValue placeholder="Date Range" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Time</SelectItem>
-                                    <SelectItem value="today">Today</SelectItem>
-                                    <SelectItem value="week">Last 7 Days</SelectItem>
-                                    <SelectItem value="month">Last 30 Days</SelectItem>
-                                    <SelectItem value="year">Last Year</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            
-                            {(searchTerm || filterType !== 'all' || dateRange !== 'all') && (
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    onClick={() => {
-                                        setSearchTerm('');
-                                        setFilterType('all');
-                                        setDateRange('all');
-                                    }}
-                                    className="border border-gray-300"
-                                >
-                                    <FilterX className="h-4 w-4" />
-                                </Button>
-                            )}
-                        </div>
+                            Customer Dashboard
+                        </h1>
+                        <p className="text-slate-600 mt-2">Track sales and customer feedback</p>
                     </div>
-                </CardContent>
-            </Card>
+                    
+                    <Button 
+                        variant="outline" 
+                        onClick={() => fetchInteractions()} 
+                        className="gap-2 border-slate-300 hover:bg-slate-100"
+                    >
+                        <History className="w-4 h-4" /> Refresh
+                    </Button>
+                </div>
 
-            {/* MAIN CONTENT */}
-            {viewMode === 'customers' ? (
-                <Card className="border border-gray-200 shadow-sm">
-                    <CardHeader className="border-b border-gray-100">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-lg font-semibold text-gray-900">Customers</CardTitle>
-                                <CardDescription className="text-gray-600">
-                                    {filteredCustomerGroups.length} customers found
-                                    {dateRange !== 'all' && ` • Showing ${dateRange} sales`}
-                                </CardDescription>
+                {/* STATS CARDS */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <Card className="bg-white border-slate-200 shadow-md hover:shadow-lg transition-shadow">
+                        <CardContent className="p-5">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-slate-600 mb-1">Total Sales</p>
+                                    <p className="text-3xl font-bold text-slate-900">{quickStats.totalSales}</p>
+                                </div>
+                                <div className="p-3 bg-blue-100 rounded-lg">
+                                    <Car className="w-6 h-6 text-blue-700" />
+                                </div>
                             </div>
-                            <Badge variant="outline" className="text-gray-700">
-                                {interactions.length} total interactions
-                            </Badge>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-white border-slate-200 shadow-md hover:shadow-lg transition-shadow">
+                        <CardContent className="p-5">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-slate-600 mb-1">Revenue</p>
+                                    <p className="text-2xl font-bold text-green-700">
+                                        {formatCurrency(quickStats.totalRevenue)}
+                                    </p>
+                                </div>
+                                <div className="p-3 bg-green-100 rounded-lg">
+                                    <DollarSign className="w-6 h-6 text-green-700" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className={`border-2 shadow-md hover:shadow-lg transition-shadow ${
+                        quickStats.pendingReviews > 0 
+                            ? 'bg-amber-50 border-amber-400' 
+                            : 'bg-white border-slate-200'
+                    }`}>
+                        <CardContent className="p-5">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-slate-600 mb-1">Pending Reviews</p>
+                                    <p className={`text-3xl font-bold ${
+                                        quickStats.pendingReviews > 0 ? 'text-amber-700' : 'text-slate-900'
+                                    }`}>
+                                        {quickStats.pendingReviews}
+                                    </p>
+                                </div>
+                                <div className={`p-3 rounded-lg ${
+                                    quickStats.pendingReviews > 0 ? 'bg-amber-200' : 'bg-green-100'
+                                }`}>
+                                    {quickStats.pendingReviews > 0 ? (
+                                        <Clock className="w-6 h-6 text-amber-800" />
+                                    ) : (
+                                        <CheckCircle2 className="w-6 h-6 text-green-700" />
+                                    )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className={`border-2 shadow-lg hover:shadow-xl transition-all ${
+                        quickStats.negativeReviews > 0 
+                            ? 'bg-red-50 border-red-500 ring-2 ring-red-300' 
+                            : 'bg-white border-slate-200'
+                    }`}>
+                        <CardContent className="p-5">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm font-bold text-slate-900 mb-1 uppercase tracking-wide">
+                                        Unhappy Customers
+                                    </p>
+                                    <p className={`text-4xl font-bold ${
+                                        quickStats.negativeReviews > 0 ? 'text-red-700' : 'text-slate-900'
+                                    }`}>
+                                        {quickStats.negativeReviews}
+                                    </p>
+                                    {quickStats.negativeReviews > 0 && (
+                                        <p className="text-xs font-semibold text-red-700 mt-2 uppercase">
+                                            ⚠ Call Them Now
+                                        </p>
+                                    )}
+                                </div>
+                                <div className={`p-3 rounded-lg ${
+                                    quickStats.negativeReviews > 0 ? 'bg-red-200' : 'bg-green-100'
+                                }`}>
+                                    {quickStats.negativeReviews > 0 ? (
+                                        <AlertTriangle className="w-7 h-7 text-red-700" />
+                                    ) : (
+                                        <ThumbsUp className="w-6 h-6 text-green-700" />
+                                    )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-white border-slate-200 shadow-md hover:shadow-lg transition-shadow">
+                        <CardContent className="p-5">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-slate-600 mb-1">Avg Sale</p>
+                                    <p className="text-2xl font-bold text-slate-900">
+                                        {formatCurrency(quickStats.avgSalePrice)}
+                                    </p>
+                                </div>
+                                <div className="p-3 bg-purple-100 rounded-lg">
+                                    <TrendingUp className="w-6 h-6 text-purple-700" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* FILTER BAR */}
+                <Card className="bg-white border-slate-200 shadow-md">
+                    <CardContent className="p-4">
+                        <div className="flex flex-col md:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                                <Input
+                                    placeholder="Search by name or phone..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 h-11 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                                />
+                            </div>
+                            
+                            <div className="flex gap-2">
+                                <Select value={viewMode} onValueChange={(v: any) => setViewMode(v)}>
+                                    <SelectTrigger className="w-[150px] h-11 border-slate-300">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="customers">By Customer</SelectItem>
+                                        <SelectItem value="sales">Sales List</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                
+                                <Select value={filterType} onValueChange={(v: any) => setFilterType(v)}>
+                                    <SelectTrigger className="w-[140px] h-11 border-slate-300">
+                                        <Filter className="h-4 w-4 mr-2" />
+                                        <SelectValue placeholder="Type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Types</SelectItem>
+                                        <SelectItem value="contact">Contacts</SelectItem>
+                                        <SelectItem value="sale">Sales</SelectItem>
+                                        <SelectItem value="financing">Financing</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                
+                                <Select value={dateRange} onValueChange={setDateRange}>
+                                    <SelectTrigger className="w-[140px] h-11 border-slate-300">
+                                        <CalendarDays className="h-4 w-4 mr-2" />
+                                        <SelectValue placeholder="Date Range" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Time</SelectItem>
+                                        <SelectItem value="today">Today</SelectItem>
+                                        <SelectItem value="week">Last 7 Days</SelectItem>
+                                        <SelectItem value="month">Last 30 Days</SelectItem>
+                                        <SelectItem value="year">Last Year</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                
+                                {(searchTerm || filterType !== 'all' || dateRange !== 'all') && (
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon"
+                                        onClick={() => {
+                                            setSearchTerm('');
+                                            setFilterType('all');
+                                            setDateRange('all');
+                                        }}
+                                        className="h-11 w-11 border border-slate-300 hover:bg-slate-100"
+                                    >
+                                        <FilterX className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
                         </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {isLoading ? (
-                            <div className="flex items-center justify-center py-16">
-                                <Loader2 className="mr-3 h-6 w-6 animate-spin text-gray-400" />
-                                <span className="text-gray-600">Loading customer data...</span>
+                    </CardContent>
+                </Card>
+
+                {/* MAIN CONTENT */}
+                {viewMode === 'customers' ? (
+                    <Card className="bg-white border-slate-200 shadow-md">
+                        <CardHeader className="border-b border-slate-200 bg-slate-50">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold text-slate-900">Customers</CardTitle>
+                                    <CardDescription className="text-slate-600 mt-1">
+                                        {filteredCustomerGroups.length} customers
+                                        {dateRange !== 'all' && ` • ${dateRange} sales`}
+                                    </CardDescription>
+                                </div>
+                                <Badge variant="outline" className="text-slate-700 font-medium px-3 py-1">
+                                    {interactions.length} total interactions
+                                </Badge>
                             </div>
-                        ) : filteredCustomerGroups.length === 0 ? (
-                            <div className="text-center py-16 text-gray-500">
-                                <Users className="w-12 h-12 mx-auto mb-4 opacity-40" />
-                                <p className="text-lg">No customers found</p>
-                                <p className="text-sm mt-2">Try adjusting your search filters</p>
-                            </div>
-                        ) : (
-                            <div className="divide-y divide-gray-100">
-                                {filteredCustomerGroups.map((customer) => (
-                                    <div key={customer.customerId} className="hover:bg-gray-50 transition-colors">
-                                        {/* CUSTOMER HEADER */}
-                                        <div 
-                                            className="p-4 cursor-pointer"
-                                            onClick={() => toggleCustomerExpand(customer.customerId)}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-8 w-8 hover:bg-gray-200"
-                                                    >
-                                                        {expandedCustomers.has(customer.customerId) ? 
-                                                            <ChevronUp className="h-4 w-4 text-gray-600" /> : 
-                                                            <ChevronDown className="h-4 w-4 text-gray-600" />
-                                                        }
-                                                    </Button>
-                                                    <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <User className="h-4 w-4 text-gray-500" />
-                                                            <h3 className="font-semibold text-gray-900">{customer.customerName}</h3>
-                                                            {customer.stats.totalSales > 1 && (
-                                                                <Badge className="bg-blue-100 text-blue-800 text-xs">
-                                                                    Repeat Buyer
-                                                                </Badge>
-                                                            )}
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center py-20">
+                                    <Loader2 className="mr-3 h-7 w-7 animate-spin text-slate-400" />
+                                    <span className="text-slate-600 font-medium">Loading...</span>
+                                </div>
+                            ) : filteredCustomerGroups.length === 0 ? (
+                                <div className="text-center py-20 text-slate-500">
+                                    <Users className="w-12 h-12 mx-auto mb-4 opacity-40" />
+                                    <p className="text-lg font-medium">No customers found</p>
+                                    <p className="text-sm mt-2">Try adjusting your filters</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-slate-100">
+                                    {filteredCustomerGroups.map((customer) => (
+                                        <div key={customer.customerId} className="hover:bg-slate-50 transition-colors">
+                                            <div 
+                                                className="p-5 cursor-pointer"
+                                                onClick={() => toggleCustomerExpand(customer.customerId)}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-9 w-9 hover:bg-slate-200"
+                                                        >
+                                                            {expandedCustomers.has(customer.customerId) ? 
+                                                                <ChevronUp className="h-5 w-5 text-slate-700" /> : 
+                                                                <ChevronDown className="h-5 w-5 text-slate-700" />
+                                                            }
+                                                        </Button>
+                                                        <div>
+                                                            <div className="flex items-center gap-3">
+                                                                <User className="h-4 w-4 text-slate-500" />
+                                                                <h3 className="font-semibold text-lg text-slate-900">{customer.customerName}</h3>
+                                                                {customer.stats.totalSales > 1 && (
+                                                                    <Badge className="bg-blue-600 text-white text-xs font-medium">
+                                                                        Repeat Buyer
+                                                                    </Badge>
+                                                                )}
+                                                                {customer.stats.negativeReviews > 0 && (
+                                                                    <Badge className="bg-red-600 text-white text-xs font-bold">
+                                                                        UNHAPPY
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-4 mt-2">
+                                                                <div className="flex items-center gap-1 text-sm text-slate-600">
+                                                                    <Phone className="h-4 w-4" />
+                                                                    {customer.primaryPhone}
+                                                                </div>
+                                                                <div className="text-sm text-slate-500">
+                                                                    • {customer.totalInteractions} interaction{customer.totalInteractions !== 1 ? 's' : ''}
+                                                                </div>
+                                                                {customer.lastActivity && (
+                                                                    <div className="text-sm text-slate-500">
+                                                                        • Last: {formatShortDate(customer.lastActivity)}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                        <div className="flex items-center gap-3 mt-1">
-                                                            <div className="flex items-center gap-1 text-sm text-gray-600">
-                                                                <Phone className="h-3 w-3" />
-                                                                {customer.primaryPhone}
-                                                            </div>
-                                                            <div className="text-sm text-gray-500">
-                                                                • {customer.totalInteractions} interaction{customer.totalInteractions !== 1 ? 's' : ''}
-                                                            </div>
-                                                            {customer.lastActivity && (
-                                                                <div className="text-sm text-gray-500">
-                                                                    • Last activity: {formatShortDate(customer.lastActivity)}
+                                                    </div>
+                                                    
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="hidden md:flex items-center gap-6">
+                                                            {customer.stats.totalSales > 0 && (
+                                                                <div className="text-center">
+                                                                    <div className="text-2xl font-bold text-green-700">{customer.stats.totalSales}</div>
+                                                                    <div className="text-xs text-slate-600 font-medium">Sales</div>
+                                                                </div>
+                                                            )}
+                                                            
+                                                            {customer.stats.pendingReviews > 0 && (
+                                                                <div className="text-center">
+                                                                    <div className="text-2xl font-bold text-amber-700">{customer.stats.pendingReviews}</div>
+                                                                    <div className="text-xs text-slate-600 font-medium">Pending</div>
+                                                                </div>
+                                                            )}
+                                                            
+                                                            {customer.stats.negativeReviews > 0 && (
+                                                                <div className="text-center px-3 py-2 bg-red-100 rounded-lg border border-red-300">
+                                                                    <div className="text-2xl font-bold text-red-800">{customer.stats.negativeReviews}</div>
+                                                                    <div className="text-xs text-red-700 font-bold uppercase">Unhappy</div>
                                                                 </div>
                                                             )}
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="flex items-center gap-4">
-                                                    {/* CUSTOMER STATS */}
-                                                    <div className="hidden md:flex items-center gap-6">
-                                                        {customer.stats.totalSales > 0 && (
-                                                            <div className="text-center">
-                                                                <div className="font-semibold text-green-700">{customer.stats.totalSales}</div>
-                                                                <div className="text-xs text-gray-600">purchases</div>
-                                                            </div>
-                                                        )}
                                                         
-                                                        {customer.stats.pendingReviews > 0 && (
-                                                            <div className="text-center">
-                                                                <div className="font-semibold text-amber-700">{customer.stats.pendingReviews}</div>
-                                                                <div className="text-xs text-gray-600">pending</div>
-                                                            </div>
-                                                        )}
-                                                        
-                                                        {customer.stats.negativeReviews > 0 && (
-                                                            <div className="text-center">
-                                                                <div className="font-semibold text-red-700">{customer.stats.negativeReviews}</div>
-                                                                <div className="text-xs text-gray-600">needs follow-up</div>
-                                                            </div>
-                                                        )}
+                                                        <Button 
+                                                            size="sm" 
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleCallCustomer(customer.primaryPhone);
+                                                            }}
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium gap-2"
+                                                        >
+                                                            <PhoneCall className="h-4 w-4" /> Call
+                                                        </Button>
                                                     </div>
-                                                    
-                                                    <Button 
-                                                        size="sm" 
-                                                        variant="ghost"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleCallCustomer(customer.primaryPhone);
-                                                        }}
-                                                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                                                    >
-                                                        <PhoneCall className="h-4 w-4 mr-1" /> Call
-                                                    </Button>
                                                 </div>
                                             </div>
-                                        </div>
-                                        
-                                        {/* EXPANDED INTERACTIONS */}
-                                        {expandedCustomers.has(customer.customerId) && (
-                                            <div className="px-4 pb-4 bg-gray-50 border-t border-gray-100">
-                                                <div className="pt-4">
-                                                    <h4 className="font-medium text-gray-700 mb-3">Customer History</h4>
-                                                    <div className="space-y-2">
-                                                        {customer.interactions
-                                                            .sort((a, b) => {
-                                                                const dateA = isContactSubmission(a) ? a.submittedAt :
-                                                                             isSoldVehicle(a) ? a.dateSold : a.submittedAt;
-                                                                const dateB = isContactSubmission(b) ? b.submittedAt :
-                                                                             isSoldVehicle(b) ? b.dateSold : b.submittedAt;
-                                                                return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
-                                                            })
-                                                            .map((interaction, idx) => (
-                                                                <div key={`${interaction.type}-${idx}`} 
-                                                                     className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200 hover:border-gray-300 transition-colors">
-                                                                    <div className="pt-1">
-                                                                        {interaction.type === 'contact' && (
-                                                                            <MessageCircle className="h-4 w-4 text-blue-600" />
-                                                                        )}
-                                                                        {interaction.type === 'sale' && (
-                                                                            <Car className="h-4 w-4 text-green-600" />
-                                                                        )}
-                                                                        {interaction.type === 'financing' && (
-                                                                            <FileText className="h-4 w-4 text-purple-600" />
-                                                                        )}
-                                                                    </div>
-                                                                    
-                                                                    <div className="flex-1">
-                                                                        <div className="flex justify-between items-start">
-                                                                            <div>
-                                                                                {isContactSubmission(interaction) && (
-                                                                                    <>
-                                                                                        <div className="font-medium text-gray-900">Contact: {interaction.subject}</div>
-                                                                                        <div className="text-sm text-gray-600 mt-1">
-                                                                                            {interaction.message.substring(0, 80)}...
-                                                                                        </div>
-                                                                                    </>
-                                                                                )}
-                                                                                
-                                                                                {isSoldVehicle(interaction) && (
-                                                                                    <>
-                                                                                        <div className="font-medium text-gray-900">
-                                                                                            {interaction.year} {interaction.make} {interaction.model}
-                                                                                        </div>
-                                                                                        <div className="text-sm text-gray-600 mt-1">
-                                                                                            Sold for {formatCurrency(interaction.price)} • {formatShortDate(interaction.dateSold)}
-                                                                                        </div>
-                                                                                        {interaction.requestFeedback && !interaction.feedbackSubmitted && (
-                                                                                            <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs">
-                                                                                                <Clock className="h-3 w-3" /> Review pending
+                                            
+                                            {expandedCustomers.has(customer.customerId) && (
+                                                <div className="px-5 pb-5 bg-slate-50 border-t border-slate-200">
+                                                    <div className="pt-5">
+                                                        <h4 className="font-semibold text-slate-900 mb-3">Customer History</h4>
+                                                        <div className="space-y-3">
+                                                            {customer.interactions
+                                                                .sort((a, b) => {
+                                                                    const dateA = isContactSubmission(a) ? a.submittedAt :
+                                                                                 isSoldVehicle(a) ? a.dateSold : a.submittedAt;
+                                                                    const dateB = isContactSubmission(b) ? b.submittedAt :
+                                                                                 isSoldVehicle(b) ? b.dateSold : b.submittedAt;
+                                                                    return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
+                                                                })
+                                                                .map((interaction, idx) => (
+                                                                    <div key={`${interaction.type}-${idx}`} 
+                                                                         className="flex items-start gap-3 p-4 bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
+                                                                        <div className="pt-1">
+                                                                            {interaction.type === 'contact' && (
+                                                                                <MessageCircle className="h-5 w-5 text-blue-600" />
+                                                                            )}
+                                                                            {interaction.type === 'sale' && (
+                                                                                <Car className="h-5 w-5 text-green-600" />
+                                                                            )}
+                                                                            {interaction.type === 'financing' && (
+                                                                                <FileText className="h-5 w-5 text-purple-600" />
+                                                                            )}
+                                                                        </div>
+                                                                        
+                                                                        <div className="flex-1">
+                                                                            <div className="flex justify-between items-start">
+                                                                                <div>
+                                                                                    {isContactSubmission(interaction) && (
+                                                                                        <>
+                                                                                            <div className="font-semibold text-slate-900">Contact: {interaction.subject}</div>
+                                                                                            <div className="text-sm text-slate-600 mt-1">
+                                                                                                {interaction.message.substring(0, 80)}...
                                                                                             </div>
-                                                                                        )}
-                                                                                        {interaction.feedbackSentiment === 'negative' && (
-                                                                                            <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">
-                                                                                                <AlertTriangle className="h-3 w-3" /> Needs immediate follow-up
+                                                                                        </>
+                                                                                    )}
+                                                                                    
+                                                                                    {isSoldVehicle(interaction) && (
+                                                                                        <>
+                                                                                            <div className="font-semibold text-slate-900">
+                                                                                                {interaction.year} {interaction.make} {interaction.model}
                                                                                             </div>
-                                                                                        )}
-                                                                                        {interaction.feedbackSentiment === 'positive' && (
-                                                                                            <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                                                                                                <ThumbsUp className="h-3 w-3" /> Positive review
+                                                                                            <div className="text-sm text-slate-600 mt-1">
+                                                                                                Sold for {formatCurrency(interaction.price)} • {formatShortDate(interaction.dateSold)}
                                                                                             </div>
-                                                                                        )}
-                                                                                    </>
-                                                                                )}
-                                                                                
-                                                                                {isCreditApplication(interaction) && (
-                                                                                    <>
-                                                                                        <div className="font-medium text-gray-900">Credit Application</div>
-                                                                                        <div className="text-sm text-gray-600 mt-1">
-                                                                                            ${interaction.monthlyIncome}/month • {interaction.hasCoBuyer ? 'With co-buyer' : 'Single'}
-                                                                                        </div>
-                                                                                    </>
-                                                                                )}
-                                                                            </div>
-                                                                            
-                                                                            <div className="text-right">
-                                                                                <div className="text-xs text-gray-500">
-                                                                                    {formatDate(
-                                                                                        isContactSubmission(interaction) ? interaction.submittedAt :
-                                                                                        isSoldVehicle(interaction) ? interaction.dateSold :
-                                                                                        interaction.submittedAt
+                                                                                            {interaction.requestFeedback && !interaction.feedbackSubmitted && (
+                                                                                                <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs font-medium">
+                                                                                                    <Clock className="h-3 w-3" /> Review pending
+                                                                                                </div>
+                                                                                            )}
+                                                                                            {interaction.feedbackSentiment === 'negative' && (
+                                                                                                <div className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-red-600 text-white rounded text-xs font-bold uppercase">
+                                                                                                    <AlertTriangle className="h-3 w-3" /> CALL NOW
+                                                                                                </div>
+                                                                                            )}
+                                                                                            {interaction.feedbackSentiment === 'positive' && (
+                                                                                                <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                                                                                    <ThumbsUp className="h-3 w-3" /> Happy customer
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </>
+                                                                                    )}
+                                                                                    
+                                                                                    {isCreditApplication(interaction) && (
+                                                                                        <>
+                                                                                            <div className="font-semibold text-slate-900">Credit Application</div>
+                                                                                            <div className="text-sm text-slate-600 mt-1">
+                                                                                                ${interaction.monthlyIncome}/month • {interaction.hasCoBuyer ? 'With co-buyer' : 'Single'}
+                                                                                            </div>
+                                                                                        </>
                                                                                     )}
                                                                                 </div>
-                                                                                <Button
-                                                                                    variant="ghost"
-                                                                                    size="sm"
-                                                                                    className="mt-2 text-gray-600 hover:text-gray-900"
-                                                                                    onClick={() => handleViewInteraction(interaction)}
-                                                                                >
-                                                                                    <Eye className="h-3 w-3 mr-1" /> View
-                                                                                </Button>
+                                                                                
+                                                                                <div className="text-right">
+                                                                                    <div className="text-xs text-slate-500">
+                                                                                        {formatDate(
+                                                                                            isContactSubmission(interaction) ? interaction.submittedAt :
+                                                                                            isSoldVehicle(interaction) ? interaction.dateSold :
+                                                                                            interaction.submittedAt
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <Button
+                                                                                        variant="ghost"
+                                                                                        size="sm"
+                                                                                        className="mt-2 text-slate-600 hover:text-slate-900"
+                                                                                        onClick={() => handleViewInteraction(interaction)}
+                                                                                    >
+                                                                                        <Eye className="h-4 w-4 mr-1" /> View
+                                                                                    </Button>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
+                                                                ))}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            ) : (
-                <Card className="border border-gray-200 shadow-sm">
-                    <CardHeader className="border-b border-gray-100">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-lg font-semibold text-gray-900">Sales List</CardTitle>
-                                <CardDescription className="text-gray-600">
-                                    {filteredSales.length} sales • {formatCurrency(quickStats.totalRevenue)} revenue
-                                    {dateRange !== 'all' && ` • ${dateRange}`}
-                                </CardDescription>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-gray-700">
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Card className="bg-white border-slate-200 shadow-md">
+                        <CardHeader className="border-b border-slate-200 bg-slate-50">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold text-slate-900">Sales List</CardTitle>
+                                    <CardDescription className="text-slate-600 mt-1">
+                                        {filteredSales.length} sales • {formatCurrency(quickStats.totalRevenue)} revenue
+                                        {dateRange !== 'all' && ` • ${dateRange}`}
+                                    </CardDescription>
+                                </div>
+                                <Badge variant="outline" className="text-slate-700 font-medium px-3 py-1">
                                     {quickStats.pendingReviews > 0 ? `${quickStats.pendingReviews} pending reviews` : 'All reviews complete'}
                                 </Badge>
                             </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {isLoading ? (
-                            <div className="flex items-center justify-center py-16">
-                                <Loader2 className="mr-3 h-6 w-6 animate-spin text-gray-400" />
-                                <span className="text-gray-600">Loading sales data...</span>
-                            </div>
-                        ) : filteredSales.length === 0 ? (
-                            <div className="text-center py-16 text-gray-500">
-                                <Car className="w-12 h-12 mx-auto mb-4 opacity-40" />
-                                <p className="text-lg">No sales found</p>
-                                <p className="text-sm mt-2">Try adjusting your date range</p>
-                            </div>
-                        ) : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-gray-50 hover:bg-gray-50">
-                                        <TableHead className="text-gray-700 font-semibold">Date</TableHead>
-                                        <TableHead className="text-gray-700 font-semibold">Customer</TableHead>
-                                        <TableHead className="text-gray-700 font-semibold">Vehicle</TableHead>
-                                        <TableHead className="text-gray-700 font-semibold">Price</TableHead>
-                                        <TableHead className="text-gray-700 font-semibold">Review Status</TableHead>
-                                        <TableHead className="text-gray-700 font-semibold text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredSales.map((sale) => (
-                                        <TableRow 
-                                            key={sale.id} 
-                                            className={`hover:bg-gray-50 ${
-                                                sale.feedbackSentiment === 'negative' ? 'bg-red-50 hover:bg-red-100' : ''
-                                            }`}
-                                        >
-                                            <TableCell className="font-medium">
-                                                <div className="text-gray-900">{formatShortDate(sale.dateSold)}</div>
-                                                {sale.dateSold && (
-                                                    <div className="text-xs text-gray-500">
-                                                        {sale.dateSold.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                    </div>
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="font-medium text-gray-900">{sale.customerName}</div>
-                                                <div className="text-sm text-gray-600">{sale.customerPhone}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="font-medium text-gray-900">
-                                                    {sale.year} {sale.make} {sale.model}
-                                                </div>
-                                                <div className="text-sm text-gray-600">
-                                                    {sale.vin?.slice(-6)}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="font-semibold text-green-700">
-                                                {formatCurrency(sale.price)}
-                                            </TableCell>
-                                            <TableCell>
-                                                {!sale.requestFeedback ? (
-                                                    <div className="text-gray-500 text-sm">Not requested</div>
-                                                ) : !sale.feedbackSubmitted ? (
-                                                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
-                                                        <Clock className="h-3 w-3" /> Pending
-                                                    </div>
-                                                ) : sale.feedbackSentiment === 'negative' ? (
-                                                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium animate-pulse">
-                                                        <AlertTriangle className="h-3 w-3" /> NEEDS FOLLOW-UP
-                                                    </div>
-                                                ) : sale.feedbackSentiment === 'positive' ? (
-                                                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                                                        <ThumbsUp className="h-3 w-3" /> Positive
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-gray-600 text-sm">Submitted</div>
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="text-gray-600 hover:text-gray-900"
-                                                        onClick={() => handleViewInteraction(sale)}
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() => handleCallCustomer(sale.customerPhone)}
-                                                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                                                    >
-                                                        <PhoneCall className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center py-20">
+                                    <Loader2 className="mr-3 h-7 w-7 animate-spin text-slate-400" />
+                                    <span className="text-slate-600 font-medium">Loading...</span>
+                                </div>
+                            ) : filteredSales.length === 0 ? (
+                                <div className="text-center py-20 text-slate-500">
+                                    <Car className="w-12 h-12 mx-auto mb-4 opacity-40" />
+                                    <p className="text-lg font-medium">No sales found</p>
+                                    <p className="text-sm mt-2">Try adjusting your date range</p>
+                                </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-slate-50 hover:bg-slate-50">
+                                            <TableHead className="text-slate-700 font-semibold">Date</TableHead>
+                                            <TableHead className="text-slate-700 font-semibold">Customer</TableHead>
+                                            <TableHead className="text-slate-700 font-semibold">Vehicle</TableHead>
+                                            <TableHead className="text-slate-700 font-semibold">Price</TableHead>
+                                            <TableHead className="text-slate-700 font-semibold">Review Status</TableHead>
+                                            <TableHead className="text-slate-700 font-semibold text-right">Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        )}
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* INTERACTION DETAIL DIALOG */}
-            <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-                <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                        <DialogTitle className="text-gray-900">Interaction Details</DialogTitle>
-                    </DialogHeader>
-                    
-                    {selectedInteraction && (
-                        <div className="space-y-4">
-                            {isContactSubmission(selectedInteraction) && (
-                                <>
-                                    <div className="space-y-2">
-                                        <div><strong className="text-gray-700">Name:</strong> {selectedInteraction.name}</div>
-                                        <div><strong className="text-gray-700">Phone:</strong> {selectedInteraction.phone}</div>
-                                        <div><strong className="text-gray-700">Subject:</strong> {selectedInteraction.subject}</div>
-                                        <div><strong className="text-gray-700">Message:</strong></div>
-                                        <div className="p-3 bg-gray-50 rounded border border-gray-200">
-                                            {selectedInteraction.message}
-                                        </div>
-                                        <div><strong className="text-gray-700">Submitted:</strong> {formatDate(selectedInteraction.submittedAt)}</div>
-                                    </div>
-                                </>
-                            )}
-                            
-                            {isSoldVehicle(selectedInteraction) && (
-                                <>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div><strong className="text-gray-700">Customer:</strong> {selectedInteraction.customerName}</div>
-                                        <div><strong className="text-gray-700">Phone:</strong> {selectedInteraction.customerPhone}</div>
-                                        <div><strong className="text-gray-700">Vehicle:</strong> {selectedInteraction.year} {selectedInteraction.make} {selectedInteraction.model}</div>
-                                        <div><strong className="text-gray-700">VIN:</strong> {selectedInteraction.vin}</div>
-                                        <div><strong className="text-gray-700">Price:</strong> {formatCurrency(selectedInteraction.price)}</div>
-                                        <div><strong className="text-gray-700">Date:</strong> {formatDate(selectedInteraction.dateSold)}</div>
-                                    </div>
-                                    
-                                    {selectedInteraction.requestFeedback && (
-                                        <div className="pt-4 border-t border-gray-200">
-                                            <h4 className="font-semibold text-gray-900 mb-3">Review Status</h4>
-                                            <div className="space-y-3">
-                                                <div><strong className="text-gray-700">Review requested:</strong> Yes</div>
-                                                <div><strong className="text-gray-700">Sent to customer:</strong> {selectedInteraction.feedbackSent ? 'Yes' : 'No'}</div>
-                                                {selectedInteraction.feedbackSentAt && (
-                                                    <div><strong className="text-gray-700">Sent on:</strong> {formatDate(selectedInteraction.feedbackSentAt)}</div>
-                                                )}
-                                                {selectedInteraction.feedbackText && (
-                                                    <div>
-                                                        <strong className="text-gray-700">Customer feedback:</strong>
-                                                        <div className="mt-1 p-3 bg-gray-50 rounded border border-gray-200">
-                                                            {selectedInteraction.feedbackText}
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredSales.map((sale) => (
+                                            <TableRow 
+                                                key={sale.id} 
+                                                className={`hover:bg-slate-50 ${
+                                                    sale.feedbackSentiment === 'negative' ? 'bg-red-50 hover:bg-red-100' : ''
+                                                }`}
+                                            >
+                                                <TableCell className="font-medium">
+                                                    <div className="text-slate-900">{formatShortDate(sale.dateSold)}</div>
+                                                    {sale.dateSold && (
+                                                        <div className="text-xs text-slate-500">
+                                                            {sale.dateSold.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                         </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="font-medium text-slate-900">{sale.customerName}</div>
+                                                    <div className="text-sm text-slate-600">{sale.customerPhone}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="font-medium text-slate-900">
+                                                        {sale.year} {sale.make} {sale.model}
                                                     </div>
-                                                )}
-                                                {selectedInteraction.feedbackSentiment === 'negative' && (
-                                                    <Alert className="bg-red-50 border-red-200">
-                                                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                                                        <AlertDescription className="text-red-800 font-medium">
-                                                            Customer needs immediate follow-up. Manager has been alerted.
-                                                        </AlertDescription>
-                                                    </Alert>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </>
+                                                    <div className="text-sm text-slate-600">
+                                                        {sale.vin?.slice(-6)}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="font-semibold text-green-700">
+                                                    {formatCurrency(sale.price)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {!sale.requestFeedback ? (
+                                                        <div className="text-slate-500 text-sm">Not requested</div>
+                                                    ) : !sale.feedbackSubmitted ? (
+                                                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
+                                                            <Clock className="h-3 w-3" /> Pending
+                                                        </div>
+                                                    ) : sale.feedbackSentiment === 'negative' ? (
+                                                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium animate-pulse">
+                                                            <AlertTriangle className="h-3 w-3" /> NEEDS FOLLOW-UP
+                                                        </div>
+                                                    ) : sale.feedbackSentiment === 'positive' ? (
+                                                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                                            <ThumbsUp className="h-3 w-3" /> Positive
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-slate-600 text-sm">Submitted</div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="text-slate-600 hover:text-slate-900"
+                                                            onClick={() => handleViewInteraction(sale)}
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => handleCallCustomer(sale.customerPhone)}
+                                                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                                                        >
+                                                            <PhoneCall className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             )}
-                            
-                            {isCreditApplication(selectedInteraction) && (
-                                <>
-                                    <div className="space-y-2">
-                                        <div><strong className="text-gray-700">Name:</strong> {selectedInteraction.firstName} {selectedInteraction.lastName}</div>
-                                        <div><strong className="text-gray-700">Phone:</strong> {selectedInteraction.mobilePhone}</div>
-                                        <div><strong className="text-gray-700">Vehicle:</strong> {selectedInteraction.vehicleToFinance || 'Not specified'}</div>
-                                        <div><strong className="text-gray-700">Monthly Income:</strong> ${selectedInteraction.monthlyIncome}</div>
-                                        <div><strong className="text-gray-700">Co-Buyer:</strong> {selectedInteraction.hasCoBuyer ? 'Yes' : 'No'}</div>
-                                        <div><strong className="text-gray-700">Submitted:</strong> {formatDate(selectedInteraction.submittedAt)}</div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
-                    
-                    <DialogFooter>
-                        {selectedInteraction && 'customerPhone' in selectedInteraction && (
-                            <Button 
-                                onClick={() => {
-                                    if ('customerPhone' in selectedInteraction) {
-                                        handleCallCustomer(selectedInteraction.customerPhone);
-                                    }
-                                }}
-                                className="bg-blue-600 hover:bg-blue-700"
-                            >
-                                <PhoneCall className="h-4 w-4 mr-2" /> Call Customer
-                            </Button>
-                        )}
-                        <Button 
-                            variant="outline" 
-                            onClick={() => setIsDetailDialogOpen(false)}
-                        >
-                            Close
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                        </CardContent>
+                    </Card>
+                )}
 
-            <Toaster />
+                {/* INTERACTION DETAIL DIALOG */}
+                <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+                    <DialogContent className="sm:max-w-[600px]">
+                        <DialogHeader>
+                            <DialogTitle className="text-slate-900">Interaction Details</DialogTitle>
+                        </DialogHeader>
+                        
+                        {selectedInteraction && (
+                            <div className="space-y-4">
+                                {isContactSubmission(selectedInteraction) && (
+                                    <>
+                                        <div className="space-y-2">
+                                            <div><strong className="text-slate-700">Name:</strong> {selectedInteraction.name}</div>
+                                            <div><strong className="text-slate-700">Phone:</strong> {selectedInteraction.phone}</div>
+                                            <div><strong className="text-slate-700">Subject:</strong> {selectedInteraction.subject}</div>
+                                            <div><strong className="text-slate-700">Message:</strong></div>
+                                            <div className="p-3 bg-slate-50 rounded border border-slate-200">
+                                                {selectedInteraction.message}
+                                            </div>
+                                            <div><strong className="text-slate-700">Submitted:</strong> {formatDate(selectedInteraction.submittedAt)}</div>
+                                        </div>
+                                    </>
+                                )}
+                                
+                                {isSoldVehicle(selectedInteraction) && (
+                                    <>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div><strong className="text-slate-700">Customer:</strong> {selectedInteraction.customerName}</div>
+                                            <div><strong className="text-slate-700">Phone:</strong> {selectedInteraction.customerPhone}</div>
+                                            <div><strong className="text-slate-700">Vehicle:</strong> {selectedInteraction.year} {selectedInteraction.make} {selectedInteraction.model}</div>
+                                            <div><strong className="text-slate-700">VIN:</strong> {selectedInteraction.vin}</div>
+                                            <div><strong className="text-slate-700">Price:</strong> {formatCurrency(selectedInteraction.price)}</div>
+                                            <div><strong className="text-slate-700">Date:</strong> {formatDate(selectedInteraction.dateSold)}</div>
+                                        </div>
+                                        
+                                        {selectedInteraction.requestFeedback && (
+                                            <div className="pt-4 border-t border-slate-200">
+                                                <h4 className="font-semibold text-slate-900 mb-3">Review Status</h4>
+                                                <div className="space-y-3">
+                                                    <div><strong className="text-slate-700">Review requested:</strong> Yes</div>
+                                                    <div><strong className="text-slate-700">Sent to customer:</strong> {selectedInteraction.feedbackSent ? 'Yes' : 'No'}</div>
+                                                    {selectedInteraction.feedbackSentAt && (
+                                                        <div><strong className="text-slate-700">Sent on:</strong> {formatDate(selectedInteraction.feedbackSentAt)}</div>
+                                                    )}
+                                                    {selectedInteraction.feedbackText && (
+                                                        <div>
+                                                            <strong className="text-slate-700">Customer feedback:</strong>
+                                                            <div className="mt-1 p-3 bg-slate-50 rounded border border-slate-200">
+                                                                {selectedInteraction.feedbackText}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {selectedInteraction.feedbackSentiment === 'negative' && (
+                                                        <Alert className="bg-red-50 border-red-200">
+                                                            <AlertTriangle className="h-4 w-4 text-red-600" />
+                                                            <AlertDescription className="text-red-800 font-medium">
+                                                                Customer needs immediate follow-up. Manager has been alerted.
+                                                            </AlertDescription>
+                                                        </Alert>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                
+                                {isCreditApplication(selectedInteraction) && (
+                                    <>
+                                        <div className="space-y-2">
+                                            <div><strong className="text-slate-700">Name:</strong> {selectedInteraction.firstName} {selectedInteraction.lastName}</div>
+                                            <div><strong className="text-slate-700">Phone:</strong> {selectedInteraction.mobilePhone}</div>
+                                            <div><strong className="text-slate-700">Vehicle:</strong> {selectedInteraction.vehicleToFinance || 'Not specified'}</div>
+                                            <div><strong className="text-slate-700">Monthly Income:</strong> ${selectedInteraction.monthlyIncome}</div>
+                                            <div><strong className="text-slate-700">Co-Buyer:</strong> {selectedInteraction.hasCoBuyer ? 'Yes' : 'No'}</div>
+                                            <div><strong className="text-slate-700">Submitted:</strong> {formatDate(selectedInteraction.submittedAt)}</div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                        
+                        <DialogFooter>
+                            {selectedInteraction && 'customerPhone' in selectedInteraction && (
+                                <Button 
+                                    onClick={() => {
+                                        if ('customerPhone' in selectedInteraction) {
+                                            handleCallCustomer(selectedInteraction.customerPhone);
+                                        }
+                                    }}
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                >
+                                    <PhoneCall className="h-4 w-4 mr-2" /> Call Customer
+                                </Button>
+                            )}
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setIsDetailDialogOpen(false)}
+                            >
+                                Close
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                <Toaster />
+            </div>
         </div>
     );
 };

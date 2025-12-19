@@ -95,10 +95,18 @@ export const sendDailyFeedbackRequests = onSchedule({
             return;
         }
 
+        const fortyEightHoursAgo = new Date();
+        fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+        
+        const twentyFourHoursAgo = new Date();
+        twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
         const soldVehiclesRef = admin.firestore().collection('sold_vehicles');
         const snapshot = await soldVehiclesRef
             .where('requestFeedback', '==', true)
             .where('feedbackSent', '!=', true)
+            .where('dateSold', '<=', twentyFourHoursAgo.toISOString())
+            .where('dateSold', '>=', fortyEightHoursAgo.toISOString())
             .get();
 
         console.log(`Found ${snapshot.size} vehicles ready for feedback`);

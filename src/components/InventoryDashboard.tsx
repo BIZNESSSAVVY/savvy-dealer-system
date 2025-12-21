@@ -47,7 +47,7 @@ const sendReviewLinkToCustomer = async (soldVehicleData: {
     try {
         // REPLACE THIS URL WITH YOUR ACTUAL CLOUD FUNCTION URL AFTER DEPLOYMENT
         const response = await fetch(
-            'https://us-central1-savvy-ds-49b12.cloudfunctions.net/sendReviewLink',
+            'https://us-central1-YOUR-PROJECT-ID.cloudfunctions.net/sendReviewLink',
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -334,6 +334,13 @@ export const InventoryDashboard: React.FC = () => {
     const handleMarkSold = async () => {
         if (!customerName || !customerPhone) {
             alert('Please enter customer name and phone');
+            return;
+        }
+
+        // VALIDATE PHONE NUMBER
+        const cleanPhone = customerPhone.replace(/\D/g, '');
+        if (cleanPhone.length < 10) {
+            alert('❌ Invalid phone number! Must be at least 10 digits.\n\nExample: 302-555-1234 or 3025551234');
             return;
         }
 

@@ -47,7 +47,7 @@ const sendReviewLinkToCustomer = async (soldVehicleData: {
     try {
         // REPLACE THIS URL WITH YOUR ACTUAL CLOUD FUNCTION URL AFTER DEPLOYMENT
         const response = await fetch(
-            'https://us-central1-YOUR-PROJECT-ID.cloudfunctions.net/sendReviewLink',
+            'https://us-central1-savvy-ds-49b12.cloudfunctions.net/sendReviewLink',
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

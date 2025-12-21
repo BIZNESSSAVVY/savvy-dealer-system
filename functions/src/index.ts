@@ -54,7 +54,7 @@ const CLICKSEND_API_KEY = process.env.CLICKSEND_API_KEY || '';
 const CLICKSEND_MANAGER_PHONE = process.env.CLICKSEND_MANAGER_PHONE || '+13024094992';
 
 // ================ SEND REVIEW LINK (CALLED IMMEDIATELY) ================
-export const sendReviewLink = onRequest(async (req, res) => {
+export const sendReviewLink = onRequest({ cors: true }, async (req, res) => {
     try {
         if (req.method !== 'POST') {
             res.status(405).json({ success: false, message: 'Method not allowed' });
@@ -75,14 +75,12 @@ export const sendReviewLink = onRequest(async (req, res) => {
             return;
         }
 
-        // Validate phone number
         const cleanNumber = customerPhone.replace(/\D/g, '');
         if (cleanNumber.length < 10) {
             res.status(400).json({ success: false, message: 'Invalid phone number' });
             return;
         }
 
-        // Generate unique feedback token
         const feedbackToken = `${soldVehicleId}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
         const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
 
@@ -92,7 +90,6 @@ export const sendReviewLink = onRequest(async (req, res) => {
         const smsSent = await sendClickSendSMS(customerPhone, message);
 
         if (smsSent) {
-            // Update sold vehicle record
             await admin.firestore().collection('sold_vehicles').doc(soldVehicleId).update({
                 feedbackToken: feedbackToken,
                 feedbackLink: feedbackLink,
@@ -108,7 +105,6 @@ export const sendReviewLink = onRequest(async (req, res) => {
                 feedbackLink: feedbackLink
             });
         } else {
-            // Update with failure status
             await admin.firestore().collection('sold_vehicles').doc(soldVehicleId).update({
                 smsStatus: 'failed',
                 lastAttempt: admin.firestore.FieldValue.serverTimestamp()
@@ -148,7 +144,7 @@ export const facebookFeed = onRequest(async (req, res) => {
 });
 
 // ================ TEST FEEDBACK FUNCTION ================
-export const testFeedback = onRequest(async (req, res) => {
+export const testFeedback = onRequest({ cors: true }, async (req, res) => {
     try {
         console.log('Test feedback function triggered');
 
@@ -192,7 +188,7 @@ export const testFeedback = onRequest(async (req, res) => {
 });
 
 // ================ SEND MANAGER ALERT ================
-export const sendManagerAlert = onRequest(async (req, res) => {
+export const sendManagerAlert = onRequest({ cors: true }, async (req, res) => {
     try {
         if (req.method !== 'POST') {
             res.status(405).send('Method not allowed');
@@ -252,7 +248,6 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
             return false;
         }
 
-        // Format as E.164
         const formattedNumber = cleanNumber.startsWith('1') ? `+${cleanNumber}` : `+1${cleanNumber}`;
 
         console.log(`Attempting ClickSend SMS to ${formattedNumber}`);

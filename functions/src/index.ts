@@ -75,21 +75,24 @@ export const sendReviewLink = onRequest({ cors: true }, async (req, res) => {
             return;
         }
 
+        // Validate phone number
         const cleanNumber = customerPhone.replace(/\D/g, '');
         if (cleanNumber.length < 10) {
             res.status(400).json({ success: false, message: 'Invalid phone number' });
             return;
         }
 
+        // Generate unique feedback token
         const feedbackToken = `${soldVehicleId}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
         const feedbackLink = `${FEEDBACK_BASE_URL}?token=${feedbackToken}`;
 
-        const message = `Hi ${customerName}, thanks for your ${vehicleYear} ${vehicleMake} ${vehicleModel} from ${DEALERSHIP_NAME}! We'd love your feedback: ${feedbackLink}`;
+        const message = `Hi ${customerName}, thank you for your recent purchase of the ${vehicleYear} ${vehicleMake} ${vehicleModel} from ${DEALERSHIP_NAME}. We value your feedback: ${feedbackLink}`;
 
         console.log(`Sending review link to ${customerPhone}`);
         const smsSent = await sendClickSendSMS(customerPhone, message);
 
         if (smsSent) {
+            // Update sold vehicle record
             await admin.firestore().collection('sold_vehicles').doc(soldVehicleId).update({
                 feedbackToken: feedbackToken,
                 feedbackLink: feedbackLink,
@@ -105,6 +108,7 @@ export const sendReviewLink = onRequest({ cors: true }, async (req, res) => {
                 feedbackLink: feedbackLink
             });
         } else {
+            // Update with failure status
             await admin.firestore().collection('sold_vehicles').doc(soldVehicleId).update({
                 smsStatus: 'failed',
                 lastAttempt: admin.firestore.FieldValue.serverTimestamp()
@@ -248,6 +252,7 @@ async function sendClickSendSMS(toNumber: string, message: string): Promise<bool
             return false;
         }
 
+        // Format as E.164
         const formattedNumber = cleanNumber.startsWith('1') ? `+${cleanNumber}` : `+1${cleanNumber}`;
 
         console.log(`Attempting ClickSend SMS to ${formattedNumber}`);
